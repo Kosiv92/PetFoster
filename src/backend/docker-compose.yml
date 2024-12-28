@@ -1,0 +1,26 @@
+version: '3.4'
+
+services:
+  petfoster.webapi:
+    container_name: pf.api
+    image: ${DOCKER_REGISTRY-}petfosterwebapi
+    depends_on:
+        - postgres
+    restart: always
+    build:
+      context: .
+      dockerfile: PetFoster.WebAPI/Dockerfile
+  postgres:
+    container_name: pf.database
+    image: postgres
+    restart: always
+    environment:
+        POSTGRES_DB: "petfoster"
+        POSTGRES_USER: "postgres"
+        POSTGRES_PASSWORD: "postgres"
+    ports:
+        - 5432:5432
+    volumes:
+        - ././volumes/data/db:/var/lib/postgresql/data
+    
+

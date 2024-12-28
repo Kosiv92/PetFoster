@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using PetFoster.Domain.Ids;
 using PetFoster.Domain.ValueObjects;
 
 namespace PetFoster.Domain.Entities

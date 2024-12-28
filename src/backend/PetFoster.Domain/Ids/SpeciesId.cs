@@ -1,4 +1,4 @@
-﻿namespace PetFoster.Domain.ValueObjects
+﻿namespace PetFoster.Domain.Ids
 {
     public sealed record SpeciesId : IComparable<SpeciesId>
     {
@@ -13,7 +13,7 @@
         public static SpeciesId Create(Guid id) => new(id);
 
         public int CompareTo(SpeciesId? other)
-        => this.Value.CompareTo(other?.Value);
+        => Value.CompareTo(other?.Value);
     }
 
 }

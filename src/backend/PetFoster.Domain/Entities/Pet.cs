@@ -1,5 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 using PetFoster.Domain.Enums;
+using PetFoster.Domain.Ids;
 using PetFoster.Domain.ValueObjects;
 
 namespace PetFoster.Domain.Entities
