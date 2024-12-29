@@ -13,6 +13,7 @@ namespace PetFoster.Infrastructure
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseNpgsql(configuration.GetConnectionString(DATABASE_NAME));
+            optionsBuilder.UseSnakeCaseNamingConvention();
         }
     }
 }
