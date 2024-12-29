@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using PetFoster.Domain.Entities;
 
 namespace PetFoster.Infrastructure
@@ -14,6 +15,10 @@ namespace PetFoster.Infrastructure
         {
             optionsBuilder.UseNpgsql(configuration.GetConnectionString(DATABASE_NAME));
             optionsBuilder.UseSnakeCaseNamingConvention();
+            optionsBuilder.UseLoggerFactory(CreateLoggerFactory());
         }
+
+        private ILoggerFactory CreateLoggerFactory()
+            => LoggerFactory.Create(builder => builder.AddConsole());
     }
 }
