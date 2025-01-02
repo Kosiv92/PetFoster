@@ -15,6 +15,8 @@ namespace PetFoster.Domain.Entities
             Breeds = breeds;
         }
 
+        public Pet Pet { get; private set; } = null!;
+
         public SpeciesId Id { get; private set; }
 
         public SpeciesName Name { get; private set; }

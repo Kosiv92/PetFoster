@@ -13,7 +13,8 @@ namespace PetFoster.Domain
         public static Result<Description> Create(string? value)
         {
             if(value != null && value.Length > MAX_DESCRIPTION_LENGTH) 
-                return Result.Failure<Description>(value);
+                return Result.Failure<Description>(
+                    $"Description cannot contain more than {Description.MAX_DESCRIPTION_LENGTH} characters");
         
             return Result.Success<Description>(new Description(value)) ; 
         }
