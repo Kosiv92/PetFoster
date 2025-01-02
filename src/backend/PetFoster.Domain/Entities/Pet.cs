@@ -7,12 +7,13 @@ namespace PetFoster.Domain.Entities
 {
     public sealed class Pet : Entity<PetId>
     {
-        public Pet(PetId id, PetName name, Species specie, Description description, Breed breed, 
+        public Pet(PetId id, Volunteer volunteer, PetName name, Species specie, Description description, Breed breed, 
             PetColoration coloration, PetHealth health, Address address, double weight, double height, 
             PhoneNumber ownerPhoneNumber, bool isCastrated, DateTimeOffset? birthDay, bool isVaccinated, 
             AssistanceStatus assistanceStatus, AssistanceRequisites assistanceRequisites) : base(id)
         {
             Id = id;
+            Volunteer = volunteer;
             Name = name;
             Specie = specie;
             Description = description;
@@ -34,6 +35,8 @@ namespace PetFoster.Domain.Entities
         private Pet() { }
 
         public PetId Id { get; private set; }
+
+        public Volunteer Volunteer { get; private set; }
 
         public PetName Name { get; private set; }
 

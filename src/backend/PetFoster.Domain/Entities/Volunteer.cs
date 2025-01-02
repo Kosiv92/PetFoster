@@ -6,8 +6,8 @@ namespace PetFoster.Domain.Entities
 {
     public sealed class Volunteer : Entity<VolunteerId>
     {
-        public Volunteer(VolunteerId id, FullName fullName, string email, Description description, 
-            int workExperienceInYears, PhoneNumber phoneNumber, AssistanceRequisites assistanceRequisites, 
+        public Volunteer(VolunteerId id, FullName fullName, Email email, Description description,
+            WorkExperience workExperienceInYears, PhoneNumber phoneNumber, IReadOnlyList<AssistanceRequisites> assistanceRequisitesList, 
             IReadOnlyList<SocialNetContact> socialNetContacts, IReadOnlyList<Pet> fosteredAnimals) : base(id)
         {
             Id = id;
@@ -16,7 +16,7 @@ namespace PetFoster.Domain.Entities
             Description = description;
             WorkExperienceInYears = workExperienceInYears;
             PhoneNumber = phoneNumber;
-            AssistanceRequisites = assistanceRequisites;
+            AssistanceRequisitesList = assistanceRequisitesList;
             SocialNetContacts = socialNetContacts;
             FosteredAnimals = fosteredAnimals;
         }
@@ -27,15 +27,15 @@ namespace PetFoster.Domain.Entities
 
         public FullName FullName { get; private set; }
 
-        public string Email { get; private set; }
+        public Email Email { get; private set; }
 
         public Description Description { get; private set; }
 
-        public int WorkExperienceInYears { get; private set; }
+        public WorkExperience WorkExperienceInYears { get; private set; }
 
         public PhoneNumber PhoneNumber { get; private set; }
 
-        public AssistanceRequisites AssistanceRequisites { get; private set; }
+        public IReadOnlyList<AssistanceRequisites> AssistanceRequisitesList { get; private set; }
 
         public IReadOnlyList<SocialNetContact> SocialNetContacts { get; private set; }
 

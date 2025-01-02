@@ -1,4 +1,4 @@
-﻿namespace PetFoster.Domain.Ids
+﻿ namespace PetFoster.Domain.Ids
 {
     public sealed record PetId : IComparable<PetId>
     {
