@@ -9,6 +9,8 @@ namespace PetFoster.Domain.ValueObjects
 
         public Volunteer Volunteer { get; private set; } = null!;
 
+        public Pet Pet { get; private set; } = null!;
+
         private AssistanceRequisites() { }
 
         private AssistanceRequisites(string name, Description description)

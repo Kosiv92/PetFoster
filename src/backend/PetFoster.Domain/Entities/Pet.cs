@@ -8,9 +8,9 @@ namespace PetFoster.Domain.Entities
     public sealed class Pet : Entity<PetId>
     {
         public Pet(PetId id, Volunteer volunteer, PetName name, Species specie, Description description, Breed breed, 
-            PetColoration coloration, PetHealth health, Address address, double weight, double height, 
+            PetColoration coloration, PetHealth health, Address address, Characteristics characteristics, 
             PhoneNumber ownerPhoneNumber, bool isCastrated, DateTimeOffset? birthDay, bool isVaccinated, 
-            AssistanceStatus assistanceStatus, AssistanceRequisites assistanceRequisites) : base(id)
+            AssistanceStatus assistanceStatus, IReadOnlyList<AssistanceRequisites> assistanceRequisitesList) : base(id)
         {
             Id = id;
             Volunteer = volunteer;
@@ -21,14 +21,13 @@ namespace PetFoster.Domain.Entities
             Coloration = coloration;
             Health = health;
             Address = address;
-            Weight = weight;
-            Height = height;
+            Characteristics = characteristics;
             OwnerPhoneNumber = ownerPhoneNumber;
             IsCastrated = isCastrated;
             BirthDay = birthDay;
             IsVaccinated = isVaccinated;
             AssistanceStatus = assistanceStatus;
-            AssistanceRequisites = assistanceRequisites;
+            AssistanceRequisitesList = assistanceRequisitesList;
             CreatedDate = DateTimeOffset.Now;
         }
 
@@ -51,10 +50,8 @@ namespace PetFoster.Domain.Entities
         public PetHealth Health { get; private set; }
 
         public Address Address { get; private set; }
-
-        public double Weight { get; private set; }
-
-        public double Height { get; private set; }
+         
+        public Characteristics Characteristics { get; private set; }
 
         public PhoneNumber OwnerPhoneNumber { get; private set; }
 
@@ -66,7 +63,7 @@ namespace PetFoster.Domain.Entities
 
         public AssistanceStatus AssistanceStatus { get; private set; }
 
-        public AssistanceRequisites AssistanceRequisites { get; private set; }
+        public IReadOnlyList<AssistanceRequisites> AssistanceRequisitesList { get; private set; }
 
         public DateTimeOffset CreatedDate { get; private set; }
 

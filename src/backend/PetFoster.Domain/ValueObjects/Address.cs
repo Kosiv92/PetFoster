@@ -1,7 +1,27 @@
-﻿namespace PetFoster.Domain.ValueObjects
+﻿using CSharpFunctionalExtensions;
+
+namespace PetFoster.Domain.ValueObjects
 {
     public sealed record Address
     {
+        public const int MAX_REGION_LENGTH = 100;
+        public const int MAX_CITY_LENGTH = 100;
+        public const int MAX_STREET_LENGTH = 200;
+        public const int MAX_HOUSE_LENGTH = 50;
+        public const int MAX_APARTMENT_LENGTH = 50;
+
+        private Address() { }
+
+        private Address(string region, string city,
+            string street, string houseNumber, string? apartmentNumber)
+        {
+            Region = region;
+            City = city;
+            Street = street;
+            HouseNumber = houseNumber;
+            ApartmentNumber = apartmentNumber;
+        }
+
         public string Region { get; }
 
         public string City { get; }
@@ -10,6 +30,38 @@
 
         public string HouseNumber { get; }
 
-        public string ApartmentNumber { get; }
+        public string? ApartmentNumber { get; }
+
+        public static Result<Address> Create(string region, string city,
+            string street, string houseNumber, string? apartmentNumber)
+        {
+            if (IsValidNonNullableValue(region, Address.MAX_REGION_LENGTH))
+                return Result.Failure<Address>(
+                    NotificationFactory.GetErrorForNonNullableValueWithMaxLimit(nameof(region), Address.MAX_REGION_LENGTH));
+
+            if (IsValidNonNullableValue(city, Address.MAX_CITY_LENGTH))
+                return Result.Failure<Address>(
+                    NotificationFactory.GetErrorForNonNullableValueWithMaxLimit(nameof(city), Address.MAX_CITY_LENGTH));
+
+            if (IsValidNonNullableValue(street, Address.MAX_STREET_LENGTH))
+                return Result.Failure<Address>(
+                    NotificationFactory.GetErrorForNonNullableValueWithMaxLimit(nameof(street), Address.MAX_STREET_LENGTH));
+
+            if (IsValidNonNullableValue(houseNumber, Address.MAX_HOUSE_LENGTH))
+                return Result.Failure<Address>(
+                    NotificationFactory.GetErrorForNonNullableValueWithMaxLimit(nameof(houseNumber), Address.MAX_HOUSE_LENGTH));
+
+            if (IsValidNullableValue(apartmentNumber, Address.MAX_APARTMENT_LENGTH))
+                return Result.Failure<Address>(
+                    NotificationFactory.GetErrorForNullableValueWithMaxLimit(nameof(apartmentNumber), Address.MAX_APARTMENT_LENGTH));
+
+            return Result.Success<Address>(new Address(region, city, street, houseNumber, apartmentNumber));
+        }
+
+        private static bool IsValidNonNullableValue(string property, int maxLimit)
+            => String.IsNullOrWhiteSpace(property) || property.Length > maxLimit;
+
+        private static bool IsValidNullableValue(string property, int maxLimit)
+            => String.IsNullOrWhiteSpace(property) || (!String.IsNullOrWhiteSpace(property) && property.Length > maxLimit);
     }
 }
