@@ -5,7 +5,7 @@ using PetFoster.Domain.ValueObjects;
 namespace PetFoster.Domain.Entities
 {
     public sealed class Breed : Entity<BreedId>
-    {
+    {     
         private Breed() { }
 
         public Breed(BreedId id, BreedName name) : base(id)
@@ -13,6 +13,8 @@ namespace PetFoster.Domain.Entities
             Id = id;
             Name = name;
         }
+
+        public Species Species { get; private set; } = null!;
 
         public Pet Pet { get; private set; } = null!;
 
