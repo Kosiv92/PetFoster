@@ -4,7 +4,7 @@ namespace PetFoster.Domain.ValueObjects
 {
     public sealed record SpeciesName
     {
-        public const int MIN_NAME_LENGTH = 1;
+        public const int MIN_NAME_LENGTH = 2;
         public const int MAX_NAME_LENGTH = 200;
 
         private SpeciesName() { }

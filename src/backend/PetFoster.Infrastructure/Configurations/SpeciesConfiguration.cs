@@ -17,17 +17,18 @@ namespace PetFoster.Infrastructure.Configurations
             builder.Property(m => m.Id)
                 .HasConversion(
                     id => id.Value,
-                    value => SpeciesId.Create(value));
-
-            builder.HasOne(m => m.Pet)
-               .WithOne(v => v.Specie)
-               .OnDelete(DeleteBehavior.NoAction);
+                    value => SpeciesId.Create(value));                       
 
             builder.Property(m => m.Name)
                 .HasMaxLength(SpeciesName.MIN_NAME_LENGTH)                
                 .HasConversion(
                 name => name.Value,
                 value => SpeciesName.Create(value).Value);
+
+            builder.HasOne(m => m.Pet)
+               .WithOne(v => v.Specie)
+               .HasForeignKey("species_id")
+               .OnDelete(DeleteBehavior.NoAction);
 
             builder.HasMany(m => m.Breeds)
                 .WithOne(m => m.Species)
