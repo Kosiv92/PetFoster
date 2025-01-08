@@ -31,5 +31,5 @@ namespace PetFoster.Domain.ValueObjects
 
             return Result.Success<AssistanceRequisites>(new AssistanceRequisites(name, description));
         }    
-    }    
+    }
 }

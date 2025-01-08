@@ -13,10 +13,10 @@ namespace PetFoster.Infrastructure.Extensions
     {
         private const string DATABASE_NAME = "Database";
 
-        public static IServiceCollection AddDbContexts(this IServiceCollection services, IConfiguration configuration)
-        {
+        public static IServiceCollection AddDbContextService(this IServiceCollection services, IConfiguration configuration)
+        {            
             services.AddDbContext<ApplicationDbContext>(opt =>
-            {
+            {                
                 opt.UseNpgsql(configuration.GetConnectionString(DATABASE_NAME));
                 opt.UseSnakeCaseNamingConvention();
                 opt.UseLoggerFactory(CreateLoggerFactory());

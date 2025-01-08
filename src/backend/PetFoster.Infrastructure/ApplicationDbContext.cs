@@ -5,20 +5,19 @@ using PetFoster.Domain.Entities;
 
 namespace PetFoster.Infrastructure
 {
-    public class ApplicationDbContext(IConfiguration configuration) : DbContext
+    public class ApplicationDbContext : DbContext
     {  
         public DbSet<Volunteer> Volunteers { get; set; }
 
-        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        //{
-        //    optionsBuilder.UseNpgsql(configuration.GetConnectionString(DATABASE_NAME));
-        //    optionsBuilder.UseSnakeCaseNamingConvention();
-        //    optionsBuilder.UseLoggerFactory(CreateLoggerFactory());
-        //}
+        public DbSet<Specie> Species { get; set; }
+
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, 
+            IConfiguration configuration) : base(options)
+        {
+
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
-            => modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);        
-
-        
+            => modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);           
     }
 }

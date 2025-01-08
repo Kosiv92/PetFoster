@@ -15,6 +15,7 @@ namespace PetFoster.Infrastructure.Configurations
             builder.HasKey(m => m.Id);
 
             builder.Property(m => m.Id)
+                .HasColumnName("breed_id")
                 .HasConversion(
                     id => id.Value,
                     value => BreedId.Create(value));
@@ -25,16 +26,16 @@ namespace PetFoster.Infrastructure.Configurations
                 name => name.Value,
                 value => BreedName.Create(value).Value);
 
-            builder.HasOne(m => m.Species)
-                .WithMany(m => m.Breeds)
+            builder.HasOne(m => m.Specie)
+                .WithMany(m => m.Breeds)                
                 .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired();
 
-            builder.HasOne(m => m.Pet)
-                .WithOne(m => m.Breed)
+            builder.HasMany(m => m.Pets)
+                .WithOne(p => p.Breed)
                 .HasForeignKey("breed_id")
                 .OnDelete(DeleteBehavior.NoAction)
-                .IsRequired();
+                .IsRequired(true);
         }
     }
 }

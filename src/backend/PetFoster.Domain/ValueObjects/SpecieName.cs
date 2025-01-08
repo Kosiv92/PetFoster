@@ -2,28 +2,28 @@
 
 namespace PetFoster.Domain.ValueObjects
 {
-    public sealed record SpeciesName
+    public sealed record SpecieName
     {
         public const int MIN_NAME_LENGTH = 2;
         public const int MAX_NAME_LENGTH = 200;
 
-        private SpeciesName() { }
+        private SpecieName() { }
                 
-        public SpeciesName(string value) => Value = value;
+        public SpecieName(string value) => Value = value;
 
         public string Value { get; }
 
-        public static Result<SpeciesName> Create(string value)
+        public static Result<SpecieName> Create(string value)
         {
             if(String.IsNullOrWhiteSpace(value) 
                 || value.Length > MAX_NAME_LENGTH 
                 || value.Length < MIN_NAME_LENGTH)
             {
-                return Result.Failure<SpeciesName>(NotificationFactory
-                    .GetErrorForNonNullableValueWithRange(nameof(SpeciesName), MIN_NAME_LENGTH, MAX_NAME_LENGTH));
+                return Result.Failure<SpecieName>(NotificationFactory
+                    .GetErrorForNonNullableValueWithRange(nameof(SpecieName), MIN_NAME_LENGTH, MAX_NAME_LENGTH));
             }
 
-            return Result.Success<SpeciesName>(new SpeciesName(value));
+            return Result.Success<SpecieName>(new SpecieName(value));
         }
     }    
 }

@@ -6,9 +6,9 @@ using PetFoster.Domain.ValueObjects;
 
 namespace PetFoster.Infrastructure.Configurations
 {
-    internal class SpeciesConfiguration : IEntityTypeConfiguration<Species>
+    internal class SpecieConfiguration : IEntityTypeConfiguration<Specie>
     {
-        public void Configure(EntityTypeBuilder<Species> builder)
+        public void Configure(EntityTypeBuilder<Specie> builder)
         {
             builder.ToTable("species");
 
@@ -17,22 +17,22 @@ namespace PetFoster.Infrastructure.Configurations
             builder.Property(m => m.Id)
                 .HasConversion(
                     id => id.Value,
-                    value => SpeciesId.Create(value));                       
+                    value => SpecieId.Create(value));                       
 
             builder.Property(m => m.Name)
-                .HasMaxLength(SpeciesName.MIN_NAME_LENGTH)                
+                .HasMaxLength(SpecieName.MIN_NAME_LENGTH)                
                 .HasConversion(
                 name => name.Value,
-                value => SpeciesName.Create(value).Value);
+                value => SpecieName.Create(value).Value);
 
-            builder.HasOne(m => m.Pet)
+            builder.HasMany(m => m.Pets)
                .WithOne(v => v.Specie)
-               .HasForeignKey("species_id")
+               .HasForeignKey("specie_id")
                .OnDelete(DeleteBehavior.NoAction);
 
             builder.HasMany(m => m.Breeds)
-                .WithOne(m => m.Species)
-                .HasForeignKey("species_id")
+                .WithOne(m => m.Specie)
+                .HasForeignKey("specie_id")
                 .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired();
         }

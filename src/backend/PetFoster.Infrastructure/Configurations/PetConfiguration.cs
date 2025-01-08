@@ -15,9 +15,9 @@ namespace PetFoster.Infrastructure.Configurations
         {
             builder.ToTable("pets", t =>
             {
-                t.HasCheckConstraint("CK_Pet_Weight_NonNegative", $"[{Characteristics.WEIGHT_COLUMN_NAME}] >= 0");
-                t.HasCheckConstraint("CK_Pet_Height_NonNegative", $"[{Characteristics.HEIGHT_COLUMN_NAME}] >= 0");
-                t.HasCheckConstraint("CK_Volunteer_PhoneNumber_NumericOnly", $"[{PhoneNumber.COLUMN_NAME}] ~ '^[0-9]{PhoneNumber.PHONE_NUMBER_LENGTH}$'");
+                t.HasCheckConstraint("CK_Pet_Weight_NonNegative", $"{Characteristics.WEIGHT_COLUMN_NAME} >= 0");
+                t.HasCheckConstraint("CK_Pet_Height_NonNegative", $"{Characteristics.HEIGHT_COLUMN_NAME} >= 0");
+                t.HasCheckConstraint("CK_Volunteer_PhoneNumber_NumericOnly", $"{PhoneNumber.COLUMN_NAME} ~ '^[0-9]{PhoneNumber.PHONE_NUMBER_LENGTH}$'");
             });            
 
             builder.HasKey(m => m.Id);
@@ -38,14 +38,12 @@ namespace PetFoster.Infrastructure.Configurations
                 value => PetName.Create(value).Value);
 
             builder.HasOne(m => m.Specie)
-                .WithOne(s => s.Pet)
-                .HasForeignKey("pet_id")
+                .WithMany(b => b.Pets)
                 .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired(true);
 
             builder.HasOne(m => m.Breed)
-                .WithOne(s => s.Pet)
-                .HasForeignKey("pet_id")
+                .WithMany(b => b.Pets)                
                 .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired(true);
 
@@ -118,17 +116,11 @@ namespace PetFoster.Infrastructure.Configurations
 
             builder.Property(m => m.IsVaccinated)
                 .HasColumnName("vaccinated")
-                .IsRequired(true);            
+                .IsRequired(true);
 
             builder.Property(m => m.AssistanceRequisitesList)
                 .JsonValueObjectCollectionConversion();
-
-            builder.HasMany(m => m.AssistanceRequisitesList)
-                .WithOne(m => m.Pet)
-                .HasForeignKey("pet_id")
-                .OnDelete(DeleteBehavior.Cascade)
-                .IsRequired();
-
+            
             builder.Property(m => m.AssistanceStatus)                
                 .HasConversion(
                 status => status.ToString(),

@@ -14,9 +14,9 @@ namespace PetFoster.Infrastructure.Configurations
         {
             builder.ToTable("volunteers", t =>
             {
-                t.HasCheckConstraint("CK_Volunteer_WorkExperience_NonNegative", $"[{WorkExperience.COLUMN_NAME}] >= 0");
-                t.HasCheckConstraint("CK_Volunteer_PhoneNumber_NumericOnly", $"[{PhoneNumber.COLUMN_NAME}] ~ '^[0-9]{PhoneNumber.PHONE_NUMBER_LENGTH}$'");
-                t.HasCheckConstraint("CK_Volunteer_Email_ValidFormat", $"[{Email.COLUMN_NAME}] ~* '{Email.EMAIL_PATTERN}'");
+                t.HasCheckConstraint("CK_Volunteer_WorkExperience_NonNegative", $"{WorkExperience.COLUMN_NAME} >= 0");
+                t.HasCheckConstraint("CK_Volunteer_PhoneNumber_NumericOnly", $"{PhoneNumber.COLUMN_NAME} ~ '^[0-9]{PhoneNumber.PHONE_NUMBER_LENGTH}$'");
+                t.HasCheckConstraint("CK_Volunteer_Email_ValidFormat", $"{Email.COLUMN_NAME} ~* '{Email.EMAIL_PATTERN}'");
             });                
 
             builder.HasKey(m => m.Id);
@@ -70,24 +70,11 @@ namespace PetFoster.Infrastructure.Configurations
                 value => PhoneNumber.Create(value).Value);
 
             builder.Property(m => m.AssistanceRequisitesList)
-                .JsonValueObjectCollectionConversion();
-
-            builder.HasMany(m => m.AssistanceRequisitesList)
-                .WithOne(m => m.Volunteer)
-                .HasForeignKey("volunteer_id")
-                .OnDelete(DeleteBehavior.Cascade)
-                .IsRequired();
+                .IsRequired()
+                .JsonValueObjectCollectionConversion();            
 
             builder.Property(m => m.SocialNetContacts)
-                .JsonValueObjectCollectionConversion();
-
-            builder.HasMany(m => m.SocialNetContacts)
-                .WithOne(m => m.Volunteer)
-                .HasForeignKey("volunteer_id")
-                .OnDelete(DeleteBehavior.Cascade)
-                .IsRequired();
-
-            builder.Property(m => m.FosteredAnimals)
+                .IsRequired()
                 .JsonValueObjectCollectionConversion();
 
             builder.HasMany(m => m.FosteredAnimals)

@@ -1,4 +1,8 @@
+using PetFoster.Infrastructure.Extensions;
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddDbContextService(builder.Configuration);
 
 builder.Services.AddControllers();
 
