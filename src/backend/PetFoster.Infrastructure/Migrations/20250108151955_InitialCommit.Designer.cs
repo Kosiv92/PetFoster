@@ -13,7 +13,7 @@ using PetFoster.Infrastructure;
 namespace PetFoster.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250108150123_InitialCommit")]
+    [Migration("20250108151955_InitialCommit")]
     partial class InitialCommit
     {
         /// <inheritdoc />
@@ -30,7 +30,7 @@ namespace PetFoster.Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid")
-                        .HasColumnName("breed_id");
+                        .HasColumnName("id");
 
                     b.Property<string>("Name")
                         .IsRequired()

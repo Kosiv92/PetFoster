@@ -27,7 +27,7 @@ namespace PetFoster.Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid")
-                        .HasColumnName("breed_id");
+                        .HasColumnName("id");
 
                     b.Property<string>("Name")
                         .IsRequired()

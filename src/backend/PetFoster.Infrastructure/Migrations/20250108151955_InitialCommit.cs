@@ -50,13 +50,13 @@ namespace PetFoster.Infrastructure.Migrations
                 name: "breeds",
                 columns: table => new
                 {
-                    breed_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    id = table.Column<Guid>(type: "uuid", nullable: false),
                     specie_id = table.Column<Guid>(type: "uuid", nullable: true),
                     name = table.Column<string>(type: "character varying(2)", maxLength: 2, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_breeds", x => x.breed_id);
+                    table.PrimaryKey("pk_breeds", x => x.id);
                     table.ForeignKey(
                         name: "fk_breeds_species_specie_id",
                         column: x => x.specie_id,
@@ -101,7 +101,7 @@ namespace PetFoster.Infrastructure.Migrations
                         name: "fk_pets_breeds_breed_id",
                         column: x => x.breed_id,
                         principalTable: "breeds",
-                        principalColumn: "breed_id");
+                        principalColumn: "id");
                     table.ForeignKey(
                         name: "fk_pets_species_specie_id",
                         column: x => x.specie_id,

@@ -14,8 +14,7 @@ namespace PetFoster.Infrastructure.Configurations
 
             builder.HasKey(m => m.Id);
 
-            builder.Property(m => m.Id)
-                .HasColumnName("breed_id")
+            builder.Property(m => m.Id)                
                 .HasConversion(
                     id => id.Value,
                     value => BreedId.Create(value));
