@@ -2,7 +2,7 @@
 
 namespace PetFoster.Domain
 {
-    public sealed record Description
+    public sealed class Description : ComparableValueObject
     {
         public const int MAX_DESCRIPTION_LENGTH = 500;
 
@@ -21,6 +21,10 @@ namespace PetFoster.Domain
 
         public static Result<Description> Empty() => Description.Create(null);
 
+        protected override IEnumerable<IComparable> GetComparableEqualityComponents()
+        {
+            yield return Value;
+        }
     }
     
 }

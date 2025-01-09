@@ -3,7 +3,7 @@ using PetFoster.Domain.Entities;
 
 namespace PetFoster.Domain.ValueObjects
 {
-    public sealed record SocialNetContact
+    public sealed class SocialNetContact : ComparableValueObject
     {
         public const int MAX_SOCIAL_NAME_LENGTH = 100;
         public const int MAX_ACCOUNT_NAME_LENGTH = 100;
@@ -34,6 +34,10 @@ namespace PetFoster.Domain.ValueObjects
             return Result.Success<SocialNetContact>(new SocialNetContact(socialNetName, accountName));
         }
 
-
+        protected override IEnumerable<IComparable> GetComparableEqualityComponents()
+        {
+            yield return AccountName;
+            yield return SocialNetName;
+        }
     }
 }

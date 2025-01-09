@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 
 namespace PetFoster.Domain.ValueObjects
 {
-    public sealed record Email
+    public sealed class Email : ComparableValueObject
     {
         public const string EMAIL_PATTERN = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
         public const int MAX_EMAIL_LENGTH = 320;
@@ -23,5 +23,10 @@ namespace PetFoster.Domain.ValueObjects
 
         private static bool IsValidValue(string value)
         => Regex.IsMatch(value, Email.EMAIL_PATTERN) && value.Length <= 320;
+
+        protected override IEnumerable<IComparable> GetComparableEqualityComponents()
+        {
+            yield return Value;
+        }
     }
 }

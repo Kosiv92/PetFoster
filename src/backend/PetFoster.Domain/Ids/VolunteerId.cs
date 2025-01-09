@@ -1,6 +1,8 @@
-﻿namespace PetFoster.Domain.Ids
+﻿using CSharpFunctionalExtensions;
+
+namespace PetFoster.Domain.Ids
 {
-    public sealed record VolunteerId : IComparable<VolunteerId>
+    public sealed class VolunteerId : ComparableValueObject
     {
         private VolunteerId(Guid value)
         {
@@ -12,8 +14,10 @@
         public static VolunteerId Empty() => new(Guid.Empty);
         public static VolunteerId Create(Guid id) => new(id);
 
-        public int CompareTo(VolunteerId? other)
-            => Value.CompareTo(other?.Value);
+        protected override IEnumerable<IComparable> GetComparableEqualityComponents()
+        {
+            yield return Value;
+        }
     }
 
 }

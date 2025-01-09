@@ -3,7 +3,7 @@ using PetFoster.Domain.Entities;
 
 namespace PetFoster.Domain.ValueObjects
 {
-    public sealed record AssistanceRequisites
+    public sealed class AssistanceRequisites : ComparableValueObject
     {
         public const int MAX_NAME_LENGTH = 100;
 
@@ -30,6 +30,12 @@ namespace PetFoster.Domain.ValueObjects
                     $"The name cannot be empty or contain more than {AssistanceRequisites.MAX_NAME_LENGTH} characters");
 
             return Result.Success<AssistanceRequisites>(new AssistanceRequisites(name, description));
-        }    
+        }
+
+        protected override IEnumerable<IComparable> GetComparableEqualityComponents()
+        {
+            yield return Name;
+            yield return Description;
+        }
     }
 }

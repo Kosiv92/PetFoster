@@ -2,7 +2,7 @@
 
 namespace PetFoster.Domain.ValueObjects
 {
-    public sealed record Characteristics
+    public sealed class Characteristics : ComparableValueObject
     {
         public const string WEIGHT_COLUMN_NAME = "weight";
 
@@ -29,6 +29,11 @@ namespace PetFoster.Domain.ValueObjects
             if (height <= 0) return Result.Failure<Characteristics>("The height must be greater than 0");
 
             return Result.Success<Characteristics>(new Characteristics(weight, height));
+        }
+
+        protected override IEnumerable<IComparable> GetComparableEqualityComponents()
+        {
+            yield return (Weight, Height);
         }
     }
 }

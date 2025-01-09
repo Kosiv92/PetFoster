@@ -2,7 +2,7 @@
 
 namespace PetFoster.Domain.ValueObjects
 {
-    public record WorkExperience
+    public sealed class WorkExperience : ComparableValueObject
     {
         public const string COLUMN_NAME = "work_expirience";
 
@@ -14,5 +14,10 @@ namespace PetFoster.Domain.ValueObjects
             => value < 0 
             ? Result.Failure<WorkExperience>("Work experience cannot be negative") 
             : Result.Success<WorkExperience>(new WorkExperience(value));
+
+        protected override IEnumerable<IComparable> GetComparableEqualityComponents()
+        {
+            yield return Value;
+        }
     }
 }

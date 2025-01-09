@@ -2,7 +2,7 @@
 
 namespace PetFoster.Domain.ValueObjects
 {
-    public sealed record BreedName
+    public sealed class BreedName : ComparableValueObject
     {
         public const int MIN_NAME_LENGTH = 2;
         public const int MAX_NAME_LENGTH = 200;
@@ -24,6 +24,11 @@ namespace PetFoster.Domain.ValueObjects
             }
 
             return Result.Success<BreedName>(new BreedName(value));
+        }
+
+        protected override IEnumerable<IComparable> GetComparableEqualityComponents()
+        {
+            yield return Value;
         }
     }    
 }

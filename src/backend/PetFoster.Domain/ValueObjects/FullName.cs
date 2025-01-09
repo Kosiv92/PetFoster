@@ -2,7 +2,7 @@
 
 namespace PetFoster.Domain.ValueObjects
 {
-    public sealed record FullName
+    public sealed class FullName : ComparableValueObject
     {
         public const int MIN_NAME_LENGTH = 2;
         public const int MAX_NAME_LENGTH = 2;
@@ -45,6 +45,11 @@ namespace PetFoster.Domain.ValueObjects
         private static bool IsValidNullableValue(string property)
             => String.IsNullOrWhiteSpace(property) || (!String.IsNullOrWhiteSpace(property) && property.Length < MIN_NAME_LENGTH);
 
-        
+        protected override IEnumerable<IComparable> GetComparableEqualityComponents()
+        {
+            yield return FirstName;
+            yield return LastName;
+            yield return Patronymic;
+        }
     };    
 }

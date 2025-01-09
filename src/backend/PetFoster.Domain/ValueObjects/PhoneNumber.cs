@@ -2,7 +2,7 @@
 
 namespace PetFoster.Domain.ValueObjects
 {
-    public sealed record PhoneNumber
+    public sealed class PhoneNumber : ComparableValueObject
     {
         public const string COLUMN_NAME = "phone_number";
         public const int PHONE_NUMBER_LENGTH = 11;        
@@ -23,5 +23,10 @@ namespace PetFoster.Domain.ValueObjects
         => !String.IsNullOrWhiteSpace(value) 
             && value.Length == PhoneNumber.PHONE_NUMBER_LENGTH
             && value.All(Char.IsDigit);
+
+        protected override IEnumerable<IComparable> GetComparableEqualityComponents()
+        {
+            yield return Value;
+        }
     }
 }

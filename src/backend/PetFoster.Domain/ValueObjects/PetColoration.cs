@@ -2,7 +2,7 @@
 
 namespace PetFoster.Domain.ValueObjects
 {
-    public sealed record PetColoration
+    public sealed class PetColoration : ComparableValueObject
     {
         public const int MAX_NAME_LENGTH = 100;
 
@@ -19,6 +19,11 @@ namespace PetFoster.Domain.ValueObjects
                     $"Coloration cannot be empty and contain more than {PetColoration.MAX_NAME_LENGTH} characters");
 
             return Result.Success<PetColoration>(new PetColoration(value));
+        }
+
+        protected override IEnumerable<IComparable> GetComparableEqualityComponents()
+        {
+            yield return Value;
         }
     }   
 }

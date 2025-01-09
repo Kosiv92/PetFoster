@@ -2,7 +2,7 @@
 
 namespace PetFoster.Domain.ValueObjects
 {
-    public sealed record Address
+    public sealed class Address : ComparableValueObject
     {
         public const int MAX_REGION_LENGTH = 100;
         public const int MAX_CITY_LENGTH = 100;
@@ -63,5 +63,14 @@ namespace PetFoster.Domain.ValueObjects
 
         private static bool IsValidNullableValue(string property, int maxLimit)
             => String.IsNullOrWhiteSpace(property) || (!String.IsNullOrWhiteSpace(property) && property.Length > maxLimit);
+
+        protected override IEnumerable<IComparable> GetComparableEqualityComponents()
+        {
+            yield return Region;
+            yield return City;
+            yield return Street;
+            yield return HouseNumber;
+            yield return ApartmentNumber;
+        }
     }
 }
