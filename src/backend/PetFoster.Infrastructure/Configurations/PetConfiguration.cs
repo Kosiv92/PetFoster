@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using PetFoster.Domain;
 using PetFoster.Domain.Entities;
 using PetFoster.Domain.Enums;
 using PetFoster.Domain.Ids;

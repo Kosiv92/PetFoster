@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PetFoster.Infrastructure;
@@ -12,9 +13,11 @@ using PetFoster.Infrastructure;
 namespace PetFoster.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250114130626_InitialCommit")]
+    partial class InitialCommit
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -267,6 +270,8 @@ namespace PetFoster.Infrastructure.Migrations
                     b.ToTable("volunteers", null, t =>
                         {
                             t.HasCheckConstraint("CK_Volunteer_Email_ValidFormat", "email ~* '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$'");
+
+                            t.HasCheckConstraint("CK_Volunteer_PhoneNumber_NumericOnly", "phone_number ~ '^[0-9]11$'");
 
                             t.HasCheckConstraint("CK_Volunteer_WorkExperience_NonNegative", "work_expirience >= 0");
                         });

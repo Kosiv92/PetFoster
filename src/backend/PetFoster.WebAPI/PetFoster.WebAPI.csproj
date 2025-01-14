@@ -19,13 +19,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\PetFoster.Application\PetFoster.Application.csproj" />
     <ProjectReference Include="..\PetFoster.Domain\PetFoster.Domain.csproj" />
     <ProjectReference Include="..\PetFoster.Infrastructure\PetFoster.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="DTO\Responses\" />
   </ItemGroup>
 
 </Project>

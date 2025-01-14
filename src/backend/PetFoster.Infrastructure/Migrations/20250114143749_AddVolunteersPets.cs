@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace PetFoster.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCommit : Migration
+    public partial class AddVolunteersPets : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -34,15 +34,14 @@ namespace PetFoster.Infrastructure.Migrations
                     phone_number = table.Column<string>(type: "text", nullable: false),
                     assistance_requisites_list = table.Column<string>(type: "text", nullable: false),
                     social_net_contacts = table.Column<string>(type: "text", nullable: false),
-                    first_name = table.Column<string>(type: "character varying(2)", maxLength: 2, nullable: false),
-                    last_name = table.Column<string>(type: "character varying(2)", maxLength: 2, nullable: false),
-                    patronymic = table.Column<string>(type: "character varying(2)", maxLength: 2, nullable: true)
+                    first_name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    last_name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    patronymic = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("pk_volunteers", x => x.id);
                     table.CheckConstraint("CK_Volunteer_Email_ValidFormat", "email ~* '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$'");
-                    table.CheckConstraint("CK_Volunteer_PhoneNumber_NumericOnly", "phone_number ~ '^[0-9]11$'");
                     table.CheckConstraint("CK_Volunteer_WorkExperience_NonNegative", "work_expirience >= 0");
                 });
 

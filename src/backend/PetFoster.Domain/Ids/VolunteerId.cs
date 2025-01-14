@@ -14,9 +14,17 @@ namespace PetFoster.Domain.Ids
         public static VolunteerId Empty() => new(Guid.Empty);
         public static VolunteerId Create(Guid id) => new(id);
 
+        public static VolunteerId NewVolunteerId() => new(Guid.NewGuid());
+
         protected override IEnumerable<IComparable> GetComparableEqualityComponents()
         {
             yield return Value;
+        }
+
+        public static implicit operator Guid(VolunteerId volunteerId)
+        {
+            ArgumentNullException.ThrowIfNull(volunteerId);
+            return volunteerId.Value;
         }
     }
 

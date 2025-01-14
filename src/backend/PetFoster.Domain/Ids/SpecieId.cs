@@ -18,6 +18,12 @@ namespace PetFoster.Domain.Ids
         {
             yield return Value;
         }
+
+        public static implicit operator Guid(SpecieId specieId)
+        {
+            ArgumentNullException.ThrowIfNull(specieId);
+            return specieId.Value;
+        }
     }
 
 }

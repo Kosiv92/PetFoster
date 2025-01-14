@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using PetFoster.Domain;
 using PetFoster.Domain.Entities;
 using PetFoster.Domain.Ids;
 using PetFoster.Domain.ValueObjects;
@@ -14,8 +13,7 @@ namespace PetFoster.Infrastructure.Configurations
         {
             builder.ToTable("volunteers", t =>
             {
-                t.HasCheckConstraint("CK_Volunteer_WorkExperience_NonNegative", $"{WorkExperience.COLUMN_NAME} >= 0");
-                t.HasCheckConstraint("CK_Volunteer_PhoneNumber_NumericOnly", $"{PhoneNumber.COLUMN_NAME} ~ '^[0-9]{PhoneNumber.PHONE_NUMBER_LENGTH}$'");
+                t.HasCheckConstraint("CK_Volunteer_WorkExperience_NonNegative", $"{WorkExperience.COLUMN_NAME} >= 0");                
                 t.HasCheckConstraint("CK_Volunteer_Email_ValidFormat", $"{Email.COLUMN_NAME} ~* '{Email.EMAIL_PATTERN}'");
             });                
 
@@ -30,17 +28,17 @@ namespace PetFoster.Infrastructure.Configurations
             {
                 pb.Property(p => p.FirstName)
                 .IsRequired(true)
-                .HasMaxLength(FullName.MIN_NAME_LENGTH)
+                .HasMaxLength(FullName.MAX_NAME_LENGTH)
                 .HasColumnName("first_name");
 
                 pb.Property(p => p.LastName)
                 .IsRequired(true)
-                .HasMaxLength(FullName.MIN_NAME_LENGTH)
+                .HasMaxLength(FullName.MAX_NAME_LENGTH)
                 .HasColumnName("last_name");
 
                 pb.Property(p => p.Patronymic)
                 .IsRequired(false)
-                .HasMaxLength(FullName.MIN_NAME_LENGTH)
+                .HasMaxLength(FullName.MAX_NAME_LENGTH)
                 .HasColumnName("patronymic");
             });
 

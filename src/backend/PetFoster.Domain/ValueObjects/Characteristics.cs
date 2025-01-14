@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using PetFoster.Domain.Shared;
 
 namespace PetFoster.Domain.ValueObjects
 {
@@ -22,13 +23,13 @@ namespace PetFoster.Domain.ValueObjects
         /// </summary>
         public double Height { get; }
 
-        public static Result<Characteristics> Create(double weight, double height)
+        public static Result<Characteristics, Error> Create(double weight, double height)
         {
-            if (weight <= 0) return Result.Failure<Characteristics>("The weight must be greater than 0");
+            if (weight <= 0) return Errors.General.ValueIsInvalid("The weight must be greater than 0");
 
-            if (height <= 0) return Result.Failure<Characteristics>("The height must be greater than 0");
+            if (height <= 0) return Errors.General.ValueIsInvalid("The height must be greater than 0");
 
-            return Result.Success<Characteristics>(new Characteristics(weight, height));
+            return new Characteristics(weight, height);
         }
 
         protected override IEnumerable<IComparable> GetComparableEqualityComponents()

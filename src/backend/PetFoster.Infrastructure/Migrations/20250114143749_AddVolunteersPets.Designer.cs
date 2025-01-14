@@ -13,8 +13,8 @@ using PetFoster.Infrastructure;
 namespace PetFoster.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250108151955_InitialCommit")]
-    partial class InitialCommit
+    [Migration("20250114143749_AddVolunteersPets")]
+    partial class AddVolunteersPets
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -248,19 +248,19 @@ namespace PetFoster.Infrastructure.Migrations
 
                             b1.Property<string>("FirstName")
                                 .IsRequired()
-                                .HasMaxLength(2)
-                                .HasColumnType("character varying(2)")
+                                .HasMaxLength(100)
+                                .HasColumnType("character varying(100)")
                                 .HasColumnName("first_name");
 
                             b1.Property<string>("LastName")
                                 .IsRequired()
-                                .HasMaxLength(2)
-                                .HasColumnType("character varying(2)")
+                                .HasMaxLength(100)
+                                .HasColumnType("character varying(100)")
                                 .HasColumnName("last_name");
 
                             b1.Property<string>("Patronymic")
-                                .HasMaxLength(2)
-                                .HasColumnType("character varying(2)")
+                                .HasMaxLength(100)
+                                .HasColumnType("character varying(100)")
                                 .HasColumnName("patronymic");
                         });
 
@@ -270,8 +270,6 @@ namespace PetFoster.Infrastructure.Migrations
                     b.ToTable("volunteers", null, t =>
                         {
                             t.HasCheckConstraint("CK_Volunteer_Email_ValidFormat", "email ~* '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$'");
-
-                            t.HasCheckConstraint("CK_Volunteer_PhoneNumber_NumericOnly", "phone_number ~ '^[0-9]11$'");
 
                             t.HasCheckConstraint("CK_Volunteer_WorkExperience_NonNegative", "work_expirience >= 0");
                         });

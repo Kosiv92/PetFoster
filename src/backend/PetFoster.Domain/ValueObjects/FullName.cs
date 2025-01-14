@@ -1,11 +1,12 @@
 ﻿using CSharpFunctionalExtensions;
+using PetFoster.Domain.Shared;
 
 namespace PetFoster.Domain.ValueObjects
 {
     public sealed class FullName : ComparableValueObject
     {
         public const int MIN_NAME_LENGTH = 2;
-        public const int MAX_NAME_LENGTH = 2;
+        public const int MAX_NAME_LENGTH = 100;
 
         private FullName() { }
 
@@ -22,28 +23,29 @@ namespace PetFoster.Domain.ValueObjects
 
         public string? Patronymic { get; }
 
-        public static Result<FullName> Create(string firstName, string lastName, string? patronymic)
+        public static Result<FullName, Error> Create(string firstName, string lastName, string? patronymic)
         {
-            if(IsValidNonNullableValue(firstName)) 
-                return Result.Failure<FullName>(
+            if(!IsValidNonNullableValue(firstName)) 
+                return Errors.General.ValueIsInvalid(
                     NotificationFactory.GetErrorForNonNullableValueWithRange(nameof(firstName), MIN_NAME_LENGTH, MAX_NAME_LENGTH));
 
-            if (IsValidNonNullableValue(lastName))
-                return Result.Failure<FullName>(
+            if (!IsValidNonNullableValue(lastName))
+                return Errors.General.ValueIsInvalid(
                     NotificationFactory.GetErrorForNonNullableValueWithRange(nameof(lastName), MIN_NAME_LENGTH, MAX_NAME_LENGTH));
 
-            if (IsValidNullableValue(patronymic))
-                return Result.Failure<FullName>(
-                    NotificationFactory.GetErrorForNonNullableValueWithRange(nameof(patronymic), MIN_NAME_LENGTH, MAX_NAME_LENGTH));
+            if (!IsValidNullableValue(patronymic))
+                return Errors.General.ValueIsInvalid(
+                    NotificationFactory.GetErrorForNullableValueWithRange(nameof(patronymic), MIN_NAME_LENGTH, MAX_NAME_LENGTH));
 
-            return Result.Success<FullName>(new FullName(firstName, lastName, patronymic));
+            return new FullName(firstName, lastName, patronymic);
         }
 
         private static bool IsValidNonNullableValue(string property)
-            => String.IsNullOrWhiteSpace(property) || property.Length < MIN_NAME_LENGTH || property.Length > MAX_NAME_LENGTH;
+            => !String.IsNullOrWhiteSpace(property) && property.Length >= MIN_NAME_LENGTH && property.Length <= MAX_NAME_LENGTH;
 
         private static bool IsValidNullableValue(string property)
-            => String.IsNullOrWhiteSpace(property) || (!String.IsNullOrWhiteSpace(property) && property.Length < MIN_NAME_LENGTH);
+            => String.IsNullOrWhiteSpace(property) 
+            || (!String.IsNullOrWhiteSpace(property) && property.Length >= MIN_NAME_LENGTH && property.Length <= MAX_NAME_LENGTH);
 
         protected override IEnumerable<IComparable> GetComparableEqualityComponents()
         {

@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using PetFoster.Domain.Shared;
 
 namespace PetFoster.Domain.ValueObjects
 {
@@ -13,17 +14,17 @@ namespace PetFoster.Domain.ValueObjects
 
         public string Value { get; }
 
-        public static Result<BreedName> Create(string value)
+        public static Result<BreedName, Error> Create(string value)
         {
             if (String.IsNullOrWhiteSpace(value)
                 || value.Length > MAX_NAME_LENGTH
                 || value.Length < MIN_NAME_LENGTH)
             {
-                return Result.Failure<BreedName>(NotificationFactory
+                return Errors.General.ValueIsInvalid(NotificationFactory
                     .GetErrorForNonNullableValueWithRange(nameof(BreedName), MIN_NAME_LENGTH, MAX_NAME_LENGTH));
             }
 
-            return Result.Success<BreedName>(new BreedName(value));
+            return new BreedName(value);
         }
 
         protected override IEnumerable<IComparable> GetComparableEqualityComponents()

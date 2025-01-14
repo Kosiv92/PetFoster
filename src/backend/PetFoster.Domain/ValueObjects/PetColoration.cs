@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using PetFoster.Domain.Shared;
 
 namespace PetFoster.Domain.ValueObjects
 {
@@ -12,13 +13,13 @@ namespace PetFoster.Domain.ValueObjects
 
         public string Value { get; }
 
-        public static Result<PetColoration> Create(string value)
+        public static Result<PetColoration, Error> Create(string value)
         {
             if (String.IsNullOrWhiteSpace(value) || value.Length > PetColoration.MAX_NAME_LENGTH)
-                return Result.Failure<PetColoration>(
+                return Errors.General.ValueIsInvalid(
                     $"Coloration cannot be empty and contain more than {PetColoration.MAX_NAME_LENGTH} characters");
 
-            return Result.Success<PetColoration>(new PetColoration(value));
+            return new PetColoration(value);
         }
 
         protected override IEnumerable<IComparable> GetComparableEqualityComponents()

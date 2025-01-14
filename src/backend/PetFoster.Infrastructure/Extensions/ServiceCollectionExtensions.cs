@@ -4,7 +4,10 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using System.Reflection.Emit;
+using PetFoster.Domain.Entities;
+using PetFoster.Domain.Ids;
+using PetFoster.Domain.Interfaces;
+using PetFoster.Infrastructure.Repositories;
 using System.Text.Json;
 
 namespace PetFoster.Infrastructure.Extensions
@@ -13,7 +16,7 @@ namespace PetFoster.Infrastructure.Extensions
     {
         private const string DATABASE_NAME = "Database";
 
-        public static IServiceCollection AddDbContextService(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
         {            
             services.AddDbContext<ApplicationDbContext>(opt =>
             {                
@@ -21,6 +24,8 @@ namespace PetFoster.Infrastructure.Extensions
                 opt.UseSnakeCaseNamingConvention();
                 opt.UseLoggerFactory(CreateLoggerFactory());
             });
+
+            services.AddScoped<IRepository<Volunteer, VolunteerId>, VolunteersRepository>();
 
             return services;
         }

@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using PetFoster.Domain.Shared;
 using System.Text.RegularExpressions;
 
 namespace PetFoster.Domain.ValueObjects
@@ -16,10 +17,10 @@ namespace PetFoster.Domain.ValueObjects
 
         public string Value { get; }
 
-        public static Result<Email> Create(string value)
+        public static Result<Email, Error> Create(string value)
          => IsValidValue(value)
-            ? Result.Success<Email>(new Email(value))
-            : Result.Failure<Email>("Incorrect format of email address");
+            ? new Email(value)
+            : Errors.General.ValueIsInvalid("Incorrect format of email address");
 
         private static bool IsValidValue(string value)
         => Regex.IsMatch(value, Email.EMAIL_PATTERN) && value.Length <= 320;

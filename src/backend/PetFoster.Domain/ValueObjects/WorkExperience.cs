@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using PetFoster.Domain.Shared;
 
 namespace PetFoster.Domain.ValueObjects
 {
@@ -10,10 +11,10 @@ namespace PetFoster.Domain.ValueObjects
 
         private WorkExperience(int value) => Value = value;
 
-        public static Result<WorkExperience> Create(int value) 
+        public static Result<WorkExperience, Error> Create(int value) 
             => value < 0 
-            ? Result.Failure<WorkExperience>("Work experience cannot be negative") 
-            : Result.Success<WorkExperience>(new WorkExperience(value));
+            ? Errors.General.ValueIsInvalid("Work experience cannot be negative") 
+            : new WorkExperience(value);
 
         protected override IEnumerable<IComparable> GetComparableEqualityComponents()
         {

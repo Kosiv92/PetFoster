@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using PetFoster.Domain.Shared;
 
 namespace PetFoster.Domain.ValueObjects
 {
@@ -32,30 +33,30 @@ namespace PetFoster.Domain.ValueObjects
 
         public string? ApartmentNumber { get; }
 
-        public static Result<Address> Create(string region, string city,
+        public static Result<Address, Error> Create(string region, string city,
             string street, string houseNumber, string? apartmentNumber)
         {
             if (IsValidNonNullableValue(region, Address.MAX_REGION_LENGTH))
-                return Result.Failure<Address>(
+                return Errors.General.ValueIsInvalid(
                     NotificationFactory.GetErrorForNonNullableValueWithMaxLimit(nameof(region), Address.MAX_REGION_LENGTH));
 
             if (IsValidNonNullableValue(city, Address.MAX_CITY_LENGTH))
-                return Result.Failure<Address>(
+                return Errors.General.ValueIsInvalid(
                     NotificationFactory.GetErrorForNonNullableValueWithMaxLimit(nameof(city), Address.MAX_CITY_LENGTH));
 
             if (IsValidNonNullableValue(street, Address.MAX_STREET_LENGTH))
-                return Result.Failure<Address>(
+                return Errors.General.ValueIsInvalid(
                     NotificationFactory.GetErrorForNonNullableValueWithMaxLimit(nameof(street), Address.MAX_STREET_LENGTH));
 
             if (IsValidNonNullableValue(houseNumber, Address.MAX_HOUSE_LENGTH))
-                return Result.Failure<Address>(
+                return Errors.General.ValueIsInvalid(
                     NotificationFactory.GetErrorForNonNullableValueWithMaxLimit(nameof(houseNumber), Address.MAX_HOUSE_LENGTH));
 
             if (IsValidNullableValue(apartmentNumber, Address.MAX_APARTMENT_LENGTH))
-                return Result.Failure<Address>(
+                return Errors.General.ValueIsInvalid(
                     NotificationFactory.GetErrorForNullableValueWithMaxLimit(nameof(apartmentNumber), Address.MAX_APARTMENT_LENGTH));
 
-            return Result.Success<Address>(new Address(region, city, street, houseNumber, apartmentNumber));
+            return new Address(region, city, street, houseNumber, apartmentNumber);
         }
 
         private static bool IsValidNonNullableValue(string property, int maxLimit)

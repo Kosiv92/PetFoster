@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using PetFoster.Domain.Shared;
 
 namespace PetFoster.Domain.ValueObjects
 {
@@ -14,10 +15,10 @@ namespace PetFoster.Domain.ValueObjects
 
         public string Value { get; }
 
-        public static Result<PhoneNumber> Create(string value)
+        public static Result<PhoneNumber, Error> Create(string value)
          => IsValidValue(value)
-            ? Result.Success<PhoneNumber>(new PhoneNumber(value))
-            : Result.Failure<PhoneNumber>($"Value must have {PhoneNumber.PHONE_NUMBER_LENGTH} digits");
+            ? new PhoneNumber(value)
+            : Errors.General.ValueIsInvalid($"Value must have {PhoneNumber.PHONE_NUMBER_LENGTH} digits");
 
         private static bool IsValidValue(string value)
         => !String.IsNullOrWhiteSpace(value) 
