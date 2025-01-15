@@ -1,5 +1,4 @@
 ﻿using CSharpFunctionalExtensions;
-using PetFoster.Domain.Entities;
 using PetFoster.Domain.Shared;
 
 namespace PetFoster.Domain.ValueObjects
@@ -13,9 +12,7 @@ namespace PetFoster.Domain.ValueObjects
 
         private SocialNetContact(string socialNetName, string accountName) =>
             (SocialNetName, AccountName) = (socialNetName, accountName);
-
-        public Volunteer Volunteer { get; private set; } = null!;
-
+                
         public string SocialNetName { get; }
 
         public string AccountName { get; }

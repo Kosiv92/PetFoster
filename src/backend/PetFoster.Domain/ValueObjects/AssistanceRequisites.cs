@@ -1,5 +1,4 @@
 ﻿using CSharpFunctionalExtensions;
-using PetFoster.Domain.Entities;
 using PetFoster.Domain.Shared;
 
 namespace PetFoster.Domain.ValueObjects
@@ -7,10 +6,6 @@ namespace PetFoster.Domain.ValueObjects
     public sealed class AssistanceRequisites : ComparableValueObject
     {
         public const int MAX_NAME_LENGTH = 100;
-
-        public Volunteer Volunteer { get; private set; } = null!;
-
-        public Pet Pet { get; private set; } = null!;
 
         private AssistanceRequisites() { }
 

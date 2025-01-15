@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,6 +24,7 @@ namespace PetFoster.Infrastructure.Extensions
                 opt.UseNpgsql(configuration.GetConnectionString(DATABASE_NAME));
                 opt.UseSnakeCaseNamingConvention();
                 opt.UseLoggerFactory(CreateLoggerFactory());
+                opt.ConfigureWarnings(warnings => warnings.Ignore(RelationalEventId.PendingModelChangesWarning));
             });
 
             services.AddScoped<IRepository<Volunteer, VolunteerId>, VolunteersRepository>();

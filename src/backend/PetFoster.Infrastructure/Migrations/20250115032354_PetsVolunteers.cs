@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace PetFoster.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class AddVolunteersPets : Migration
+    public partial class PetsVolunteers : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -71,7 +71,7 @@ namespace PetFoster.Infrastructure.Migrations
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     volunteer_id = table.Column<Guid>(type: "uuid", nullable: false),
                     name = table.Column<string>(type: "character varying(1)", maxLength: 1, nullable: false),
-                    specie_id = table.Column<Guid>(type: "uuid", nullable: true),
+                    specie_id = table.Column<Guid>(type: "uuid", nullable: false),
                     description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
                     breed_id = table.Column<Guid>(type: "uuid", nullable: false),
                     coloration = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),

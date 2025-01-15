@@ -37,9 +37,10 @@ namespace PetFoster.Infrastructure.Configurations
                 value => PetName.Create(value).Value);
 
             builder.HasOne(m => m.Specie)
-                .WithMany(b => b.Pets)
-                .OnDelete(DeleteBehavior.NoAction)
-                .IsRequired(true);
+            .WithMany()
+            .HasForeignKey("specie_id")
+            .IsRequired()
+            .OnDelete(DeleteBehavior.NoAction);
 
             builder.HasOne(m => m.Breed)
                 .WithMany(b => b.Pets)                

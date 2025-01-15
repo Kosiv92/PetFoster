@@ -6,21 +6,19 @@ namespace PetFoster.Domain.Entities
 {
     public sealed class Specie : Entity<SpecieId>
     {
+        private List<Breed> _breeds;
+
         private Specie() { }
 
-        public Specie(SpecieId id, SpecieName name, IReadOnlyList<Breed> breeds) : base(id)
+        public Specie(SpecieId id, SpecieName name, List<Breed> breeds) : base(id)
         {
             Id = id;
             Name = name;
-            Breeds = breeds;
-        }
-
-        public IReadOnlyCollection<Pet> Pets { get; private set; } = null!;
-
-        public SpecieId Id { get; private set; }
+            _breeds = breeds;
+        }        
 
         public SpecieName Name { get; private set; }
 
-        public IReadOnlyList<Breed> Breeds { get; private set; }
+        public IReadOnlyList<Breed> Breeds => _breeds;
     }
 }

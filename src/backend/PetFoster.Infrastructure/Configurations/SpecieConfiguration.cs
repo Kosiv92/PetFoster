@@ -23,12 +23,7 @@ namespace PetFoster.Infrastructure.Configurations
                 .HasMaxLength(SpecieName.MIN_NAME_LENGTH)                
                 .HasConversion(
                 name => name.Value,
-                value => SpecieName.Create(value).Value);
-
-            builder.HasMany(m => m.Pets)
-               .WithOne(v => v.Specie)
-               .HasForeignKey("specie_id")
-               .OnDelete(DeleteBehavior.NoAction);
+                value => SpecieName.Create(value).Value);                        
 
             builder.HasMany(m => m.Breeds)
                 .WithOne(m => m.Specie)

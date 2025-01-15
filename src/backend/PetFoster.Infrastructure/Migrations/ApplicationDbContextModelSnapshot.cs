@@ -113,7 +113,7 @@ namespace PetFoster.Infrastructure.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("breed_id");
 
-                    b.Property<Guid?>("specie_id")
+                    b.Property<Guid>("specie_id")
                         .HasColumnType("uuid")
                         .HasColumnName("specie_id");
 
@@ -294,7 +294,7 @@ namespace PetFoster.Infrastructure.Migrations
                         .HasConstraintName("fk_pets_breeds_breed_id");
 
                     b.HasOne("PetFoster.Domain.Entities.Specie", "Specie")
-                        .WithMany("Pets")
+                        .WithMany()
                         .HasForeignKey("specie_id")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired()
@@ -322,8 +322,6 @@ namespace PetFoster.Infrastructure.Migrations
             modelBuilder.Entity("PetFoster.Domain.Entities.Specie", b =>
                 {
                     b.Navigation("Breeds");
-
-                    b.Navigation("Pets");
                 });
 
             modelBuilder.Entity("PetFoster.Domain.Entities.Volunteer", b =>
