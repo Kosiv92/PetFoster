@@ -1,4 +1,6 @@
-﻿namespace PetFoster.Domain.Shared
+﻿using PetFoster.Domain.Entities;
+
+namespace PetFoster.Domain.Shared
 {
     public static class Errors
     {
@@ -13,5 +15,16 @@
             public static Error ValueIsRequired(string? name = null)
                 => Error.Validation("length.is.invalid", $"invalid{(name == null ? " " : " " + name + " ")}");
         }
+
+        public static class Volunteer
+        {
+            public static Error AlreadyExist()
+            {
+                return Error.Validation("record.already.exist",
+                    "Volunteer with the same email or phone number is already exist");
+            }
+        }
+
+
     }
 }

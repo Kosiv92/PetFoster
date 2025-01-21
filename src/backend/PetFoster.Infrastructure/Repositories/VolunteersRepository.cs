@@ -2,6 +2,7 @@
 using PetFoster.Domain.Entities;
 using PetFoster.Domain.Ids;
 using PetFoster.Domain.Interfaces;
+using System.Linq.Expressions;
 
 namespace PetFoster.Infrastructure.Repositories
 {
@@ -38,13 +39,21 @@ namespace PetFoster.Infrastructure.Repositories
             return await _volunteers
                 .AsNoTracking()
                 .ToListAsync(cancellationToken);
-        }               
+        }
 
         public Task<Volunteer?> GetByIdAsync(VolunteerId id, CancellationToken cancellationToken = default)
             => _volunteers.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
         
 
         public Task SaveChangesAsync(CancellationToken cancellationToken = default)
-            => _dbContext.SaveChangesAsync(cancellationToken);   
+            => _dbContext.SaveChangesAsync(cancellationToken);
+
+        public async Task<Volunteer?> GetByCriteriaAsync(Expression<Func<Volunteer, bool>> searchCriteria, CancellationToken cancellationToken)
+        {
+            return await Task.Run(() =>
+            {
+                return _volunteers.FirstOrDefault(searchCriteria);
+            }, cancellationToken);
+        }
     }
 }
