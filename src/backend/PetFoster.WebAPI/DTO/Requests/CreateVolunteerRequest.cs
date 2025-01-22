@@ -10,12 +10,15 @@ namespace PetFoster.WebAPI.DTO.Requests
 
     public static class CreateVolunteerRequestExtensions
     {
-        public static CreateVolunteerCommand ToCreateVolunteerCommand(this CreateVolunteerRequest request)
-        {
-            var id = VolunteerId.NewVolunteerId();
-
-            return new CreateVolunteerCommand(id, request.FirstName, request.LastName, request.Patronymic, request.Email,
-                request.PhoneNumber, request.Description, request.WorkExpirience, request.AssistanceRequisitesList, request.SocialNetContactsList);
-        }
+        public static CreateVolunteerCommand ToCreateVolunteerCommand(this CreateVolunteerRequest request) 
+            => new CreateVolunteerCommand(VolunteerId.NewVolunteerId(), 
+                new FullNameDto(request.FirstName, request.LastName, request.Patronymic), 
+                request.Email,
+                request.PhoneNumber, 
+                request.Description, 
+                request.WorkExpirience, 
+                request.AssistanceRequisitesList, 
+                request.SocialNetContactsList);
+        
     }
 }

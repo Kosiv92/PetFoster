@@ -1,11 +1,10 @@
-using PetFoster.Application.Volunteers.CreateVolunteer;
+using PetFoster.Application.Extensions;
 using PetFoster.Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddInfrastructureServices(builder.Configuration);
-
-builder.Services.AddTransient<CreateVolunteerHandler>();
+builder.Services.AddApplicationServices();
 
 builder.Services.AddControllers();
 

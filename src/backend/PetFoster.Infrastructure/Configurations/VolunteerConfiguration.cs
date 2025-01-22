@@ -80,6 +80,9 @@ namespace PetFoster.Infrastructure.Configurations
                 .HasForeignKey("volunteer_id")
                 .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired();
+
+            builder.Navigation(v => v.FosteredAnimals)
+                .AutoInclude();
         }
     }
 }

@@ -18,9 +18,7 @@ namespace PetFoster.WebAPI.Controllers
             var result = await handler.Handle(command, cancellationToken);
 
             if (result.IsFailure)
-            {
                 return result.Error.ToResponse();
-            }
 
             return Ok(result.Value);
         }
