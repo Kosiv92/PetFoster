@@ -40,8 +40,7 @@ namespace PetFoster.Application.Volunteers.CreateVolunteer
             if (existVolunteer != null)
             {
                 return Errors.Volunteer.AlreadyExist().ToErrorList();
-            }
-                
+            } 
 
             var id = VolunteerId.NewVolunteerId();
 
