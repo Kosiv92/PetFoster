@@ -1,17 +1,16 @@
 ﻿using PetFoster.Domain.Shared;
 using PetFoster.WebAPI.DTO.Responses;
-using System.Net;
 
 namespace PetFoster.WebAPI.Middlewares
 {
     public class ExceptionMiddleware
     {
         private readonly RequestDelegate _next;
+        private readonly ILogger<ExceptionMiddleware> _logger;
 
-        public ExceptionMiddleware(RequestDelegate next)
-        {
-            _next = next;
-        }
+        public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger)
+            => (_next, _logger) = (next, logger);         
+        
 
         public async Task InvokeAsync(HttpContext context)
         {
@@ -21,6 +20,8 @@ namespace PetFoster.WebAPI.Middlewares
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, ex.Message);
+
                 var error = Error.Failure("server.internal.error", ex.Message);
                 var envelope = Envelope.Error(error.ToErrorList());
 

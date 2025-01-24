@@ -1,8 +1,14 @@
 using PetFoster.Application.Extensions;
 using PetFoster.Infrastructure.Extensions;
-using PetFoster.WebAPI.Middlewares;
+using PetFoster.WebAPI.Extensions;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .CreateLogger();
+
 
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddApplicationServices();
@@ -12,15 +18,19 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddSerilog();
+
 var app = builder.Build();
 
-app.UseExceptionHandler();
+app.UseCustomExceptionHandler();
 
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseSerilogRequestLogging();
 
 app.UseHttpsRedirection();
 
