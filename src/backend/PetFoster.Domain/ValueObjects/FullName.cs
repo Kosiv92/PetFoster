@@ -56,7 +56,7 @@ namespace PetFoster.Domain.ValueObjects
 
         public override string ToString()
         {
-            return String.Join("", LastName, FirstName, Patronymic);
+            return String.Join(' ', LastName, FirstName, Patronymic);
         }
     };    
 }
