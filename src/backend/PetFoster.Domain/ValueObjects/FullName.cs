@@ -53,5 +53,10 @@ namespace PetFoster.Domain.ValueObjects
             yield return LastName;
             yield return Patronymic;
         }
+
+        public override string ToString()
+        {
+            return String.Join(' ', LastName, FirstName, Patronymic);
+        }
     };    
 }

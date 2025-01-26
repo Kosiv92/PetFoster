@@ -1,5 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 using FluentValidation;
+using Microsoft.Extensions.Logging;
 using PetFoster.Application.Extensions;
 using PetFoster.Domain.Entities;
 using PetFoster.Domain.Ids;
@@ -13,12 +14,15 @@ namespace PetFoster.Application.Volunteers.CreateVolunteer
     {
         private readonly IRepository<Volunteer, VolunteerId> _repository;
         private readonly IValidator<CreateVolunteerCommand> _validator;
+        ILogger<CreateVolunteerHandler> _logger;
 
         public CreateVolunteerHandler(IRepository<Volunteer, VolunteerId> repository,
-            IValidator<CreateVolunteerCommand> validator)
+            IValidator<CreateVolunteerCommand> validator, 
+            ILogger<CreateVolunteerHandler> logger)
         {
             _repository = repository;
             _validator = validator;
+            _logger = logger;
         }
 
         public async Task<Result<Guid, ErrorList>> Handle(CreateVolunteerCommand command, 
@@ -40,8 +44,7 @@ namespace PetFoster.Application.Volunteers.CreateVolunteer
             if (existVolunteer != null)
             {
                 return Errors.Volunteer.AlreadyExist().ToErrorList();
-            }
-                
+            } 
 
             var id = VolunteerId.NewVolunteerId();
 
@@ -65,6 +68,10 @@ namespace PetFoster.Application.Volunteers.CreateVolunteer
                 socialNetContacts, new List<Pet>());
 
             await _repository.AddAsync(volunteer, cancellationToken);
+
+            _logger.LogInformation("Created volunteer {VolunteerFullname} with id {VolunteerId}", 
+                volunteer.FullName, volunteer.Id);
+
             return (Guid)volunteer.Id;
         }
     }

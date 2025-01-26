@@ -11,6 +11,14 @@ services:
         - 5433:5432
     volumes:
         - postgres-data:/var/lib/postgresql/data
-    
+  seq:
+    container_name: pf.seq
+    image: datalust/seq:latest
+    restart: always
+    environment:
+      - ACCEPT_EULA=Y
+    ports:  
+      - 5431:5341
+      - 8081:80
 volumes:
     postgres-data:
