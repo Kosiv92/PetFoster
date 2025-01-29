@@ -6,9 +6,13 @@ namespace PetFoster.Domain.Entities
 {
     public sealed class Volunteer : Entity<VolunteerId>
     {
-        public Volunteer(VolunteerId id, FullName fullName, Email email, Description description,
-            WorkExperience workExperienceInYears, PhoneNumber phoneNumber, IReadOnlyList<AssistanceRequisites> assistanceRequisitesList, 
-            IReadOnlyList<SocialNetContact> socialNetContacts, IReadOnlyList<Pet> fosteredAnimals) : base(id)
+        public Volunteer(VolunteerId id, FullName fullName, 
+            Email email, Description description,
+            WorkExperience workExperienceInYears, 
+            PhoneNumber phoneNumber, 
+            IReadOnlyList<AssistanceRequisites> assistanceRequisitesList, 
+            IReadOnlyList<SocialNetContact> socialNetContacts, 
+            IReadOnlyList<Pet> fosteredAnimals) : base(id)
         {
             Id = id;
             FullName = fullName;
@@ -49,6 +53,19 @@ namespace PetFoster.Domain.Entities
 
         public int NeedsHelpAnimals => FosteredAnimals?
             .Count(a => a.AssistanceStatus == Enums.AssistanceStatus.NeedsHelp) ?? 0;
+
+        public void UpdatePersonalInfo(FullName fullName, 
+            Email email, 
+            PhoneNumber phoneNumber, 
+            Description description, 
+            WorkExperience workExperience)
+        {
+            FullName = fullName;
+            Email = email;
+            PhoneNumber = phoneNumber;
+            Description = description;
+            WorkExperienceInYears = workExperience;
+        }
 
     }
 }

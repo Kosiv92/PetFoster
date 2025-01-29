@@ -13,7 +13,7 @@ public interface IRepository<TEntity, TId> where TEntity : Entity<TId> where TId
 
     public Task DeleteAsync(TId id, CancellationToken cancellationToken);
 
-    public Task SaveChangesAsync(CancellationToken cancellationToken);
+    public Task SaveChangesAsync(TEntity? entity, CancellationToken cancellationToken);
 
     public Task<TEntity?> GetByCriteriaAsync(Expression<Func<TEntity, bool>> searchCriteria, CancellationToken cancellationToken);
 }
