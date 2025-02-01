@@ -1,5 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 using PetFoster.Domain.Shared;
+using System.Text.Json.Serialization;
 
 namespace PetFoster.Domain.ValueObjects
 {
@@ -7,6 +8,7 @@ namespace PetFoster.Domain.ValueObjects
     {
         public const int MAX_DESCRIPTION_LENGTH = 500;
 
+        [JsonConstructorAttribute]
         private Description(string? value) => Value = value;
 
         public string? Value { get; }

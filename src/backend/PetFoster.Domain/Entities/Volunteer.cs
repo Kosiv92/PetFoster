@@ -74,7 +74,9 @@ namespace PetFoster.Domain.Entities
         }
 
         public void UpdateSocialNetContacts(IEnumerable<SocialNetContact> socialNetContacts)
-            => _socialNetContacts = socialNetContacts.ToList();       
+            => _socialNetContacts = socialNetContacts.ToList();
 
+        public void UpdateRequisites(IEnumerable<AssistanceRequisites> requisites)
+            => _assistanceRequisites = requisites.ToList();
     }
 }
