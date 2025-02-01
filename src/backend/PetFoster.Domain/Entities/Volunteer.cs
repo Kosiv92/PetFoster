@@ -6,9 +6,13 @@ namespace PetFoster.Domain.Entities
 {
     public sealed class Volunteer : Entity<VolunteerId>
     {
-        public Volunteer(VolunteerId id, FullName fullName, Email email, Description description,
-            WorkExperience workExperienceInYears, PhoneNumber phoneNumber, IReadOnlyList<AssistanceRequisites> assistanceRequisitesList, 
-            IReadOnlyList<SocialNetContact> socialNetContacts, IReadOnlyList<Pet> fosteredAnimals) : base(id)
+        public Volunteer(VolunteerId id, FullName fullName, 
+            Email email, Description description,
+            WorkExperience workExperienceInYears, 
+            PhoneNumber phoneNumber,
+            IEnumerable<AssistanceRequisites> assistanceRequisitesList,
+            IEnumerable<SocialNetContact> socialNetContacts, 
+            IReadOnlyList<Pet> fosteredAnimals) : base(id)
         {
             Id = id;
             FullName = fullName;
@@ -16,12 +20,16 @@ namespace PetFoster.Domain.Entities
             Description = description;
             WorkExperienceInYears = workExperienceInYears;
             PhoneNumber = phoneNumber;
-            AssistanceRequisitesList = assistanceRequisitesList;
-            SocialNetContacts = socialNetContacts;
+            _assistanceRequisites = assistanceRequisitesList.ToList();
+            _socialNetContacts = socialNetContacts.ToList();
             FosteredAnimals = fosteredAnimals;
         }
 
         private Volunteer() { }
+
+        private List<AssistanceRequisites> _assistanceRequisites = new List<AssistanceRequisites>();
+
+        private List<SocialNetContact> _socialNetContacts = new List<SocialNetContact>();
 
         public VolunteerId Id { get; private set; }
 
@@ -35,9 +43,11 @@ namespace PetFoster.Domain.Entities
 
         public PhoneNumber PhoneNumber { get; private set; }
 
-        public IReadOnlyList<AssistanceRequisites> AssistanceRequisitesList { get; private set; }
+        public IReadOnlyList<AssistanceRequisites> AssistanceRequisitesList 
+            => _assistanceRequisites.AsReadOnly();
 
-        public IReadOnlyList<SocialNetContact> SocialNetContacts { get; private set; }
+        public IReadOnlyList<SocialNetContact> SocialNetContacts 
+            => _socialNetContacts.AsReadOnly();
 
         public IReadOnlyList<Pet> FosteredAnimals { get; private set; }
 
@@ -50,5 +60,23 @@ namespace PetFoster.Domain.Entities
         public int NeedsHelpAnimals => FosteredAnimals?
             .Count(a => a.AssistanceStatus == Enums.AssistanceStatus.NeedsHelp) ?? 0;
 
+        public void UpdatePersonalInfo(FullName fullName, 
+            Email email, 
+            PhoneNumber phoneNumber, 
+            Description description, 
+            WorkExperience workExperience)
+        {
+            FullName = fullName;
+            Email = email;
+            PhoneNumber = phoneNumber;
+            Description = description;
+            WorkExperienceInYears = workExperience;
+        }
+
+        public void UpdateSocialNetContacts(IEnumerable<SocialNetContact> socialNetContacts)
+            => _socialNetContacts = socialNetContacts.ToList();
+
+        public void UpdateRequisites(IEnumerable<AssistanceRequisites> requisites)
+            => _assistanceRequisites = requisites.ToList();
     }
 }

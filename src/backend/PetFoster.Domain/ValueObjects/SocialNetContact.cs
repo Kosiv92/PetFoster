@@ -1,5 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 using PetFoster.Domain.Shared;
+using System.Text.Json.Serialization;
 
 namespace PetFoster.Domain.ValueObjects
 {
@@ -8,8 +9,7 @@ namespace PetFoster.Domain.ValueObjects
         public const int MAX_SOCIAL_NAME_LENGTH = 100;
         public const int MAX_ACCOUNT_NAME_LENGTH = 100;
 
-        private SocialNetContact() { }
-
+        [JsonConstructorAttribute]
         private SocialNetContact(string socialNetName, string accountName) =>
             (SocialNetName, AccountName) = (socialNetName, accountName);
                 
