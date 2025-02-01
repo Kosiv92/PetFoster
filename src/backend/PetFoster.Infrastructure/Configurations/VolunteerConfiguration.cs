@@ -68,10 +68,14 @@ namespace PetFoster.Infrastructure.Configurations
                 value => PhoneNumber.Create(value).Value);
 
             builder.Property(m => m.AssistanceRequisitesList)
+                .HasField("_assistanceRequisites")
+                .UsePropertyAccessMode(PropertyAccessMode.Field)
                 .IsRequired()
                 .JsonValueObjectCollectionConversion();            
 
             builder.Property(m => m.SocialNetContacts)
+                .HasField("_socialNetContacts")
+                //.UsePropertyAccessMode(PropertyAccessMode.Field)
                 .IsRequired()
                 .JsonValueObjectCollectionConversion();
 

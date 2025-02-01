@@ -13,7 +13,7 @@ namespace PetFoster.Application.Volunteers.UpdatePersonalInfo
         string Description,
         int WorkExperience);
 
-    public class UpdateVolunteerPersonalInfoCommandValidator 
+    public sealed class UpdateVolunteerPersonalInfoCommandValidator 
         : AbstractValidator<UpdateVolunteerPersonalInfoCommand>
     {
         public UpdateVolunteerPersonalInfoCommandValidator()
