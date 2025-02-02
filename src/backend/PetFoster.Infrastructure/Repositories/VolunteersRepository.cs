@@ -20,7 +20,7 @@ namespace PetFoster.Infrastructure.Repositories
         public async Task AddAsync(Volunteer entity, CancellationToken cancellationToken = default)
         {
             await _volunteers.AddAsync(entity, cancellationToken);
-            await SaveChangesAsync(cancellationToken);            
+            await SaveChangesAsync(null, cancellationToken);            
         }
 
         public async Task DeleteAsync(VolunteerId id, CancellationToken cancellationToken = default)
@@ -31,7 +31,7 @@ namespace PetFoster.Infrastructure.Repositories
                 throw new Exception($"Volunteer with ID:{id} not found");
 
             _volunteers.Remove(entity);
-            await SaveChangesAsync(cancellationToken);
+            await SaveChangesAsync(null, cancellationToken);
         }
 
         public async Task<IEnumerable<Volunteer>> GetAllAsync(CancellationToken cancellationToken = default)
@@ -42,11 +42,16 @@ namespace PetFoster.Infrastructure.Repositories
         }
 
         public Task<Volunteer?> GetByIdAsync(VolunteerId id, CancellationToken cancellationToken = default)
-            => _volunteers.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
-        
+            => _volunteers.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);        
 
-        public Task SaveChangesAsync(CancellationToken cancellationToken = default)
-            => _dbContext.SaveChangesAsync(cancellationToken);
+        public Task SaveChangesAsync(Volunteer? entity, CancellationToken cancellationToken = default)
+        {
+            if (entity != null)
+            {
+                _volunteers.Attach(entity);
+            }
+            return _dbContext.SaveChangesAsync(cancellationToken);
+        }
 
         public async Task<Volunteer?> GetByCriteriaAsync(Expression<Func<Volunteer, bool>> searchCriteria, CancellationToken cancellationToken)
         {

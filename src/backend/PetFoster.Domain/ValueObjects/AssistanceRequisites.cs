@@ -1,5 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 using PetFoster.Domain.Shared;
+using System.Text.Json.Serialization;
 
 namespace PetFoster.Domain.ValueObjects
 {
@@ -7,8 +8,7 @@ namespace PetFoster.Domain.ValueObjects
     {
         public const int MAX_NAME_LENGTH = 100;
 
-        private AssistanceRequisites() { }
-
+        [JsonConstructorAttribute]
         private AssistanceRequisites(string name, Description description)
         {
             Name = name;

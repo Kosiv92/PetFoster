@@ -7,7 +7,7 @@ using PetFoster.Domain.ValueObjects;
 
 namespace PetFoster.Application.Volunteers.CreateVolunteer
 {
-    public record CreateVolunteerCommand(VolunteerId id, 
+    public sealed record CreateVolunteerCommand(VolunteerId id, 
         FullNameDto FullName, 
         string Email, 
         string PhoneNumber, 
