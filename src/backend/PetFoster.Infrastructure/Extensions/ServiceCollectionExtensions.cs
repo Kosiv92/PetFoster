@@ -23,7 +23,8 @@ namespace PetFoster.Infrastructure.Extensions
             {                
                 opt.UseNpgsql(configuration.GetConnectionString(DATABASE_NAME));
                 opt.UseSnakeCaseNamingConvention();
-                opt.UseLoggerFactory(CreateLoggerFactory());
+                opt.EnableSensitiveDataLogging();
+                opt.UseLoggerFactory(CreateLoggerFactory());                
                 opt.ConfigureWarnings(warnings => warnings.Ignore(RelationalEventId.PendingModelChangesWarning));
             });
 

@@ -17,7 +17,9 @@ namespace PetFoster.Infrastructure.Configurations
                 t.HasCheckConstraint("CK_Pet_Weight_NonNegative", $"{Characteristics.WEIGHT_COLUMN_NAME} >= 0");
                 t.HasCheckConstraint("CK_Pet_Height_NonNegative", $"{Characteristics.HEIGHT_COLUMN_NAME} >= 0");
                 t.HasCheckConstraint("CK_Volunteer_PhoneNumber_NumericOnly", $"{PhoneNumber.COLUMN_NAME} ~ '^[0-9]{PhoneNumber.PHONE_NUMBER_LENGTH}$'");
-            });            
+            });
+
+            builder.HasQueryFilter(m => !m.IsDeleted);
 
             builder.HasKey(m => m.Id);
 
@@ -132,6 +134,7 @@ namespace PetFoster.Infrastructure.Configurations
             builder.Property(m => m.CreatedDate)
                 .IsRequired(true);
 
+            builder.Property(m => m.IsDeleted);
         }
     }
 }

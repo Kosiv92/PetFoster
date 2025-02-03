@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PetFoster.Application.Volunteers.CreateVolunteer;
+using PetFoster.Application.Volunteers.DeleteVolunteer;
 using PetFoster.Application.Volunteers.UpdatePersonalInfo;
 using PetFoster.Application.Volunteers.UpdateRequisites;
 using PetFoster.Application.Volunteers.UpdateSocialNet;
@@ -28,7 +29,7 @@ namespace PetFoster.WebAPI.Controllers
 
         [HttpPut("{id:guid}/personal-info")]
         public async Task<IActionResult> UpdatePersonalInfo([FromRoute] Guid id,
-            [FromServices] UpdatePersonalInfoHandler handler,
+            [FromServices] UpdateVolunteerPersonalInfoHandler handler,
             [FromBody] UpdateVolunteerPersonalInfoRequest request,
             CancellationToken cancellationToken = default )
         {
@@ -44,7 +45,7 @@ namespace PetFoster.WebAPI.Controllers
 
         [HttpPut("{id:guid}/social-net")]
         public async Task<IActionResult> UpdateSocialNetInfo([FromRoute] Guid id,
-            [FromServices] UpdateSocialNetHandler handler,
+            [FromServices] UpdateVolunteerSocialNetHandler handler,
             [FromBody] UpdateSocialNetInfoVolunteerRequest request,
             CancellationToken cancellationToken = default)
         {
@@ -60,7 +61,7 @@ namespace PetFoster.WebAPI.Controllers
 
         [HttpPut("{id:guid}/requisites")]
         public async Task<IActionResult> UpdateRequisites([FromRoute] Guid id,
-            [FromServices] UpdateRequisitesHandler handler,
+            [FromServices] UpdateVolunteerRequisitesHandler handler,
             [FromBody] UpdateRequisitesInfoVolunteerRequest request,
             CancellationToken cancellationToken = default)
         {
@@ -72,6 +73,20 @@ namespace PetFoster.WebAPI.Controllers
                 return result.Error.ToResponse();
 
             return Ok(result.Value);
+        }
+
+        [HttpDelete("{id:guid}")]
+        public async Task<ActionResult> Delete([FromRoute] Guid id, 
+            [FromServices] DeleteVolunteerHandler handler, CancellationToken cancellationToken = default)
+        {
+            var command = new DeleteVolunteerCommand(id);
+
+            var result = await handler.Handle(command, cancellationToken);
+
+            if (result.IsFailure)
+                return result.Error.ToResponse();
+
+            return Ok();
         }
     }
 }

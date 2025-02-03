@@ -12,9 +12,10 @@ namespace PetFoster.Application.Extensions
         public static IServiceCollection AddApplicationServices(this IServiceCollection services)
         {
             services.AddTransient<CreateVolunteerHandler>();
-            services.AddTransient<UpdatePersonalInfoHandler>();
-            services.AddTransient<UpdateSocialNetHandler>();
-            services.AddTransient<UpdateRequisitesHandler>();
+            services.AddTransient<UpdateVolunteerPersonalInfoHandler>();
+            services.AddTransient<UpdateVolunteerSocialNetHandler>();
+            services.AddTransient<UpdateVolunteerRequisitesHandler>();
+            services.AddTransient<DeleteVolunteerHandler>();
 
             services.AddValidatorsFromAssembly(typeof(ServiceCollectionExtensions).Assembly);            
 

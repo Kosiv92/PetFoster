@@ -1,9 +1,11 @@
-﻿using CSharpFunctionalExtensions;
+﻿using PetFoster.Domain.Entities;
 using System.Linq.Expressions;
 
 namespace PetFoster.Domain.Interfaces;
 
-public interface IRepository<TEntity, TId> where TEntity : Entity<TId> where TId : IComparable<TId>
+public interface IRepository<TEntity, TId> 
+    where TEntity : SoftDeletableEntity<TId> 
+    where TId : IComparable<TId>
 {
     public Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken);
 
@@ -11,7 +13,7 @@ public interface IRepository<TEntity, TId> where TEntity : Entity<TId> where TId
 
     public Task AddAsync(TEntity entity, CancellationToken cancellationToken);
 
-    public Task DeleteAsync(TId id, CancellationToken cancellationToken);
+    public Task<TId> DeleteAsync(TId id, CancellationToken cancellationToken);
 
     public Task SaveChangesAsync(TEntity? entity, CancellationToken cancellationToken);
 

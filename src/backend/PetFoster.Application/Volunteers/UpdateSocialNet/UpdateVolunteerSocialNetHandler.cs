@@ -10,15 +10,15 @@ using PetFoster.Domain.ValueObjects;
 
 namespace PetFoster.Application.Volunteers.UpdateSocialNet
 {
-    public sealed class UpdateSocialNetHandler
+    public sealed class UpdateVolunteerSocialNetHandler
     {
         private readonly IRepository<Volunteer, VolunteerId> _repository;
         private readonly IValidator<UpdateVolunteerSocialNetCommand> _validator;
-        private readonly ILogger<UpdateSocialNetHandler> _logger;
+        private readonly ILogger<UpdateVolunteerSocialNetHandler> _logger;
 
-        public UpdateSocialNetHandler(IRepository<Volunteer, VolunteerId> repository,
+        public UpdateVolunteerSocialNetHandler(IRepository<Volunteer, VolunteerId> repository,
             IValidator<UpdateVolunteerSocialNetCommand> validator,
-            ILogger<UpdateSocialNetHandler> logger)
+            ILogger<UpdateVolunteerSocialNetHandler> logger)
         {
             _repository = repository;
             _validator = validator;

@@ -4,7 +4,7 @@ using PetFoster.Domain.ValueObjects;
 
 namespace PetFoster.Domain.Entities
 {
-    public sealed class Volunteer : Entity<VolunteerId>
+    public sealed class Volunteer : SoftDeletableEntity<VolunteerId>
     {
         public Volunteer(VolunteerId id, FullName fullName, 
             Email email, Description description,
@@ -29,9 +29,7 @@ namespace PetFoster.Domain.Entities
 
         private List<AssistanceRequisites> _assistanceRequisites = new List<AssistanceRequisites>();
 
-        private List<SocialNetContact> _socialNetContacts = new List<SocialNetContact>();
-
-        public VolunteerId Id { get; private set; }
+        private List<SocialNetContact> _socialNetContacts = new List<SocialNetContact>();                
 
         public FullName FullName { get; private set; }
 
@@ -78,5 +76,23 @@ namespace PetFoster.Domain.Entities
 
         public void UpdateRequisites(IEnumerable<AssistanceRequisites> requisites)
             => _assistanceRequisites = requisites.ToList();
+
+        public override void Delete()
+        {
+            base.Delete();
+            foreach(var pet in FosteredAnimals)
+            {
+                pet.Delete();
+            }
+        }
+
+        public override void Restore()
+        {
+            base.Restore();
+            foreach (var pet in FosteredAnimals)
+            {
+                pet.Restore();
+            }
+        }
     }
 }

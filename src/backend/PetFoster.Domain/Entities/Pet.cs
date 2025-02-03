@@ -1,11 +1,10 @@
-﻿using CSharpFunctionalExtensions;
-using PetFoster.Domain.Enums;
+﻿using PetFoster.Domain.Enums;
 using PetFoster.Domain.Ids;
 using PetFoster.Domain.ValueObjects;
 
 namespace PetFoster.Domain.Entities
 {
-    public sealed class Pet : Entity<PetId>
+    public sealed class Pet : SoftDeletableEntity<PetId>
     {
         public Pet(PetId id, Volunteer volunteer, PetName name, Specie specie, Description description, Breed breed, 
             PetColoration coloration, PetHealth health, Address address, Characteristics characteristics, 
@@ -31,9 +30,7 @@ namespace PetFoster.Domain.Entities
             CreatedDate = DateTimeOffset.Now;
         }
 
-        private Pet() { }
-
-        public PetId Id { get; private set; }
+        private Pet() { }        
 
         public Volunteer Volunteer { get; private set; }
 

@@ -23,7 +23,7 @@ namespace PetFoster.Infrastructure.Repositories
             await SaveChangesAsync(null, cancellationToken);            
         }
 
-        public async Task DeleteAsync(VolunteerId id, CancellationToken cancellationToken = default)
+        public async Task<VolunteerId> DeleteAsync(VolunteerId id, CancellationToken cancellationToken = default)
         {
             var entity = await _volunteers.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
 
@@ -32,6 +32,8 @@ namespace PetFoster.Infrastructure.Repositories
 
             _volunteers.Remove(entity);
             await SaveChangesAsync(null, cancellationToken);
+
+            return id;
         }
 
         public async Task<IEnumerable<Volunteer>> GetAllAsync(CancellationToken cancellationToken = default)

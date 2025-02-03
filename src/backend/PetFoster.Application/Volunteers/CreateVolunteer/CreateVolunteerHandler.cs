@@ -14,7 +14,7 @@ namespace PetFoster.Application.Volunteers.CreateVolunteer
     {
         private readonly IRepository<Volunteer, VolunteerId> _repository;
         private readonly IValidator<CreateVolunteerCommand> _validator;
-        ILogger<CreateVolunteerHandler> _logger;
+        private readonly ILogger<CreateVolunteerHandler> _logger;
 
         public CreateVolunteerHandler(IRepository<Volunteer, VolunteerId> repository,
             IValidator<CreateVolunteerCommand> validator, 
