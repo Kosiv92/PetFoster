@@ -15,7 +15,9 @@ namespace PetFoster.Infrastructure.Configurations
             {
                 t.HasCheckConstraint("CK_Volunteer_WorkExperience_NonNegative", $"{WorkExperience.COLUMN_NAME} >= 0");                
                 t.HasCheckConstraint("CK_Volunteer_Email_ValidFormat", $"{Email.COLUMN_NAME} ~* '{Email.EMAIL_PATTERN}'");
-            });                
+            });
+
+            builder.HasQueryFilter(m => !m.IsDeleted);
 
             builder.HasKey(m => m.Id);
 
@@ -85,6 +87,8 @@ namespace PetFoster.Infrastructure.Configurations
 
             builder.Navigation(v => v.FosteredAnimals)
                 .AutoInclude();
+
+            builder.Property(m => m.IsDeleted);
         }
     }
 }

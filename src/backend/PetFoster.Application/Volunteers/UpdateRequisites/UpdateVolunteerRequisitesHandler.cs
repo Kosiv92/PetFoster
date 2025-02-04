@@ -10,15 +10,15 @@ using PetFoster.Domain.ValueObjects;
 
 namespace PetFoster.Application.Volunteers.UpdateRequisites
 {
-    public sealed class UpdateRequisitesHandler
+    public sealed class UpdateVolunteerRequisitesHandler
     {
         private readonly IRepository<Volunteer, VolunteerId> _repository;
         private readonly IValidator<UpdateVolunteerRequisitesCommand> _validator;
-        private readonly ILogger<UpdateRequisitesHandler> _logger;
+        private readonly ILogger<UpdateVolunteerRequisitesHandler> _logger;
 
-        public UpdateRequisitesHandler(IRepository<Volunteer, VolunteerId> repository,
+        public UpdateVolunteerRequisitesHandler(IRepository<Volunteer, VolunteerId> repository,
             IValidator<UpdateVolunteerRequisitesCommand> validator,
-            ILogger<UpdateRequisitesHandler> logger)
+            ILogger<UpdateVolunteerRequisitesHandler> logger)
         {
             _repository = repository;
             _validator = validator;
