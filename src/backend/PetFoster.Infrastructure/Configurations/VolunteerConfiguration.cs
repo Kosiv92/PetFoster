@@ -86,6 +86,7 @@ namespace PetFoster.Infrastructure.Configurations
                 .IsRequired();
 
             builder.Navigation(v => v.FosteredAnimals)
+                .HasField("_fosteredPets")
                 .AutoInclude();
 
             builder.Property(m => m.IsDeleted);

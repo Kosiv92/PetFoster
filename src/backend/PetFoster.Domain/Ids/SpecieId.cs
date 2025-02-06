@@ -14,6 +14,8 @@ namespace PetFoster.Domain.Ids
         public static SpecieId Empty() => new(Guid.Empty);
         public static SpecieId Create(Guid id) => new(id);
 
+        public static SpecieId NewSpecieId() => new(Guid.NewGuid());
+
         protected override IEnumerable<IComparable> GetComparableEqualityComponents()
         {
             yield return Value;

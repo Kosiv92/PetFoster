@@ -135,6 +135,9 @@ namespace PetFoster.Infrastructure.Configurations
                 .IsRequired(true);
 
             builder.Property(m => m.IsDeleted);
+
+            builder.Property(m => m.Position)
+                .IsRequired(true);
         }
     }
 }

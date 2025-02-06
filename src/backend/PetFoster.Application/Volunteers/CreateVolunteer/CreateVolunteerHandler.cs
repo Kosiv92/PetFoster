@@ -65,7 +65,7 @@ namespace PetFoster.Application.Volunteers.CreateVolunteer
 
             var volunteer = new Volunteer(id, fullName, email,
                 description, workExpirience, phoneNumber, assistanceRequisites,
-                socialNetContacts, new List<Pet>());
+                socialNetContacts);
 
             await _repository.AddAsync(volunteer, cancellationToken);
 

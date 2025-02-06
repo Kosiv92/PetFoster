@@ -13,6 +13,7 @@ namespace PetFoster.Domain.Ids
 
         public static PetId Empty() => new(Guid.Empty);
         public static PetId Create(Guid id) => new(id);
+        public static PetId NewPetId() => new(Guid.NewGuid());
 
         protected override IEnumerable<IComparable> GetComparableEqualityComponents()
         {

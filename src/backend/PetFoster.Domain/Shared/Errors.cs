@@ -24,7 +24,5 @@ namespace PetFoster.Domain.Shared
                     "Volunteer with the same email or phone number is already exist");
             }
         }
-
-
     }
 }
