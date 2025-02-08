@@ -1,18 +1,19 @@
 ﻿using CSharpFunctionalExtensions;
 using PetFoster.Domain.Ids;
+using PetFoster.Domain.Shared;
 using PetFoster.Domain.ValueObjects;
+using System.Formats.Tar;
 
 namespace PetFoster.Domain.Entities
 {
     public sealed class Volunteer : SoftDeletableEntity<VolunteerId>
     {
-        public Volunteer(VolunteerId id, FullName fullName, 
+        public Volunteer(VolunteerId id, FullName fullName,
             Email email, Description description,
-            WorkExperience workExperienceInYears, 
+            WorkExperience workExperienceInYears,
             PhoneNumber phoneNumber,
             IEnumerable<AssistanceRequisites> assistanceRequisitesList,
-            IEnumerable<SocialNetContact> socialNetContacts, 
-            IReadOnlyList<Pet> fosteredAnimals) : base(id)
+            IEnumerable<SocialNetContact> socialNetContacts) : base(id)
         {
             Id = id;
             FullName = fullName;
@@ -21,15 +22,16 @@ namespace PetFoster.Domain.Entities
             WorkExperienceInYears = workExperienceInYears;
             PhoneNumber = phoneNumber;
             _assistanceRequisites = assistanceRequisitesList.ToList();
-            _socialNetContacts = socialNetContacts.ToList();
-            FosteredAnimals = fosteredAnimals;
+            _socialNetContacts = socialNetContacts.ToList();            
         }
 
         private Volunteer() { }
 
         private List<AssistanceRequisites> _assistanceRequisites = new List<AssistanceRequisites>();
 
-        private List<SocialNetContact> _socialNetContacts = new List<SocialNetContact>();                
+        private List<SocialNetContact> _socialNetContacts = new List<SocialNetContact>();
+
+        private List<Pet> _fosteredPets = new List<Pet>();
 
         public FullName FullName { get; private set; }
 
@@ -41,13 +43,14 @@ namespace PetFoster.Domain.Entities
 
         public PhoneNumber PhoneNumber { get; private set; }
 
-        public IReadOnlyList<AssistanceRequisites> AssistanceRequisitesList 
+        public IReadOnlyList<AssistanceRequisites> AssistanceRequisitesList
             => _assistanceRequisites.AsReadOnly();
 
-        public IReadOnlyList<SocialNetContact> SocialNetContacts 
+        public IReadOnlyList<SocialNetContact> SocialNetContacts
             => _socialNetContacts.AsReadOnly();
 
-        public IReadOnlyList<Pet> FosteredAnimals { get; private set; }
+        public IReadOnlyList<Pet> FosteredAnimals
+            => _fosteredPets.AsReadOnly();
 
         public int FoundHomeAnimals => FosteredAnimals?
             .Count(a => a.AssistanceStatus == Enums.AssistanceStatus.FoundHome) ?? 0;
@@ -58,10 +61,10 @@ namespace PetFoster.Domain.Entities
         public int NeedsHelpAnimals => FosteredAnimals?
             .Count(a => a.AssistanceStatus == Enums.AssistanceStatus.NeedsHelp) ?? 0;
 
-        public void UpdatePersonalInfo(FullName fullName, 
-            Email email, 
-            PhoneNumber phoneNumber, 
-            Description description, 
+        public void UpdatePersonalInfo(FullName fullName,
+            Email email,
+            PhoneNumber phoneNumber,
+            Description description,
             WorkExperience workExperience)
         {
             FullName = fullName;
@@ -77,10 +80,102 @@ namespace PetFoster.Domain.Entities
         public void UpdateRequisites(IEnumerable<AssistanceRequisites> requisites)
             => _assistanceRequisites = requisites.ToList();
 
+        public UnitResult<Error> AddPet(Pet pet)
+        {
+            var serialNumberResult = Position.Create(_fosteredPets.Count + 1);
+            if (serialNumberResult.IsFailure) return serialNumberResult.Error;
+            pet.SetPositionNumber(serialNumberResult.Value);
+            pet.SetVolunteer(this);
+
+            _fosteredPets.Add(pet);
+            return Result.Success<Error>();
+        }
+
+        public UnitResult<Error> MovePet(Pet pet, Position newPosition)
+        {
+            if (pet.Volunteer != this) 
+                return Errors.General.ValueIsInvalid("The pet does not belong to this volunteer");
+
+            var currentPosition = pet.Position;
+
+            if (currentPosition == newPosition || _fosteredPets.Count == 1)
+                return Result.Success<Error>();
+
+            var adjustedPosition = AdjustNewPositionOutOfRange(newPosition);
+            if (adjustedPosition.IsFailure) return adjustedPosition.Error;
+
+            newPosition = adjustedPosition.Value;
+
+            var movePetsResult = MovePetsBetweenPositions(newPosition, currentPosition);
+            if (movePetsResult.IsFailure) return movePetsResult.Error;
+
+            pet.Move(newPosition);
+
+            var uniqCounts = _fosteredPets.Select(p => p.Position.Value).Distinct().Count();
+            if (uniqCounts != _fosteredPets.Count)
+                return Error.Failure("nonuniq.pet.position", "Non-unique animal positions at the volunteer");
+
+            return Result.Success<Error>();
+        }
+
+        public UnitResult<Error> MovePetToStart(Pet pet)
+            => MovePet(pet, Position.First);
+
+        public UnitResult<Error> MovePetToEnd(Pet pet)
+        {
+            var lastPosition = Position.Create(_fosteredPets.Count).Value;
+            return MovePet(pet, lastPosition);
+        }         
+
+        private UnitResult<Error> MovePetsBetweenPositions(Position newPosition, Position currentPosition)
+        {
+            if (newPosition.Value < currentPosition.Value)
+            {
+                var petsToMove = _fosteredPets
+                    .Where(p => p.Position.Value >= newPosition.Value
+                        && p.Position.Value < currentPosition.Value);
+
+                foreach (var petToMove in petsToMove)
+                {
+                    var result = petToMove.MoveForward();
+                    if (result.IsFailure) return result.Error;
+                }
+            }
+            else if (newPosition.Value > currentPosition.Value)
+            {
+                var petsToMove = _fosteredPets
+                    .Where(p => p.Position.Value > currentPosition.Value
+                        && p.Position.Value <= newPosition.Value);
+
+                foreach (var petToMove in petsToMove)
+                {
+                    var result = petToMove.MoveBack();
+                    if (result.IsFailure) return result.Error;
+                }
+            }
+
+            return Result.Success<Error>();
+        }
+
+        private Result<Position, Error> AdjustNewPositionOutOfRange(Position newPosition)
+        {
+            if (newPosition.Value > _fosteredPets.Count)
+            {
+                var lastPostionResult = Position.Create(_fosteredPets.Count);
+                if (lastPostionResult.IsFailure)
+                {
+                    return lastPostionResult.Error;
+                }
+                return lastPostionResult.Value;
+            }
+
+            return newPosition;
+        }
+
         public override void Delete()
         {
             base.Delete();
-            foreach(var pet in FosteredAnimals)
+            foreach (var pet in FosteredAnimals)
             {
                 pet.Delete();
             }

@@ -13,6 +13,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PetFoster.Application", "Pe
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{2F8A443B-4D5D-43A7-8E8D-0C32DA8867B7}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{2D33B1DB-8F92-4100-A2CA-BF2475B2FBE2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PetFoster.UnitTests", "..\PetFoster.UnitTests\PetFoster.UnitTests.csproj", "{A6D0B521-32AF-469C-878F-226B1618691F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,9 +43,16 @@ Global
 		{2F8A443B-4D5D-43A7-8E8D-0C32DA8867B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2F8A443B-4D5D-43A7-8E8D-0C32DA8867B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2F8A443B-4D5D-43A7-8E8D-0C32DA8867B7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A6D0B521-32AF-469C-878F-226B1618691F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6D0B521-32AF-469C-878F-226B1618691F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A6D0B521-32AF-469C-878F-226B1618691F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6D0B521-32AF-469C-878F-226B1618691F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A6D0B521-32AF-469C-878F-226B1618691F} = {2D33B1DB-8F92-4100-A2CA-BF2475B2FBE2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8100EF29-19AC-4C4E-B491-6776C7FF4504}

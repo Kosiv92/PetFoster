@@ -1,18 +1,19 @@
-﻿using PetFoster.Domain.Enums;
+﻿using CSharpFunctionalExtensions;
+using PetFoster.Domain.Enums;
 using PetFoster.Domain.Ids;
+using PetFoster.Domain.Shared;
 using PetFoster.Domain.ValueObjects;
 
 namespace PetFoster.Domain.Entities
 {
     public sealed class Pet : SoftDeletableEntity<PetId>
     {
-        public Pet(PetId id, Volunteer volunteer, PetName name, Specie specie, Description description, Breed breed, 
+        public Pet(PetId id, PetName name, Specie specie, Description description, Breed breed, 
             PetColoration coloration, PetHealth health, Address address, Characteristics characteristics, 
             PhoneNumber ownerPhoneNumber, bool isCastrated, DateTimeOffset? birthDay, bool isVaccinated, 
             AssistanceStatus assistanceStatus, IReadOnlyList<AssistanceRequisites> assistanceRequisitesList) : base(id)
         {
-            Id = id;
-            Volunteer = volunteer;
+            Id = id;            
             Name = name;
             Specie = specie;
             Description = description;
@@ -58,11 +59,44 @@ namespace PetFoster.Domain.Entities
 
         public bool IsVaccinated { get; private set; }
 
+        public Position Position { get; private set; }
+
         public AssistanceStatus AssistanceStatus { get; private set; }
 
         public IReadOnlyList<AssistanceRequisites> AssistanceRequisitesList { get; private set; }
 
         public DateTimeOffset CreatedDate { get; private set; }
+
+        public void SetPositionNumber(Position serialNumber) 
+            => Position = serialNumber;
+
+        public void Move(Position newPosition)
+            => Position = newPosition;           
+
+        public UnitResult<Error> MoveForward()
+        {
+            var newPositionResult = Position.Forward();
+            if (newPositionResult.IsFailure) return newPositionResult.Error;
+
+            Position = newPositionResult.Value;
+
+            return Result.Success<Error>();
+        }
+
+        public UnitResult<Error> MoveBack()
+        {
+            var newPositionResult = Position.Back();
+            if (newPositionResult.IsFailure) return newPositionResult.Error;
+
+            Position = newPositionResult.Value;
+
+            return Result.Success<Error>();
+        }
+
+        public void SetVolunteer(Volunteer volunteer)
+        {
+            Volunteer = volunteer;
+        }
 
     }
 }
