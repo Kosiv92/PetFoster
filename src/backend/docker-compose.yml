@@ -20,5 +20,17 @@ services:
     ports:  
       - 5431:5341
       - 8081:80
+  minio:
+    container_name: pf.minio
+    image: minio/minio
+    restart: always
+    ports:
+      - 9000:9000
+      - 9001:9001
+    volumes:
+      - minio-data:/data 
+    command: server --console-address ":9001" /data
+
 volumes:
     postgres-data:
+    minio-data:
