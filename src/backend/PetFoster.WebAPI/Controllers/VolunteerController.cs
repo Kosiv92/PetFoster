@@ -88,5 +88,16 @@ namespace PetFoster.WebAPI.Controllers
 
             return Ok();
         }
+
+        [HttpPost("{id:guid}/pet")]
+        public async Task<ActionResult> AddPet([FromRoute] Guid id, AddPetRequest request,
+            CancellationToken cancellationToken = default)
+        {
+            var command = request.ToAddPetCommand(id);
+
+
+
+            return Ok();
+        }
     }
 }
