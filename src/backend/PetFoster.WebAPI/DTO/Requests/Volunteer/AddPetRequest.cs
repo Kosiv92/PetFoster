@@ -7,15 +7,17 @@ namespace PetFoster.WebAPI.DTO.Requests.Volunteer
         string Health, string Coloration, CharacteristicsDto Characteristics, string OwnerPhoneNumber,
         string BirthDay, string Specie, string Breed, bool IsCastrated, bool IsVaccinated, 
         AddressDto Address, string AssistanceStatus, List<AssistanceRequisitesDto> AssistanceRequisitesList, 
-        IFormFileCollection _files);
+        IFormFileCollection Files);
 
     public static class AddPetRequestExtensions
     {
-        public static AddPetCommand ToAddPetCommand(this AddPetRequest request, Guid id)
+        public static AddPetCommand ToAddPetCommand(this AddPetRequest request, Guid id, IEnumerable<CreateFileDto> files)
             => new AddPetCommand(id, request.Name, request.Description, request.Health, 
                 request.Coloration, request.Characteristics, request.OwnerPhoneNumber, 
                 request.BirthDay, request.Specie, request.Breed, request.IsCastrated, 
                 request.IsVaccinated, request.Address, request.AssistanceStatus, 
-                request.AssistanceRequisitesList);
+                request.AssistanceRequisitesList, files);
+
+          
     }
 }

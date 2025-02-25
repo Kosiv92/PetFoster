@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using PetFoster.Application.Volunteers.AddPet;
 using PetFoster.Application.Volunteers.CreateVolunteer;
 using PetFoster.Application.Volunteers.DeleteVolunteer;
 using PetFoster.Application.Volunteers.UpdatePersonalInfo;
@@ -6,6 +7,7 @@ using PetFoster.Application.Volunteers.UpdateRequisites;
 using PetFoster.Application.Volunteers.UpdateSocialNet;
 using PetFoster.WebAPI.DTO.Requests.Volunteer;
 using PetFoster.WebAPI.Extensions;
+using PetFoster.WebAPI.Processors;
 
 namespace PetFoster.WebAPI.Controllers
 {
@@ -31,7 +33,7 @@ namespace PetFoster.WebAPI.Controllers
         public async Task<IActionResult> UpdatePersonalInfo([FromRoute] Guid id,
             [FromServices] UpdateVolunteerPersonalInfoHandler handler,
             [FromBody] UpdateVolunteerPersonalInfoRequest request,
-            CancellationToken cancellationToken = default )
+            CancellationToken cancellationToken = default)
         {
             var command = request.ToUpdateVolunteerPersonalInfoCommand(id);
 
@@ -76,7 +78,7 @@ namespace PetFoster.WebAPI.Controllers
         }
 
         [HttpDelete("{id:guid}")]
-        public async Task<ActionResult> Delete([FromRoute] Guid id, 
+        public async Task<ActionResult> Delete([FromRoute] Guid id,
             [FromServices] DeleteVolunteerHandler handler, CancellationToken cancellationToken = default)
         {
             var command = new DeleteVolunteerCommand(id);
@@ -90,12 +92,20 @@ namespace PetFoster.WebAPI.Controllers
         }
 
         [HttpPost("{id:guid}/pet")]
-        public async Task<ActionResult> AddPet([FromRoute] Guid id, AddPetRequest request,
+        public async Task<ActionResult> AddPet([FromRoute] Guid id,
+            [FromForm] AddPetRequest request,
+            [FromServices] AddPetHandler handler,
             CancellationToken cancellationToken = default)
         {
-            var command = request.ToAddPetCommand(id);
+            await using var fileProcessor = new FormFileProcessor();
+            var fileDtos = fileProcessor.Process(request.Files);
 
+            var command = request.ToAddPetCommand(id, fileDtos);
 
+            var result = await handler.Handle(command, cancellationToken);
+
+            if (result.IsFailure)
+                return result.Error.ToResponse();
 
             return Ok();
         }

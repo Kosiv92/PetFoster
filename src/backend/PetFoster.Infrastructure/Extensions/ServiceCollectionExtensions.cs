@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Minio;
+using PetFoster.Application.Database;
 using PetFoster.Application.Interfaces;
 using PetFoster.Domain.Entities;
 using PetFoster.Domain.Ids;
@@ -38,6 +39,7 @@ namespace PetFoster.Infrastructure.Extensions
 
             services.AddScoped<IRepository<Volunteer, VolunteerId>, VolunteersRepository>();
             services.AddScoped<IRepository<Specie, SpecieId>, SpeciesRepository>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             return services;
         }
