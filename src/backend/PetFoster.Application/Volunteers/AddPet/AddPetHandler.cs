@@ -114,7 +114,7 @@ namespace PetFoster.Application.Volunteers.AddPet
 
                 transaction.Rollback();
 
-                return Error.Failure("volunteer.pet.failure", $"Failed to add pet to volunteer with id {volunteer.Id.Value}")
+                return Error.Failure("volunteer.add.pet.failure", $"Failed to add pet to volunteer with id {volunteer.Id.Value}")
                     .ToErrorList();
             }
         }

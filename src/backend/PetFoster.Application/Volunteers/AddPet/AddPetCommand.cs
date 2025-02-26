@@ -15,9 +15,9 @@ namespace PetFoster.Application.Volunteers.AddPet
         IEnumerable<CreateFileDto> Files);    
 }
 
-public sealed class AddPetCommandCommandValidator : AbstractValidator<AddPetCommand>
+public sealed class AddPetCommandValidator : AbstractValidator<AddPetCommand>
 {
-    public AddPetCommandCommandValidator()
+    public AddPetCommandValidator()
     {
         RuleFor(c => c.VolunteerId).NotEmpty()
                 .WithError(Errors.General.ValueIsRequired());
