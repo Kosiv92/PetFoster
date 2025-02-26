@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
+using PetFoster.Application.Volunteers.AddPet;
 using PetFoster.Application.Volunteers.CreateVolunteer;
 using PetFoster.Application.Volunteers.UpdatePersonalInfo;
 using PetFoster.Application.Volunteers.UpdateRequisites;
@@ -16,6 +17,7 @@ namespace PetFoster.Application.Extensions
             services.AddTransient<UpdateVolunteerSocialNetHandler>();
             services.AddTransient<UpdateVolunteerRequisitesHandler>();
             services.AddTransient<DeleteVolunteerHandler>();
+            services.AddTransient<AddPetHandler>();
 
             services.AddValidatorsFromAssembly(typeof(ServiceCollectionExtensions).Assembly);            
 

@@ -14,7 +14,7 @@ namespace PetFoster.Application.Volunteers.CreateVolunteer
     {
         private readonly IRepository<Volunteer, VolunteerId> _repository;
         private readonly IValidator<DeleteVolunteerCommand> _validator;
-        private readonly ILogger<DeleteVolunteerHandler> _logger;
+        private readonly ILogger<DeleteVolunteerHandler> _logger;        
 
         public DeleteVolunteerHandler(IRepository<Volunteer, VolunteerId> repository,
             IValidator<DeleteVolunteerCommand> validator, 
@@ -22,7 +22,7 @@ namespace PetFoster.Application.Volunteers.CreateVolunteer
         {
             _repository = repository;
             _validator = validator;
-            _logger = logger;
+            _logger = logger;            
         }
 
         public async Task<Result<Guid, ErrorList>> Handle(DeleteVolunteerCommand command, 

@@ -4,7 +4,7 @@ using PetFoster.Domain.ValueObjects;
 
 namespace PetFoster.Domain.Entities
 {
-    public sealed class Breed : Entity<BreedId>
+    public sealed class Breed : SoftDeletableEntity<BreedId>
     {
         private List<Pet> _pets;
 
