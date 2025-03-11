@@ -11,8 +11,7 @@ namespace PetFoster.Domain.Entities
         public Pet(PetId id, PetName name, Specie specie, Description description, Breed breed, 
             PetColoration coloration, PetHealth health, Address address, Characteristics characteristics, 
             PhoneNumber ownerPhoneNumber, bool isCastrated, DateTimeOffset? birthDay, bool isVaccinated, 
-            AssistanceStatus assistanceStatus, List<AssistanceRequisites> assistanceRequisitesList,
-            List<PetFile> fileList) : base(id)
+            AssistanceStatus assistanceStatus, List<AssistanceRequisites> assistanceRequisitesList) : base(id)
         {
             Id = id;            
             Name = name;
@@ -28,8 +27,7 @@ namespace PetFoster.Domain.Entities
             BirthDay = birthDay;
             IsVaccinated = isVaccinated;
             AssistanceStatus = assistanceStatus;
-            _assistanceRequisitesList = assistanceRequisitesList;
-            _fileList = fileList;
+            _assistanceRequisitesList = assistanceRequisitesList;            
             CreatedDate = DateTimeOffset.Now;
         }
 
@@ -106,6 +104,9 @@ namespace PetFoster.Domain.Entities
         {
             Volunteer = volunteer;
         }
+
+        public void UpdateFiles(IEnumerable<PetFile> files) =>
+            _fileList = files.ToList();
 
     }
 }

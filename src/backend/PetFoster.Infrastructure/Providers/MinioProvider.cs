@@ -2,11 +2,11 @@
 using Microsoft.Extensions.Logging;
 using Minio.DataModel.Args;
 using Minio;
-using PetFoster.Application.FileProvider;
 using PetFoster.Application.Interfaces;
 using PetFoster.Domain.Shared;
 using PetFoster.Domain.ValueObjects;
 using PetFoster.Application.DTO;
+using PetFoster.Application.Files;
 
 namespace PetFoster.Infrastructure.Providers
 {
@@ -30,21 +30,30 @@ namespace PetFoster.Infrastructure.Providers
             return result.Value.Single();
         }
 
-        public async Task<UnitResult<Error>> RemoveFile(RemoveFileDto dto,
+        public async Task<UnitResult<Error>> RemoveFile(Application.Files.FileInfo fileInfo,
             CancellationToken cancellationToken = default)
         {
-            var bucketExist = await IsBucketExist(dto.BucketName, cancellationToken);
+            var bucketExist = await IsBucketExist(fileInfo.BucketName, cancellationToken);
 
             if (bucketExist == false)
             {
-                return Error.Failure("bucket.not.exist", $"Bucket {dto.BucketName} is not exist");
+                return Error.Failure("bucket.not.exist", $"Bucket {fileInfo.BucketName} is not exist");
             }
 
             try
             {
+                var statArgs = new StatObjectArgs()
+                    .WithBucket(fileInfo.BucketName)
+                    .WithObject(fileInfo.FilePath.Path);
+
+                var objectStat = await _minioClient.StatObjectAsync(statArgs, cancellationToken);
+
+                if (objectStat is null)
+                    return Result.Success<Error>();
+
                 RemoveObjectArgs removeArgs = new RemoveObjectArgs()
-                .WithBucket(dto.BucketName)
-                .WithObject(dto.FilePath.Path);
+                .WithBucket(fileInfo.BucketName)
+                .WithObject(fileInfo.FilePath.Path);
 
                 await _minioClient.RemoveObjectAsync(removeArgs, cancellationToken);
 
@@ -54,7 +63,7 @@ namespace PetFoster.Infrastructure.Providers
             {
                 _logger.LogError(
                     "Throw exception {Exception} while remove file {FilePath} from bucket {BucketName} in minio",
-                    ex.Message, dto.FilePath.Path, dto.BucketName);
+                    ex.Message, fileInfo.FilePath.Path, fileInfo.BucketName);
 
                 return Error.Failure("file.remove", "Fail to remove file in minio");
             }
@@ -133,25 +142,25 @@ namespace PetFoster.Infrastructure.Providers
             await semaphoreSlim.WaitAsync(cancellationToken);
 
             var putObjectArgs = new PutObjectArgs()
-                .WithBucket(fileData.BucketName)
+                .WithBucket(fileData.FileInfo.BucketName)
                 .WithStreamData(fileData.Stream)
                 .WithObjectSize(fileData.Stream.Length)
-                .WithObject(fileData.FilePath.Path);
+                .WithObject(fileData.FileInfo.FilePath.Path);
 
             try
             {
                 await _minioClient
                     .PutObjectAsync(putObjectArgs, cancellationToken);
 
-                return fileData.FilePath;
+                return fileData.FileInfo.FilePath;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex,
                     "Throw exception {Exception} while upload files in minio with path {path} in bucket {bucket}",
                     ex.Message,
-                    fileData.FilePath.Path,
-                    fileData.BucketName);
+                    fileData.FileInfo.FilePath.Path,
+                    fileData.FileInfo.BucketName);
 
                 return Error.Failure("file.upload", "Fail to upload file in minio");
             }
@@ -165,7 +174,7 @@ namespace PetFoster.Infrastructure.Providers
             IEnumerable<FileData> filesData,
             CancellationToken cancellationToken)
         {
-            HashSet<string> bucketNames = [.. filesData.Select(file => file.BucketName)];
+            HashSet<string> bucketNames = [.. filesData.Select(file => file.FileInfo.BucketName)];
 
             foreach (var bucketName in bucketNames)
             {

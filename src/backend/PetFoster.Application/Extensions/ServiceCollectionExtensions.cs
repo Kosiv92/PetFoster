@@ -2,9 +2,11 @@
 using Microsoft.Extensions.DependencyInjection;
 using PetFoster.Application.Volunteers.AddPet;
 using PetFoster.Application.Volunteers.CreateVolunteer;
+using PetFoster.Application.Volunteers.DeleteVolunteer;
 using PetFoster.Application.Volunteers.UpdatePersonalInfo;
 using PetFoster.Application.Volunteers.UpdateRequisites;
 using PetFoster.Application.Volunteers.UpdateSocialNet;
+using PetFoster.Application.Volunteers.UploadFilesToPet;
 
 namespace PetFoster.Application.Extensions
 {
@@ -18,6 +20,7 @@ namespace PetFoster.Application.Extensions
             services.AddTransient<UpdateVolunteerRequisitesHandler>();
             services.AddTransient<DeleteVolunteerHandler>();
             services.AddTransient<AddPetHandler>();
+            services.AddTransient<UploadFilesToPetHandler>();
 
             services.AddValidatorsFromAssembly(typeof(ServiceCollectionExtensions).Assembly);            
 

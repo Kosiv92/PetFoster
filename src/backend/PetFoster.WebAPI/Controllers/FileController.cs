@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PetFoster.Application.DTO;
-using PetFoster.Application.FileProvider;
+using PetFoster.Application.Files;
 using PetFoster.Application.Interfaces;
 using PetFoster.Domain.ValueObjects;
 using PetFoster.WebAPI.Extensions;
@@ -43,9 +43,9 @@ namespace PetFoster.WebAPI.Controllers
         {
             var filePath = FilePath.Create(file).Value;
 
-            var dto = new RemoveFileDto(filePath, BUCKET_NAME);
+            var fileInfo = new Application.Files.FileInfo(filePath, BUCKET_NAME);
 
-            var result = await _fileProvider.RemoveFile(dto, cancellationToken);
+            var result = await _fileProvider.RemoveFile(fileInfo, cancellationToken);
 
             if (result.IsFailure)
                 return result.Error.ToResponse();
@@ -66,7 +66,7 @@ namespace PetFoster.WebAPI.Controllers
             {
                 var filePath = FilePath.Create(Guid.NewGuid(), Path.GetExtension(file.FileName));
 
-                var fileData = new FileData(file.Content, filePath.Value, BUCKET_NAME);
+                var fileData = new FileData(file.Content, new Application.Files.FileInfo(filePath.Value, BUCKET_NAME));
 
                 filesData.Add(fileData);
             }

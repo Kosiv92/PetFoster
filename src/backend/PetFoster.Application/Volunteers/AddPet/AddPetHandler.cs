@@ -3,7 +3,6 @@ using FluentValidation;
 using Microsoft.Extensions.Logging;
 using PetFoster.Application.Database;
 using PetFoster.Application.Extensions;
-using PetFoster.Application.FileProvider;
 using PetFoster.Application.Interfaces;
 using PetFoster.Domain.Entities;
 using PetFoster.Domain.Enums;
@@ -11,7 +10,6 @@ using PetFoster.Domain.Ids;
 using PetFoster.Domain.Interfaces;
 using PetFoster.Domain.Shared;
 using PetFoster.Domain.ValueObjects;
-using PetFile = PetFoster.Domain.ValueObjects.PetFile;
 
 namespace PetFoster.Application.Volunteers.AddPet
 {
@@ -76,32 +74,11 @@ namespace PetFoster.Application.Volunteers.AddPet
 
             try
             {
-                List<FileData> filesData = new();
-
-                foreach (var file in command.Files)
-                {
-                    var filePath = FilePath.Create(Guid.NewGuid(), Path.GetExtension(file.FileName));
-
-                    if (filePath.IsFailure) return filePath.Error.ToErrorList();
-
-                    var fileData = new FileData(file.Content, filePath.Value, BUCKET_NAME);
-
-                    filesData.Add(fileData);
-                }
-
-                var petFiles = filesData
-                    .Select(d => new PetFile(d.FilePath))
-                    .ToList();
-
-                var pet = CreatePet(command, specie, breed, petFiles);
+                var pet = CreatePet(command, specie, breed);
 
                 volunteer.AddPet(pet);
 
-                await _unitOfWork.SaveChanges(cancellationToken);
-
-                var uploadResult = await _fileProvider.UploadFiles(filesData, cancellationToken);
-
-                if (uploadResult.IsFailure) return uploadResult.Error.ToErrorList();
+                await _unitOfWork.SaveChanges(cancellationToken);                               
 
                 transaction.Commit();
 
@@ -119,7 +96,7 @@ namespace PetFoster.Application.Volunteers.AddPet
             }
         }
 
-        private Pet CreatePet(AddPetCommand command, Specie specie, Breed breed, List<PetFile> petFiles)
+        private Pet CreatePet(AddPetCommand command, Specie specie, Breed breed)
         {
             PetId id = PetId.NewPetId();
             PetName name = PetName.Create(command.Name).Value;
@@ -142,7 +119,7 @@ namespace PetFoster.Application.Volunteers.AddPet
 
             return new Pet(id, name, specie, description, breed, coloration, health, address,
                 characteristics, phone, command.IsCastrated, birthDay, command.IsVaccinated, status,
-                assistanceRequisites, petFiles);
+                assistanceRequisites);
         }
 
         private DateTimeOffset? GetBirthDay(string inputData)

@@ -8,9 +8,13 @@ using Microsoft.Extensions.Logging;
 using Minio;
 using PetFoster.Application.Database;
 using PetFoster.Application.Interfaces;
+using PetFoster.Application.Messaging;
 using PetFoster.Domain.Entities;
 using PetFoster.Domain.Ids;
 using PetFoster.Domain.Interfaces;
+using PetFoster.Infrastructure.BackgroundServices;
+using PetFoster.Infrastructure.Files;
+using PetFoster.Infrastructure.MessageQueues;
 using PetFoster.Infrastructure.Options;
 using PetFoster.Infrastructure.Providers;
 using PetFoster.Infrastructure.Repositories;
@@ -37,9 +41,15 @@ namespace PetFoster.Infrastructure.Extensions
 
             services.AddMinioServices(configuration);
 
+            services.AddHostedService<FilesCleanerBackgroundService>();
+
+            services.AddSingleton<IMessageQueue<IEnumerable<Application.Files.FileInfo>>, InMemoryMessageQueue<IEnumerable<Application.Files.FileInfo>>>();
+            
             services.AddScoped<IRepository<Volunteer, VolunteerId>, VolunteersRepository>();
             services.AddScoped<IRepository<Specie, SpecieId>, SpeciesRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            services.AddTransient<IFilesCleanerService, FilesCleanerService>();
 
             return services;
         }
