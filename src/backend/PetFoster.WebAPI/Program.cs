@@ -1,4 +1,5 @@
 using PetFoster.Application.Extensions;
+using PetFoster.Infrastructure.BackgroundServices;
 using PetFoster.Infrastructure.Extensions;
 using PetFoster.WebAPI.Extensions;
 using Serilog;
@@ -15,6 +16,8 @@ Log.Logger = new LoggerConfiguration()
 
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddApplicationServices();
+
+builder.Services.AddHostedService<FilesCleanerBackgroundService>();
 
 builder.Services.AddControllers();
 

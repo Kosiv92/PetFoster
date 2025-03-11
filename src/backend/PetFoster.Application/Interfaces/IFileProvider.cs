@@ -1,6 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 using PetFoster.Application.DTO;
-using PetFoster.Application.FileProvider;
+using PetFoster.Application.Files;
 using PetFoster.Domain.Shared;
 using PetFoster.Domain.ValueObjects;
 
@@ -15,7 +15,7 @@ namespace PetFoster.Application.Interfaces
         IEnumerable<FileData> filesData,
         CancellationToken cancellationToken = default);
 
-        public Task<UnitResult<Error>> RemoveFile(RemoveFileDto dto,
+        public Task<UnitResult<Error>> RemoveFile(Files.FileInfo fileInfo,
             CancellationToken cancellationToken = default);
 
         public Task<Result<string, Error>> GetFileLink(GetFileDto dto,

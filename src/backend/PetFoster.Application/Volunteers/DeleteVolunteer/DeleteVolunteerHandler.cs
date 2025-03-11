@@ -2,13 +2,12 @@
 using FluentValidation;
 using Microsoft.Extensions.Logging;
 using PetFoster.Application.Extensions;
-using PetFoster.Application.Volunteers.DeleteVolunteer;
 using PetFoster.Domain.Entities;
 using PetFoster.Domain.Ids;
 using PetFoster.Domain.Interfaces;
 using PetFoster.Domain.Shared;
 
-namespace PetFoster.Application.Volunteers.CreateVolunteer
+namespace PetFoster.Application.Volunteers.DeleteVolunteer
 {
     public sealed class DeleteVolunteerHandler
     {

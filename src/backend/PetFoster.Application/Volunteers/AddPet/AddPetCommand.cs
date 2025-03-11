@@ -11,13 +11,12 @@ namespace PetFoster.Application.Volunteers.AddPet
     public sealed record AddPetCommand(Guid VolunteerId, string Name, string Description,
         string Health, string Coloration, CharacteristicsDto Characteristics, string OwnerPhoneNumber,
         string BirthDay, string Specie, string Breed, bool IsCastrated, bool IsVaccinated,
-        AddressDto Address, string AssistanceStatus, List<AssistanceRequisitesDto> AssistanceRequisitesList,
-        IEnumerable<CreateFileDto> Files);    
+        AddressDto Address, string AssistanceStatus, List<AssistanceRequisitesDto> AssistanceRequisitesList);    
 }
 
-public sealed class AddPetCommandCommandValidator : AbstractValidator<AddPetCommand>
+public sealed class AddPetCommandValidator : AbstractValidator<AddPetCommand>
 {
-    public AddPetCommandCommandValidator()
+    public AddPetCommandValidator()
     {
         RuleFor(c => c.VolunteerId).NotEmpty()
                 .WithError(Errors.General.ValueIsRequired());
@@ -55,10 +54,7 @@ public sealed class AddPetCommandCommandValidator : AbstractValidator<AddPetComm
             .WithError(Errors.General.ValueIsInvalid("Birth date is invalid"));
 
         RuleFor(c => c.AssistanceStatus).Must(s => Enum.TryParse(s, ignoreCase: true, out AssistanceStatus _))
-            .WithError(Errors.General.ValueIsInvalid("Assistance status is invalid"));                
-
-        RuleForEach(c => c.Files)
-            .MustBeValueObject(f => FilePath.Create(f.FileName));
+            .WithError(Errors.General.ValueIsInvalid("Assistance status is invalid")); 
     }
 
     private bool IsValidDateOrEmpty(string inputData)
