@@ -5,7 +5,7 @@ using PetFoster.Domain.Ids;
 using PetFoster.Domain.ValueObjects;
 using PetFoster.Infrastructure.Extensions;
 
-namespace PetFoster.Infrastructure.Configurations
+namespace PetFoster.Infrastructure.Configurations.Write
 {
     public class VolunteerConfiguration : IEntityTypeConfiguration<Volunteer>
     {
@@ -13,7 +13,7 @@ namespace PetFoster.Infrastructure.Configurations
         {
             builder.ToTable("volunteers", t =>
             {
-                t.HasCheckConstraint("CK_Volunteer_WorkExperience_NonNegative", $"{WorkExperience.COLUMN_NAME} >= 0");                
+                t.HasCheckConstraint("CK_Volunteer_WorkExperience_NonNegative", $"{WorkExperience.COLUMN_NAME} >= 0");
                 t.HasCheckConstraint("CK_Volunteer_Email_ValidFormat", $"{Email.COLUMN_NAME} ~* '{Email.EMAIL_PATTERN}'");
             });
 
@@ -23,7 +23,7 @@ namespace PetFoster.Infrastructure.Configurations
 
             builder.Property(m => m.Id)
                 .HasConversion(
-                    id => id.Value, 
+                    id => id.Value,
                     value => VolunteerId.Create(value));
 
             builder.ComplexProperty(m => m.FullName, pb =>
@@ -48,7 +48,7 @@ namespace PetFoster.Infrastructure.Configurations
                 .HasColumnName(Email.COLUMN_NAME)
                 .HasMaxLength(Email.MAX_EMAIL_LENGTH)
                 .HasConversion(
-                email => email.Value, 
+                email => email.Value,
                 value => Email.Create(value).Value);
 
             builder.Property(m => m.Description)
@@ -64,18 +64,18 @@ namespace PetFoster.Infrastructure.Configurations
                 value => WorkExperience.Create(value).Value);
 
             builder.Property(m => m.PhoneNumber)
-                .HasColumnName(PhoneNumber.COLUMN_NAME)                
+                .HasColumnName(PhoneNumber.COLUMN_NAME)
                 .HasConversion(
                 phoneNumber => phoneNumber.Value,
                 value => PhoneNumber.Create(value).Value);
 
             builder.Property(m => m.AssistanceRequisitesList)
-                .HasField("_assistanceRequisites")                
+                .HasField("_assistanceRequisites")
                 .IsRequired()
-                .JsonValueObjectCollectionConversion();            
+                .JsonValueObjectCollectionConversion();
 
             builder.Property(m => m.SocialNetContacts)
-                .HasField("_socialNetContacts")                
+                .HasField("_socialNetContacts")
                 .IsRequired()
                 .JsonValueObjectCollectionConversion();
 

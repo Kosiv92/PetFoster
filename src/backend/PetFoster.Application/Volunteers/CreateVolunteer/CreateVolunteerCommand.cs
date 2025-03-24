@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using PetFoster.Application.DTO;
+using PetFoster.Application.Interfaces;
 using PetFoster.Application.Validation;
 using PetFoster.Application.Volunteers.CreateVolunteer;
 using PetFoster.Domain.Ids;
@@ -14,7 +15,7 @@ namespace PetFoster.Application.Volunteers.CreateVolunteer
         string Description, 
         int WorkExpirience, 
         List<AssistanceRequisitesDto> AssistanceRequisitesList, 
-        List<SocialNetContactsDto> SocialNetContactsList);
+        List<SocialNetContactsDto> SocialNetContactsList) : ICommand;
 }
 
 public class CreateModuleCommandValidator : AbstractValidator<CreateVolunteerCommand>

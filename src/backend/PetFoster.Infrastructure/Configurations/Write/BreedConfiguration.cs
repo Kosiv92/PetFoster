@@ -4,7 +4,7 @@ using PetFoster.Domain.Entities;
 using PetFoster.Domain.Ids;
 using PetFoster.Domain.ValueObjects;
 
-namespace PetFoster.Infrastructure.Configurations
+namespace PetFoster.Infrastructure.Configurations.Write
 {
     public class BreedConfiguration : IEntityTypeConfiguration<Breed>
     {

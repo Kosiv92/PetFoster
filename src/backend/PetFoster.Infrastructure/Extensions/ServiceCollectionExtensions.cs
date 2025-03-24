@@ -13,6 +13,7 @@ using PetFoster.Domain.Entities;
 using PetFoster.Domain.Ids;
 using PetFoster.Domain.Interfaces;
 using PetFoster.Infrastructure.BackgroundServices;
+using PetFoster.Infrastructure.DbContexts;
 using PetFoster.Infrastructure.Files;
 using PetFoster.Infrastructure.MessageQueues;
 using PetFoster.Infrastructure.Options;
@@ -24,14 +25,12 @@ namespace PetFoster.Infrastructure.Extensions
 {
     public static class ServiceCollectionExtensions
     {
-        private const string DATABASE_NAME = "Database";
-
         public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, 
             IConfiguration configuration)
         {            
-            services.AddDbContext<ApplicationDbContext>(opt =>
+            services.AddDbContext<WriteDbContext>(opt =>
             {                
-                opt.UseNpgsql(configuration.GetConnectionString(DATABASE_NAME));
+                opt.UseNpgsql(configuration.GetConnectionString(Constants.DATABASE_NAME));
                 opt.UseSnakeCaseNamingConvention();
                 opt.EnableSensitiveDataLogging();
                 opt.UseLoggerFactory(CreateLoggerFactory());                
@@ -44,12 +43,16 @@ namespace PetFoster.Infrastructure.Extensions
             services.AddHostedService<FilesCleanerBackgroundService>();
 
             services.AddSingleton<IMessageQueue<IEnumerable<Application.Files.FileInfo>>, InMemoryMessageQueue<IEnumerable<Application.Files.FileInfo>>>();
+            services.AddSingleton<ISqlConnectionFactory, SqlConnectionFactory>();
             
             services.AddScoped<IRepository<Volunteer, VolunteerId>, VolunteersRepository>();
             services.AddScoped<IRepository<Specie, SpecieId>, SpeciesRepository>();
+            services.AddScoped<IVolunteersQueryRepository, VolunteersQueryRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             services.AddTransient<IFilesCleanerService, FilesCleanerService>();
+
+            Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
 
             return services;
         }

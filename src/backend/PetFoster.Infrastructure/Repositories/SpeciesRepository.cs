@@ -2,16 +2,17 @@
 using PetFoster.Domain.Entities;
 using PetFoster.Domain.Ids;
 using PetFoster.Domain.Interfaces;
+using PetFoster.Infrastructure.DbContexts;
 using System.Linq.Expressions;
 
 namespace PetFoster.Infrastructure.Repositories
 {
     public sealed class SpeciesRepository : IRepository<Specie, SpecieId>
     {
-        private readonly ApplicationDbContext _dbContext;
+        private readonly WriteDbContext _dbContext;
         DbSet<Specie> _species;
 
-        public SpeciesRepository(ApplicationDbContext dbContext)
+        public SpeciesRepository(WriteDbContext dbContext)
         {
             _dbContext = dbContext;
             _species = _dbContext.Species;

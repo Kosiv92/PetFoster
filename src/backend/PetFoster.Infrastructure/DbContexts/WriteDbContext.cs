@@ -1,23 +1,21 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using PetFoster.Domain.Entities;
 
-namespace PetFoster.Infrastructure
+namespace PetFoster.Infrastructure.DbContexts
 {
-    public class ApplicationDbContext : DbContext
-    {  
+    public class WriteDbContext : DbContext
+    {
         public DbSet<Volunteer> Volunteers { get; set; }
 
         public DbSet<Specie> Species { get; set; }
 
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, 
+        public WriteDbContext(DbContextOptions<WriteDbContext> options,
             IConfiguration configuration) : base(options)
-        {
-
-        }
+        { }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
-            => modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);           
+            => modelBuilder.ApplyConfigurationsFromAssembly(typeof(WriteDbContext).Assembly,
+                type => type.FullName?.Contains("Configurations.Write") ?? false);
     }
 }

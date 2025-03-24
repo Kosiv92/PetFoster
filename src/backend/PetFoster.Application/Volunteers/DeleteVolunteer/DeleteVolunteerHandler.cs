@@ -2,6 +2,7 @@
 using FluentValidation;
 using Microsoft.Extensions.Logging;
 using PetFoster.Application.Extensions;
+using PetFoster.Application.Interfaces;
 using PetFoster.Domain.Entities;
 using PetFoster.Domain.Ids;
 using PetFoster.Domain.Interfaces;
@@ -9,7 +10,7 @@ using PetFoster.Domain.Shared;
 
 namespace PetFoster.Application.Volunteers.DeleteVolunteer
 {
-    public sealed class DeleteVolunteerHandler
+    public sealed class DeleteVolunteerHandler : ICommandHandler<Guid, DeleteVolunteerCommand>
     {
         private readonly IRepository<Volunteer, VolunteerId> _repository;
         private readonly IValidator<DeleteVolunteerCommand> _validator;

@@ -2,6 +2,8 @@
 using PetFoster.Application.Volunteers.AddPet;
 using PetFoster.Application.Volunteers.CreateVolunteer;
 using PetFoster.Application.Volunteers.DeleteVolunteer;
+using PetFoster.Application.Volunteers.GetVolunteer;
+using PetFoster.Application.Volunteers.GetVolunteers;
 using PetFoster.Application.Volunteers.UpdatePersonalInfo;
 using PetFoster.Application.Volunteers.UpdateRequisites;
 using PetFoster.Application.Volunteers.UpdateSocialNet;
@@ -16,6 +18,31 @@ namespace PetFoster.WebAPI.Controllers
     [Route("[controller]")]
     public class VolunteerController : ControllerBase
     {
+        [HttpGet]
+        public async Task<ActionResult> GetVolunteers([FromQuery] GetVolunteersWithPagiationRequest request,
+            [FromServices] GetVoluteersWithPaginationQueryHandler handler,
+            CancellationToken cancellationToken = default)
+        {
+            var query = request.ToQuery();
+
+            var volunteerDtos = await handler.Handle(query, cancellationToken);
+
+            return Ok(volunteerDtos);
+        }
+
+        [HttpGet("{id:guid}")]
+        public async Task<ActionResult> GetVolunteer([FromRoute] Guid id,
+            [FromServices] GetVolunteerHandler handler,
+            CancellationToken cancellationToken = default)
+        {
+            var query = new GetVolunteerQuery(id);
+
+            var volunteerDto = await handler.Handle(query, cancellationToken);
+
+            return Ok(volunteerDto);
+        }
+
+
         [HttpPost]
         public async Task<ActionResult<Guid>> Create([FromServices] CreateVolunteerHandler handler,
             [FromBody] CreateVolunteerRequest request, CancellationToken cancellationToken = default)

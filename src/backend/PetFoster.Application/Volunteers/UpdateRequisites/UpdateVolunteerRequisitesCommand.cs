@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using PetFoster.Application.DTO;
+using PetFoster.Application.Interfaces;
 using PetFoster.Application.Validation;
 using PetFoster.Application.Volunteers.UpdateRequisites;
 using PetFoster.Domain.Shared;
@@ -8,7 +9,7 @@ using PetFoster.Domain.ValueObjects;
 namespace PetFoster.Application.Volunteers.UpdateRequisites
 {
     public sealed record UpdateVolunteerRequisitesCommand(Guid Id,
-        List<AssistanceRequisitesDto> AssistanceRequisitesList);
+        List<AssistanceRequisitesDto> AssistanceRequisitesList) : ICommand;
 }
 
 public sealed class UpdateVolunteerRequisitesCommandValidator

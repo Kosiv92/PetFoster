@@ -1,12 +1,6 @@
 ﻿using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
-using PetFoster.Application.Volunteers.AddPet;
-using PetFoster.Application.Volunteers.CreateVolunteer;
-using PetFoster.Application.Volunteers.DeleteVolunteer;
-using PetFoster.Application.Volunteers.UpdatePersonalInfo;
-using PetFoster.Application.Volunteers.UpdateRequisites;
-using PetFoster.Application.Volunteers.UpdateSocialNet;
-using PetFoster.Application.Volunteers.UploadFilesToPet;
+using PetFoster.Application.Interfaces;
 
 namespace PetFoster.Application.Extensions
 {
@@ -14,17 +8,31 @@ namespace PetFoster.Application.Extensions
     {
         public static IServiceCollection AddApplicationServices(this IServiceCollection services)
         {
-            services.AddTransient<CreateVolunteerHandler>();
-            services.AddTransient<UpdateVolunteerPersonalInfoHandler>();
-            services.AddTransient<UpdateVolunteerSocialNetHandler>();
-            services.AddTransient<UpdateVolunteerRequisitesHandler>();
-            services.AddTransient<DeleteVolunteerHandler>();
-            services.AddTransient<AddPetHandler>();
-            services.AddTransient<UploadFilesToPetHandler>();
+            services.AddCommands();
+
+            services.AddQueries();
 
             services.AddValidatorsFromAssembly(typeof(ServiceCollectionExtensions).Assembly);            
 
             return services;
+        }
+
+        private static IServiceCollection AddCommands(this IServiceCollection services)
+        {
+            return services.Scan(scan => scan.FromAssemblies(typeof(ServiceCollectionExtensions).Assembly)
+                .AddClasses(classes => classes
+                    .AssignableToAny(typeof(ICommandHandler<,>), typeof(ICommandHandler<>)))
+                .AsSelfWithInterfaces()
+                .WithScopedLifetime());
+        }
+
+        private static IServiceCollection AddQueries(this IServiceCollection services)
+        {
+            return services.Scan(scan => scan.FromAssemblies(typeof(ServiceCollectionExtensions).Assembly)
+                .AddClasses(classes => classes
+                    .AssignableTo(typeof(IQueryHandler<,>)))
+                .AsSelfWithInterfaces()
+                .WithScopedLifetime());
         }
     }
 }
