@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using PetFoster.Application.DTO;
+using PetFoster.Application.Interfaces;
 using PetFoster.Application.Validation;
 using PetFoster.Application.Volunteers.AddPet;
 using PetFoster.Domain.Enums;
@@ -11,7 +12,7 @@ namespace PetFoster.Application.Volunteers.AddPet
     public sealed record AddPetCommand(Guid VolunteerId, string Name, string Description,
         string Health, string Coloration, CharacteristicsDto Characteristics, string OwnerPhoneNumber,
         string BirthDay, string Specie, string Breed, bool IsCastrated, bool IsVaccinated,
-        AddressDto Address, string AssistanceStatus, List<AssistanceRequisitesDto> AssistanceRequisitesList);    
+        AddressDto Address, string AssistanceStatus, List<AssistanceRequisitesDto> AssistanceRequisitesList) : ICommand;    
 }
 
 public sealed class AddPetCommandValidator : AbstractValidator<AddPetCommand>

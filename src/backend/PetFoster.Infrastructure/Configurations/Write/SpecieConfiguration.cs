@@ -4,7 +4,7 @@ using PetFoster.Domain.Entities;
 using PetFoster.Domain.Ids;
 using PetFoster.Domain.ValueObjects;
 
-namespace PetFoster.Infrastructure.Configurations
+namespace PetFoster.Infrastructure.Configurations.Write
 {
     internal class SpecieConfiguration : IEntityTypeConfiguration<Specie>
     {
@@ -17,13 +17,13 @@ namespace PetFoster.Infrastructure.Configurations
             builder.Property(m => m.Id)
                 .HasConversion(
                     id => id.Value,
-                    value => SpecieId.Create(value));                       
+                    value => SpecieId.Create(value));
 
             builder.Property(m => m.Name)
-                .HasMaxLength(SpecieName.MIN_NAME_LENGTH)                
+                .HasMaxLength(SpecieName.MIN_NAME_LENGTH)
                 .HasConversion(
                 name => name.Value,
-                value => SpecieName.Create(value).Value);                        
+                value => SpecieName.Create(value).Value);
 
             builder.HasMany(m => m.Breeds)
                 .WithOne(m => m.Specie)

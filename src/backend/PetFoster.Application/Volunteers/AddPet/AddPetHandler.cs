@@ -13,7 +13,7 @@ using PetFoster.Domain.ValueObjects;
 
 namespace PetFoster.Application.Volunteers.AddPet
 {
-    public sealed class AddPetHandler
+    public sealed class AddPetHandler : ICommandHandler<Guid, AddPetCommand>
     {
         private const string BUCKET_NAME = "files";
 

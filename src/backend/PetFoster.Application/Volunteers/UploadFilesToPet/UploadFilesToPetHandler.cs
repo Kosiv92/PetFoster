@@ -14,7 +14,7 @@ using PetFoster.Domain.ValueObjects;
 
 namespace PetFoster.Application.Volunteers.UploadFilesToPet
 {
-    public class UploadFilesToPetHandler
+    public class UploadFilesToPetHandler : ICommandHandler<Guid, UploadFilesToPetCommand>
     {
         private const string BUCKET_NAME = "files";
 

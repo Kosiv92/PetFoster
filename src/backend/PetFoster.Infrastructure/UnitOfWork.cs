@@ -1,14 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore.Storage;
 using PetFoster.Application.Database;
+using PetFoster.Infrastructure.DbContexts;
 using System.Data;
 
 namespace PetFoster.Infrastructure
 {
     public class UnitOfWork : IUnitOfWork
     {
-        private readonly ApplicationDbContext _dbContext;
+        private readonly WriteDbContext _dbContext;
 
-        public UnitOfWork(ApplicationDbContext dbContext)
+        public UnitOfWork(WriteDbContext dbContext)
         {
             _dbContext = dbContext;
         }

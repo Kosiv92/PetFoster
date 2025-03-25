@@ -6,7 +6,7 @@ using PetFoster.Domain.Ids;
 using PetFoster.Domain.ValueObjects;
 using PetFoster.Infrastructure.Extensions;
 
-namespace PetFoster.Infrastructure.Configurations
+namespace PetFoster.Infrastructure.Configurations.Write
 {
     public class PetConfiguration : IEntityTypeConfiguration<Pet>
     {
@@ -30,8 +30,8 @@ namespace PetFoster.Infrastructure.Configurations
 
             builder.HasOne(m => m.Volunteer)
                .WithMany(v => v.FosteredAnimals)
-               .OnDelete(DeleteBehavior.NoAction);     
-            
+               .OnDelete(DeleteBehavior.NoAction);
+
             builder.Property(m => m.Name)
                 .HasMaxLength(PetName.MIN_NAME_LENGTH)
                 .HasConversion(
@@ -45,7 +45,7 @@ namespace PetFoster.Infrastructure.Configurations
             .OnDelete(DeleteBehavior.NoAction);
 
             builder.HasOne(m => m.Breed)
-                .WithMany(b => b.Pets)                
+                .WithMany(b => b.Pets)
                 .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired(true);
 
@@ -71,7 +71,7 @@ namespace PetFoster.Infrastructure.Configurations
             {
                 pb.Property(pm => pm.Region)
                 .HasMaxLength(Address.MAX_REGION_LENGTH)
-                .IsRequired(true)                
+                .IsRequired(true)
                 .HasColumnName("region");
 
                 pb.Property(pm => pm.City)
@@ -97,13 +97,13 @@ namespace PetFoster.Infrastructure.Configurations
 
             builder.ComplexProperty(m => m.Characteristics, pb =>
             {
-                pb.Property(pm => pm.Weight)                
+                pb.Property(pm => pm.Weight)
                 .IsRequired(true)
                 .HasColumnName(Characteristics.WEIGHT_COLUMN_NAME);
 
-                pb.Property(pm => pm.Height)                
+                pb.Property(pm => pm.Height)
                 .IsRequired(true)
-                .HasColumnName(Characteristics.HEIGHT_COLUMN_NAME);                
+                .HasColumnName(Characteristics.HEIGHT_COLUMN_NAME);
             });
 
             builder.Property(m => m.OwnerPhoneNumber)
@@ -122,8 +122,8 @@ namespace PetFoster.Infrastructure.Configurations
 
             builder.Property(m => m.AssistanceRequisitesList)
                 .JsonValueObjectCollectionConversion();
-            
-            builder.Property(m => m.AssistanceStatus)                
+
+            builder.Property(m => m.AssistanceStatus)
                 .HasConversion(
                 status => status.ToString(),
                 value => (AssistanceStatus)Enum.Parse(typeof(AssistanceStatus), value));

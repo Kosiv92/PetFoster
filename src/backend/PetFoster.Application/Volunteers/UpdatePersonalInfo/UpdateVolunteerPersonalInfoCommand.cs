@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using PetFoster.Application.DTO;
+using PetFoster.Application.Interfaces;
 using PetFoster.Application.Validation;
 using PetFoster.Domain.Shared;
 using PetFoster.Domain.ValueObjects;
@@ -11,7 +12,7 @@ namespace PetFoster.Application.Volunteers.UpdatePersonalInfo
         string Email,
         string PhoneNumber,
         string Description,
-        int WorkExperience);
+        int WorkExperience) : ICommand;
 
     public sealed class UpdateVolunteerPersonalInfoCommandValidator 
         : AbstractValidator<UpdateVolunteerPersonalInfoCommand>

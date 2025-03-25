@@ -3,6 +3,7 @@ using FluentValidation;
 using Microsoft.Extensions.Logging;
 using PetFoster.Application.Database;
 using PetFoster.Application.Extensions;
+using PetFoster.Application.Interfaces;
 using PetFoster.Domain.Entities;
 using PetFoster.Domain.Ids;
 using PetFoster.Domain.Interfaces;
@@ -11,7 +12,7 @@ using PetFoster.Domain.ValueObjects;
 
 namespace PetFoster.Application.Volunteers.MovePet
 {
-    public sealed class MovePetHandler
+    public sealed class MovePetHandler : ICommandHandler<Guid, MovePetCommand>
     {
         private readonly IRepository<Volunteer, VolunteerId> _repository;
         private readonly IValidator<MovePetCommand> _validator;
