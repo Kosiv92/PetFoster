@@ -1,4 +1,4 @@
-﻿using PetFoster.Application.DTO;
+﻿using PetFoster.Application.DTO.Volunteer;
 using PetFoster.Application.Volunteers.CreateVolunteer;
 using PetFoster.Domain.Ids;
 

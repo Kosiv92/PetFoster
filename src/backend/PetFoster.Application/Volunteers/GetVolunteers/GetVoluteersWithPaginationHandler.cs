@@ -1,19 +1,19 @@
 ﻿using Microsoft.Extensions.Logging;
-using PetFoster.Application.DTO;
+using PetFoster.Application.DTO.Volunteer;
 using PetFoster.Application.Interfaces;
 using PetFoster.Domain.Interfaces;
 using PetFoster.Domain.Shared;
 
 namespace PetFoster.Application.Volunteers.GetVolunteers
 {
-    public sealed class GetVoluteersWithPaginationQueryHandler 
+    public sealed class GetVoluteersWithPaginationHandler 
         : IQueryHandler<PagedList<VolunteerDto>, GetVoluteersWithPaginationQuery>
     {
         private readonly IVolunteersQueryRepository _repository;
-        private readonly ILogger<GetVoluteersWithPaginationQueryHandler> _logger;
+        private readonly ILogger<GetVoluteersWithPaginationHandler> _logger;
 
-        public GetVoluteersWithPaginationQueryHandler(IVolunteersQueryRepository repository, 
-            ILogger<GetVoluteersWithPaginationQueryHandler> logger)
+        public GetVoluteersWithPaginationHandler(IVolunteersQueryRepository repository, 
+            ILogger<GetVoluteersWithPaginationHandler> logger)
         {
             _repository = repository;
             _logger = logger;

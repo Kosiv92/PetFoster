@@ -1,4 +1,4 @@
-﻿using PetFoster.Application.DTO;
+﻿using PetFoster.Application.DTO.Volunteer;
 
 namespace PetFoster.WebAPI.DTO.Requests.Volunteer
 {

@@ -57,7 +57,7 @@ namespace PetFoster.Application.Volunteers.CreateVolunteer
 
             List<AssistanceRequisites> assistanceRequisites = command.AssistanceRequisitesList
                 .Select(a => AssistanceRequisites
-                    .Create(a.Name, Description.Create(a.Description).Value).Value)
+                .Create(a.Name, Description.Create(a.Description).Value).Value)
                 .ToList();
             
             List<SocialNetContact> socialNetContacts = command.SocialNetContactsList
@@ -71,7 +71,7 @@ namespace PetFoster.Application.Volunteers.CreateVolunteer
             await _repository.AddAsync(volunteer, cancellationToken);
 
             _logger.LogInformation("Created volunteer {VolunteerFullname} with id {VolunteerId}", 
-                volunteer.FullName, volunteer.Id);
+                volunteer.FullName.ToString(), volunteer.Id.Value);
 
             return (Guid)volunteer.Id;
         }

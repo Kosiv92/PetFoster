@@ -20,7 +20,7 @@ namespace PetFoster.WebAPI.Controllers
     {
         [HttpGet]
         public async Task<ActionResult> GetVolunteers([FromQuery] GetVolunteersWithPagiationRequest request,
-            [FromServices] GetVoluteersWithPaginationQueryHandler handler,
+            [FromServices] GetVoluteersWithPaginationHandler handler,
             CancellationToken cancellationToken = default)
         {
             var query = request.ToQuery();
@@ -35,7 +35,7 @@ namespace PetFoster.WebAPI.Controllers
             [FromServices] GetVolunteerHandler handler,
             CancellationToken cancellationToken = default)
         {
-            var query = new GetVolunteerQuery(id);
+            var query = new GetVolunteerByIdQuery(id);
 
             var volunteerDto = await handler.Handle(query, cancellationToken);
 
@@ -116,7 +116,7 @@ namespace PetFoster.WebAPI.Controllers
             if (result.IsFailure)
                 return result.Error.ToResponse();
 
-            return Ok();
+            return Ok(result);
         }
 
         [HttpPost("{id:guid}/pet")]
@@ -132,7 +132,7 @@ namespace PetFoster.WebAPI.Controllers
             if (result.IsFailure)
                 return result.Error.ToResponse();
 
-            return Ok();
+            return Ok(result);
         }
 
         [HttpPost("{id:guid}/pet/{petId:guid}/files")]

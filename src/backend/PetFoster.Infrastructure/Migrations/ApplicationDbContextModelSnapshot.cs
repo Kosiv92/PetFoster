@@ -18,7 +18,7 @@ namespace PetFoster.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.0")
+                .HasAnnotation("ProductVersion", "9.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -29,10 +29,14 @@ namespace PetFoster.Infrastructure.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_deleted");
+
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(2)
-                        .HasColumnType("character varying(2)")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
                         .HasColumnName("name");
 
                     b.Property<Guid?>("specie_id")
@@ -64,9 +68,13 @@ namespace PetFoster.Infrastructure.Migrations
                         .HasColumnType("text")
                         .HasColumnName("assistance_status");
 
-                    b.Property<DateTimeOffset?>("BirthDay")
+                    b.Property<DateTime?>("BirthDay")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("birth_day");
+
+                    b.Property<Guid>("BreedId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("breed_id");
 
                     b.Property<string>("Coloration")
                         .IsRequired()
@@ -74,7 +82,7 @@ namespace PetFoster.Infrastructure.Migrations
                         .HasColumnType("character varying(100)")
                         .HasColumnName("coloration");
 
-                    b.Property<DateTimeOffset>("CreatedDate")
+                    b.Property<DateTime>("CreatedDate")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_date");
 
@@ -83,6 +91,10 @@ namespace PetFoster.Infrastructure.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)")
                         .HasColumnName("description");
+
+                    b.Property<string>("FileList")
+                        .HasColumnType("text")
+                        .HasColumnName("file_list");
 
                     b.Property<string>("Health")
                         .IsRequired()
@@ -104,8 +116,8 @@ namespace PetFoster.Infrastructure.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(1)
-                        .HasColumnType("character varying(1)")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
                         .HasColumnName("name");
 
                     b.Property<string>("OwnerPhoneNumber")
@@ -113,11 +125,11 @@ namespace PetFoster.Infrastructure.Migrations
                         .HasColumnType("text")
                         .HasColumnName("phone_number");
 
-                    b.Property<Guid>("breed_id")
-                        .HasColumnType("uuid")
-                        .HasColumnName("breed_id");
+                    b.Property<int>("Position")
+                        .HasColumnType("integer")
+                        .HasColumnName("position");
 
-                    b.Property<Guid>("specie_id")
+                    b.Property<Guid>("SpecieId")
                         .HasColumnType("uuid")
                         .HasColumnName("specie_id");
 
@@ -169,10 +181,10 @@ namespace PetFoster.Infrastructure.Migrations
                     b.HasKey("Id")
                         .HasName("pk_pets");
 
-                    b.HasIndex("breed_id")
+                    b.HasIndex("BreedId")
                         .HasDatabaseName("ix_pets_breed_id");
 
-                    b.HasIndex("specie_id")
+                    b.HasIndex("SpecieId")
                         .HasDatabaseName("ix_pets_specie_id");
 
                     b.HasIndex("volunteer_id")
@@ -184,7 +196,7 @@ namespace PetFoster.Infrastructure.Migrations
 
                             t.HasCheckConstraint("CK_Pet_Weight_NonNegative", "weight >= 0");
 
-                            t.HasCheckConstraint("CK_Volunteer_PhoneNumber_NumericOnly", "phone_number ~ '^[0-9]11$'");
+                            t.HasCheckConstraint("CK_Volunteer_PhoneNumber_NumericOnly", "phone_number ~ '^[0-9]{11}$'");
                         });
                 });
 
@@ -194,10 +206,14 @@ namespace PetFoster.Infrastructure.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_deleted");
+
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(2)
-                        .HasColumnType("character varying(2)")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
                         .HasColumnName("name");
 
                     b.HasKey("Id")
@@ -295,15 +311,15 @@ namespace PetFoster.Infrastructure.Migrations
             modelBuilder.Entity("PetFoster.Domain.Entities.Pet", b =>
                 {
                     b.HasOne("PetFoster.Domain.Entities.Breed", "Breed")
-                        .WithMany("Pets")
-                        .HasForeignKey("breed_id")
+                        .WithMany()
+                        .HasForeignKey("BreedId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired()
                         .HasConstraintName("fk_pets_breeds_breed_id");
 
                     b.HasOne("PetFoster.Domain.Entities.Specie", "Specie")
                         .WithMany()
-                        .HasForeignKey("specie_id")
+                        .HasForeignKey("SpecieId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired()
                         .HasConstraintName("fk_pets_species_specie_id");
@@ -320,11 +336,6 @@ namespace PetFoster.Infrastructure.Migrations
                     b.Navigation("Specie");
 
                     b.Navigation("Volunteer");
-                });
-
-            modelBuilder.Entity("PetFoster.Domain.Entities.Breed", b =>
-                {
-                    b.Navigation("Pets");
                 });
 
             modelBuilder.Entity("PetFoster.Domain.Entities.Specie", b =>

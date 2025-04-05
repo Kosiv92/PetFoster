@@ -1,5 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
-using PetFoster.Application.DTO;
+using PetFoster.Application.DTO.Volunteer;
 using PetFoster.Application.Files;
 using PetFoster.Domain.Shared;
 using PetFoster.Domain.ValueObjects;

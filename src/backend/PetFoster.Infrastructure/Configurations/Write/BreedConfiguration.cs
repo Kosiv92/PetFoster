@@ -20,7 +20,7 @@ namespace PetFoster.Infrastructure.Configurations.Write
                     value => BreedId.Create(value));
 
             builder.Property(m => m.Name)
-                .HasMaxLength(BreedName.MIN_NAME_LENGTH)
+                .HasMaxLength(BreedName.MAX_NAME_LENGTH)
                 .HasConversion(
                 name => name.Value,
                 value => BreedName.Create(value).Value);
@@ -30,11 +30,11 @@ namespace PetFoster.Infrastructure.Configurations.Write
                 .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired();
 
-            builder.HasMany(m => m.Pets)
-                .WithOne(p => p.Breed)
-                .HasForeignKey("breed_id")
-                .OnDelete(DeleteBehavior.NoAction)
-                .IsRequired(true);
+            //builder.HasMany(m => m.Pets)
+            //    .WithOne()       
+            //    .HasForeignKey(p =>)
+            //    .OnDelete(DeleteBehavior.NoAction)
+            //    .IsRequired();
         }
     }
 }

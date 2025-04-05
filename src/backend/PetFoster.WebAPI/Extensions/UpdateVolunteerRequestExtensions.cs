@@ -1,4 +1,4 @@
-﻿using PetFoster.Application.DTO;
+﻿using PetFoster.Application.DTO.Volunteer;
 using PetFoster.Application.Volunteers.UpdatePersonalInfo;
 using PetFoster.Application.Volunteers.UpdateRequisites;
 using PetFoster.Application.Volunteers.UpdateSocialNet;

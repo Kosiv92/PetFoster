@@ -20,7 +20,7 @@ namespace PetFoster.Infrastructure.Configurations.Write
                     value => SpecieId.Create(value));
 
             builder.Property(m => m.Name)
-                .HasMaxLength(SpecieName.MIN_NAME_LENGTH)
+                .HasMaxLength(SpecieName.MAX_NAME_LENGTH)
                 .HasConversion(
                 name => name.Value,
                 value => SpecieName.Create(value).Value);

@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using PetFoster.Application.DTO;
+using PetFoster.Application.DTO.Volunteer;
 using PetFoster.Application.Interfaces;
 using PetFoster.Application.Validation;
 using PetFoster.Domain.Shared;

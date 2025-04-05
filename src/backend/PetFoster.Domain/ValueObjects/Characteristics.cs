@@ -11,7 +11,8 @@ namespace PetFoster.Domain.ValueObjects
 
         private Characteristics() { }
 
-        private Characteristics(double weight, double height) { }
+        private Characteristics(double weight, double height)
+            => (Weight, Height) = (weight, height);
 
         /// <summary>
         /// Weight in kilograms

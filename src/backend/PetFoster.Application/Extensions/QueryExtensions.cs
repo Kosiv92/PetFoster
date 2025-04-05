@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using PetFoster.Domain.Shared;
+using System.Linq.Expressions;
 
 namespace PetFoster.Application.Extensions
 {

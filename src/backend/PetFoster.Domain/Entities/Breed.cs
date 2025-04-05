@@ -1,12 +1,11 @@
-﻿using CSharpFunctionalExtensions;
-using PetFoster.Domain.Ids;
+﻿using PetFoster.Domain.Ids;
 using PetFoster.Domain.ValueObjects;
 
 namespace PetFoster.Domain.Entities
 {
     public sealed class Breed : SoftDeletableEntity<BreedId>
     {
-        private List<Pet> _pets;
+        //private List<Pet> _pets;
 
         private Breed() { }
 
@@ -18,7 +17,7 @@ namespace PetFoster.Domain.Entities
 
         public Specie Specie { get; private set; } = null!;  
         
-        public IReadOnlyCollection<Pet> Pets => _pets;                
+        //public IReadOnlyCollection<Pet> Pets => _pets;                
 
         public BreedName Name { get; private set; }
     }

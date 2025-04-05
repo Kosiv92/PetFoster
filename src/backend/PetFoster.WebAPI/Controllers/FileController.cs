@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using PetFoster.Application.DTO;
+using PetFoster.Application.DTO.Volunteer;
 using PetFoster.Application.Files;
 using PetFoster.Application.Interfaces;
 using PetFoster.Domain.ValueObjects;

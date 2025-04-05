@@ -65,6 +65,10 @@ namespace PetFoster.Domain.ValueObjects
         private static bool IsValidNullableValue(string property, int maxLimit)
             => String.IsNullOrWhiteSpace(property) || (!String.IsNullOrWhiteSpace(property) && property.Length > maxLimit);
 
+        public override string? ToString()
+            => String.Join(',' , this.Region, this.City, this.Street, 
+                this.HouseNumber, this.ApartmentNumber);
+
         protected override IEnumerable<IComparable> GetComparableEqualityComponents()
         {
             yield return Region;

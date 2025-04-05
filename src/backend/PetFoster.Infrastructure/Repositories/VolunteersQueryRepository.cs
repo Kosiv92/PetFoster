@@ -1,6 +1,8 @@
 ﻿using Dapper;
-using PetFoster.Application.DTO;
+using PetFoster.Application.DTO.Volunteer;
 using PetFoster.Application.Interfaces;
+using PetFoster.Application.Volunteers.GetPetsByBreedId;
+using PetFoster.Application.Volunteers.GetPetsBySpecieId;
 using PetFoster.Application.Volunteers.GetVolunteer;
 using PetFoster.Application.Volunteers.GetVolunteers;
 using PetFoster.Domain.Interfaces;
@@ -34,6 +36,7 @@ namespace PetFoster.Infrastructure.Repositories
                    SELECT id, first_name, last_name, patronymic, email, description, work_expirience, 
                     phone_number, is_deleted, assistance_requisites_list, social_net_contacts 
                    FROM volunteers
+                   WHERE is_deleted = false
                    ORDER BY last_name,first_name,patronymic LIMIT @PageSize OFFSET @Offset
                    """;
 
@@ -68,7 +71,7 @@ namespace PetFoster.Infrastructure.Repositories
 
         }
 
-        public async Task<VolunteerDto> GetByIdAsync(GetVolunteerQuery query, CancellationToken cancellationToken)
+        public async Task<VolunteerDto> GetByIdAsync(GetVolunteerByIdQuery query, CancellationToken cancellationToken)
         {
             var connection = _connectionFactory.CreateConnection();
             var parameters = new DynamicParameters();
@@ -79,7 +82,7 @@ namespace PetFoster.Infrastructure.Repositories
                    SELECT id, first_name, last_name, patronymic, email, description, work_expirience, 
                     phone_number, is_deleted, assistance_requisites_list, social_net_contacts 
                    FROM volunteers
-                   WHERE id = @VolunteerId
+                   WHERE id = @VolunteerId AND is_deleted = false
                    """;
 
             var queryResult = await connection.QueryAsync<VolunteerDto, string, string, VolunteerDto>(
@@ -105,5 +108,70 @@ namespace PetFoster.Infrastructure.Repositories
 
             return queryResult.FirstOrDefault();
         }
+                
+        public async Task<IEnumerable<PetDto>> GetPetsBySpecieId(GetPetsBySpecieIdQuery query, CancellationToken cancellationToken)
+        {
+            var connection = _connectionFactory.CreateConnection();
+            var parameters = new DynamicParameters();
+
+            parameters.Add("@SpecieId", query.SpecieId);
+
+            var sql = """
+                   SELECT id, name, specie_id, description, breed_id, coloration, health, weight, height, phone_number, 
+                   is_castrated, birth_day, is_vaccinated, position, assistancestatus 
+                   FROM pets
+                   WHERE specie_id = @SpecieId AND is_deleted = false
+                   """;
+
+            var queryResult = await connection.QueryAsync<PetDto, string, PetDto>(
+             sql,
+             (pet, petFilesJson) =>
+             {
+                 var petFiles = JsonSerializer.Deserialize<List<PetFile>>(petFilesJson) ?? new();
+
+                 pet.PetFiles = petFiles
+                    .Select(f => new PetFileDto(f.PathToStorage.Path))
+                    .ToList();
+
+                 return pet;
+             },
+             splitOn: "file_list",
+             param: parameters);
+
+            return queryResult;
+        }
+
+        public async Task<IEnumerable<PetDto>> GetPetsByBreedId(GetPetsByBreedIdQuery query, CancellationToken cancellationToken)
+        {
+            var connection = _connectionFactory.CreateConnection();
+            var parameters = new DynamicParameters();
+
+            parameters.Add("@BreedId", query.BreedId);
+
+            var sql = """
+                   SELECT id, name, specie_id, description, breed_id, coloration, health, weight, height, phone_number, 
+                   is_castrated, birth_day, is_vaccinated, position, assistancestatus 
+                   FROM pets
+                   WHERE breed_id = @BreedId AND is_deleted = false
+                   """;
+
+            var queryResult = await connection.QueryAsync<PetDto, string, PetDto>(
+             sql,
+             (pet, petFilesJson) =>
+             {
+                 var petFiles = JsonSerializer.Deserialize<List<PetFile>>(petFilesJson) ?? new();
+
+                 pet.PetFiles = petFiles
+                    .Select(f => new PetFileDto(f.PathToStorage.Path))
+                    .ToList();
+
+                 return pet;
+             },
+             splitOn: "file_list",
+             param: parameters);
+
+            return queryResult;
+        }
+
     }
 }

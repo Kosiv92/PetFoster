@@ -8,23 +8,23 @@ namespace PetFoster.Domain.Entities
 {
     public sealed class Pet : SoftDeletableEntity<PetId>
     {
-        public Pet(PetId id, PetName name, Specie specie, Description description, Breed breed, 
+        public Pet(PetId id, PetName name, SpecieId specieId, Description description, BreedId breedId, 
             PetColoration coloration, PetHealth health, Address address, Characteristics characteristics, 
             PhoneNumber ownerPhoneNumber, bool isCastrated, DateTimeOffset? birthDay, bool isVaccinated, 
             AssistanceStatus assistanceStatus, List<AssistanceRequisites> assistanceRequisitesList) : base(id)
         {
             Id = id;            
             Name = name;
-            Specie = specie;
+            SpecieId = specieId;
             Description = description;
-            Breed = breed;
+            BreedId = breedId;
             Coloration = coloration;
             Health = health;
             Address = address;
             Characteristics = characteristics;
             OwnerPhoneNumber = ownerPhoneNumber;
             IsCastrated = isCastrated;
-            BirthDay = birthDay;
+            BirthDay = birthDay; //? birthDay.Value.UtcDateTime : null;
             IsVaccinated = isVaccinated;
             AssistanceStatus = assistanceStatus;
             _assistanceRequisitesList = assistanceRequisitesList;            
@@ -42,9 +42,13 @@ namespace PetFoster.Domain.Entities
 
         public PetName Name { get; private set; }
 
+        public SpecieId SpecieId { get; private set; }
+
         public Specie Specie { get; private set; }
 
         public Description Description { get; private set; }
+
+        public BreedId BreedId { get; private set; }
 
         public Breed Breed { get; private set; }
 

@@ -5,8 +5,8 @@ using Minio;
 using PetFoster.Application.Interfaces;
 using PetFoster.Domain.Shared;
 using PetFoster.Domain.ValueObjects;
-using PetFoster.Application.DTO;
 using PetFoster.Application.Files;
+using PetFoster.Application.DTO.Volunteer;
 
 namespace PetFoster.Infrastructure.Providers
 {
