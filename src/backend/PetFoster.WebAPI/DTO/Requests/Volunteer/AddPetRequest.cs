@@ -1,11 +1,11 @@
-﻿using PetFoster.Application.DTO;
+﻿using PetFoster.Application.DTO.Volunteer;
 using PetFoster.Application.Volunteers.AddPet;
 
 namespace PetFoster.WebAPI.DTO.Requests.Volunteer
 {
     public sealed record AddPetRequest(string Name, string Description, 
         string Health, string Coloration, CharacteristicsDto Characteristics, string OwnerPhoneNumber,
-        string BirthDay, string Specie, string Breed, bool IsCastrated, bool IsVaccinated, 
+        string BirthDay, Guid Specie, Guid Breed, bool IsCastrated, bool IsVaccinated, 
         AddressDto Address, string AssistanceStatus, List<AssistanceRequisitesDto> AssistanceRequisitesList);
 
     public static class AddPetRequestExtensions

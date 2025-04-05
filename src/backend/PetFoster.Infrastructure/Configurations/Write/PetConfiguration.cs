@@ -16,7 +16,7 @@ namespace PetFoster.Infrastructure.Configurations.Write
             {
                 t.HasCheckConstraint("CK_Pet_Weight_NonNegative", $"{Characteristics.WEIGHT_COLUMN_NAME} >= 0");
                 t.HasCheckConstraint("CK_Pet_Height_NonNegative", $"{Characteristics.HEIGHT_COLUMN_NAME} >= 0");
-                t.HasCheckConstraint("CK_Volunteer_PhoneNumber_NumericOnly", $"{PhoneNumber.COLUMN_NAME} ~ '^[0-9]{PhoneNumber.PHONE_NUMBER_LENGTH}$'");
+                t.HasCheckConstraint("CK_Volunteer_PhoneNumber_NumericOnly", $"{PhoneNumber.COLUMN_NAME} ~ '^[0-9]{{{PhoneNumber.PHONE_NUMBER_LENGTH}}}$'");
             });
 
             builder.HasQueryFilter(m => !m.IsDeleted);
@@ -33,21 +33,34 @@ namespace PetFoster.Infrastructure.Configurations.Write
                .OnDelete(DeleteBehavior.NoAction);
 
             builder.Property(m => m.Name)
-                .HasMaxLength(PetName.MIN_NAME_LENGTH)
+                .HasMaxLength(PetName.MAX_NAME_LENGTH)
                 .HasConversion(
                 name => name.Value,
                 value => PetName.Create(value).Value);
 
+            builder.Property(m => m.SpecieId)
+                .HasConversion(
+                id => id.Value,
+                value => SpecieId.Create(value))
+                .HasColumnName("specie_id");
+
             builder.HasOne(m => m.Specie)
             .WithMany()
-            .HasForeignKey("specie_id")
+            .HasForeignKey(p => p.SpecieId)
             .IsRequired()
             .OnDelete(DeleteBehavior.NoAction);
 
+            builder.Property(m => m.BreedId)
+                .HasConversion(
+                id => id.Value,
+                value => BreedId.Create(value))
+                .HasColumnName("breed_id");
+
             builder.HasOne(m => m.Breed)
-                .WithMany(b => b.Pets)
-                .OnDelete(DeleteBehavior.NoAction)
-                .IsRequired(true);
+                .WithMany()                
+                .HasForeignKey(p => p.BreedId)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.NoAction);
 
             builder.Property(m => m.Description)
                 .HasMaxLength(Description.MAX_DESCRIPTION_LENGTH)
@@ -123,20 +136,36 @@ namespace PetFoster.Infrastructure.Configurations.Write
             builder.Property(m => m.AssistanceRequisitesList)
                 .JsonValueObjectCollectionConversion();
 
+            builder.Property(m => m.FileList)
+                .HasField("_fileList")
+                .IsRequired(false)
+                .JsonValueObjectCollectionConversion();
+
             builder.Property(m => m.AssistanceStatus)
                 .HasConversion(
                 status => status.ToString(),
                 value => (AssistanceStatus)Enum.Parse(typeof(AssistanceStatus), value));
 
             builder.Property(m => m.BirthDay)
+                .HasConversion(
+                    d => d.HasValue ? d.Value.UtcDateTime : (DateTime?)null,
+                    d => d.HasValue ? new DateTimeOffset(d.Value, TimeSpan.Zero) : (DateTimeOffset?)null
+                )
                 .IsRequired(false);
 
             builder.Property(m => m.CreatedDate)
+                .HasConversion(
+                    d => d.UtcDateTime,
+                    d => new DateTimeOffset(d, TimeSpan.Zero)
+                    )
                 .IsRequired(true);
 
             builder.Property(m => m.IsDeleted);
 
             builder.Property(m => m.Position)
+                .HasConversion(
+                    position => position.Value,
+                    value => Position.Create(value).Value)
                 .IsRequired(true);
         }
     }

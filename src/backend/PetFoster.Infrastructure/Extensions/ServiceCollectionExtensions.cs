@@ -38,6 +38,16 @@ namespace PetFoster.Infrastructure.Extensions
                     RelationalEventId.PendingModelChangesWarning));
             });
 
+            services.AddDbContext<ReadDbContext>(opt =>
+            {
+                opt.UseNpgsql(configuration.GetConnectionString(Constants.DATABASE_NAME));
+                opt.UseSnakeCaseNamingConvention();
+                opt.EnableSensitiveDataLogging();
+                opt.UseLoggerFactory(CreateLoggerFactory());
+                opt.ConfigureWarnings(warnings => warnings.Ignore(
+                    RelationalEventId.PendingModelChangesWarning));
+            });
+
             services.AddMinioServices(configuration);
 
             services.AddHostedService<FilesCleanerBackgroundService>();
@@ -46,8 +56,10 @@ namespace PetFoster.Infrastructure.Extensions
             services.AddSingleton<ISqlConnectionFactory, SqlConnectionFactory>();
             
             services.AddScoped<IRepository<Volunteer, VolunteerId>, VolunteersRepository>();
-            services.AddScoped<IRepository<Specie, SpecieId>, SpeciesRepository>();
+            services.AddScoped<IRepository<Specie, SpecieId>, SpeciesWriteRepository>();
             services.AddScoped<IVolunteersQueryRepository, VolunteersQueryRepository>();
+            services.AddKeyedScoped<ISpeciesQueryRepository, SpeciesQueryRepository>("dapper");
+            services.AddKeyedScoped<ISpeciesQueryRepository, SpeciesReadRepository>("ef");
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             services.AddTransient<IFilesCleanerService, FilesCleanerService>();

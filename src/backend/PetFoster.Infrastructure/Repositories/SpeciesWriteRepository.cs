@@ -7,12 +7,12 @@ using System.Linq.Expressions;
 
 namespace PetFoster.Infrastructure.Repositories
 {
-    public sealed class SpeciesRepository : IRepository<Specie, SpecieId>
+    public sealed class SpeciesWriteRepository : IRepository<Specie, SpecieId>
     {
         private readonly WriteDbContext _dbContext;
         DbSet<Specie> _species;
 
-        public SpeciesRepository(WriteDbContext dbContext)
+        public SpeciesWriteRepository(WriteDbContext dbContext)
         {
             _dbContext = dbContext;
             _species = _dbContext.Species;

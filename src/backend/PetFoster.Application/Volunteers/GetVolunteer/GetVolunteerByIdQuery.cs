@@ -2,5 +2,5 @@
 
 namespace PetFoster.Application.Volunteers.GetVolunteer
 {
-    public sealed record GetVolunteerQuery(Guid Id) : IQuery;        
+    public sealed record GetVolunteerByIdQuery(Guid Id) : IQuery;        
 }

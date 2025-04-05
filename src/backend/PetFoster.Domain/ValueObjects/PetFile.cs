@@ -2,6 +2,8 @@
 {
     public sealed record PetFile
     {
+        private PetFile() { }
+
         public PetFile(FilePath pathToStorage)
         {
             PathToStorage = pathToStorage;

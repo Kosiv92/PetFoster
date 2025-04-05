@@ -1,6 +1,4 @@
-﻿using PetFoster.Domain.ValueObjects;
-
-namespace PetFoster.Application.DTO
+﻿namespace PetFoster.Application.DTO.Volunteer
 {
     public sealed class VolunteerDto
     {

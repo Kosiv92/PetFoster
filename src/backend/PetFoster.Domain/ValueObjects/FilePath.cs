@@ -5,6 +5,9 @@ namespace PetFoster.Domain.ValueObjects
 {
     public sealed record FilePath
     {
+        private FilePath()
+        { }
+
         private FilePath(string path)
         {
             Path = path;

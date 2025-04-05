@@ -1,12 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using PetFoster.Application.DTO;
+using PetFoster.Application.DTO.Specie;
 
 namespace PetFoster.Infrastructure.DbContexts
 {
     public class ReadDbContext : DbContext
     {
-        public DbSet<VolunteerDto> Volunteers { get; set; }
+        public DbSet<SpecieDto> Species { get; set; }
+
+        public DbSet<BreedDto> Breeds { get; set; }
 
         public ReadDbContext(DbContextOptions<ReadDbContext> options,
             IConfiguration configuration) : base(options)
