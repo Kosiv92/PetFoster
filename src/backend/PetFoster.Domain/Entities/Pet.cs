@@ -112,5 +112,16 @@ namespace PetFoster.Domain.Entities
         public void UpdateFiles(IEnumerable<PetFile> files) =>
             _fileList = files.ToList();
 
+        internal UnitResult<Error> UpdateAssistanceStatus(AssistanceStatus newAssistanceStatus)
+        {
+            if (newAssistanceStatus == AssistanceStatus.LookingForHome
+                || newAssistanceStatus == AssistanceStatus.NeedsHelp)
+            {
+                AssistanceStatus = newAssistanceStatus;
+                return Result.Success<Error>();
+            }
+            else return Errors.General.ValueIsInvalid("Wrong status");
+        }
+
     }
 }

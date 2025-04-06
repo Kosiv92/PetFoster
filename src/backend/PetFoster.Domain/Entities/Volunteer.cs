@@ -1,8 +1,10 @@
 ﻿using CSharpFunctionalExtensions;
+using PetFoster.Domain.Enums;
 using PetFoster.Domain.Ids;
 using PetFoster.Domain.Shared;
 using PetFoster.Domain.ValueObjects;
 using System.Formats.Tar;
+using static PetFoster.Domain.Shared.Errors;
 
 namespace PetFoster.Domain.Entities
 {
@@ -89,6 +91,17 @@ namespace PetFoster.Domain.Entities
 
             _fosteredPets.Add(pet);
             return Result.Success<Error>();
+        }
+
+        public UnitResult<Error> UpdatePetAssistanceStatus(PetId petId, 
+            AssistanceStatus assistanceStatus)
+        {
+            var pet = _fosteredPets.FirstOrDefault(a => a.Id == petId);
+            if (pet == null)
+                return Errors.General.ValueIsInvalid(
+                    $"Pet with id {petId.Value} not found in volunteer with id {this.Id.Value}");
+
+            return pet.UpdateAssistanceStatus(assistanceStatus);
         }
 
         public UnitResult<Error> MovePet(Pet pet, Position newPosition)

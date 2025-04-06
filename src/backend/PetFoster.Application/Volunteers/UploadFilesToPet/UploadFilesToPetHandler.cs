@@ -63,8 +63,7 @@ namespace PetFoster.Application.Volunteers.UploadFilesToPet
 
             var pet = volunteer.FosteredAnimals.FirstOrDefault(a => a.Id == petId);
             if (pet == null)
-
-            return Errors.General.ValueIsInvalid($"Pet with id {command.PetId} not found in volunteer with id {command.VolunteerId}")
+                return Errors.General.ValueIsInvalid($"Pet with id {command.PetId} not found in volunteer with id {command.VolunteerId}")
                    .ToErrorList();
 
             List<FileData> filesData = [];

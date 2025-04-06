@@ -5,6 +5,7 @@ using PetFoster.Application.Volunteers.DeleteVolunteer;
 using PetFoster.Application.Volunteers.GetVolunteer;
 using PetFoster.Application.Volunteers.GetVolunteers;
 using PetFoster.Application.Volunteers.UpdatePersonalInfo;
+using PetFoster.Application.Volunteers.UpdatePetStatus;
 using PetFoster.Application.Volunteers.UpdateRequisites;
 using PetFoster.Application.Volunteers.UpdateSocialNet;
 using PetFoster.Application.Volunteers.UploadFilesToPet;
@@ -107,7 +108,8 @@ namespace PetFoster.WebAPI.Controllers
 
         [HttpDelete("{id:guid}")]
         public async Task<ActionResult> Delete([FromRoute] Guid id,
-            [FromServices] DeleteVolunteerHandler handler, CancellationToken cancellationToken = default)
+            [FromServices] DeleteVolunteerHandler handler, 
+            CancellationToken cancellationToken = default)
         {
             var command = new DeleteVolunteerCommand(id);
 
@@ -116,7 +118,7 @@ namespace PetFoster.WebAPI.Controllers
             if (result.IsFailure)
                 return result.Error.ToResponse();
 
-            return Ok(result);
+            return Ok(result.Value);
         }
 
         [HttpPost("{id:guid}/pet")]
@@ -132,7 +134,22 @@ namespace PetFoster.WebAPI.Controllers
             if (result.IsFailure)
                 return result.Error.ToResponse();
 
-            return Ok(result);
+            return Ok(result.Value);
+        }
+
+        [HttpPut("{id:guid}/pet/{petId:guid}/status")]
+        public async Task<ActionResult> UpdatePetStatus([FromRoute] Guid id, [FromRoute] Guid petId,
+            [FromBody] UpdatePetStatusRequest request,
+            [FromServices] UpdatePetStatusHandler handler,
+            CancellationToken cancellationToken = default)
+        {
+            var command = request.ToCommand(id, petId);
+            var result = await handler.Handle(command, cancellationToken);
+
+            if (result.IsFailure)
+                return result.Error.ToResponse();
+
+            return Ok(result.Value);
         }
 
         [HttpPost("{id:guid}/pet/{petId:guid}/files")]
