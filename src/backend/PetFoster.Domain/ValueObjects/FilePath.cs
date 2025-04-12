@@ -17,7 +17,7 @@ namespace PetFoster.Domain.ValueObjects
 
         public static Result<FilePath, Error> Create(Guid path, string extension)
         {
-            var fullPath = String.Concat(path, '.', extension);
+            var fullPath = String.Concat(path, extension);
 
             return new FilePath(fullPath);
         }

@@ -56,7 +56,7 @@ namespace PetFoster.Infrastructure.Extensions
             services.AddSingleton<ISqlConnectionFactory, SqlConnectionFactory>();
             
             services.AddScoped<IRepository<Volunteer, VolunteerId>, VolunteersRepository>();
-            services.AddScoped<IRepository<Specie, SpecieId>, SpeciesWriteRepository>();
+            services.AddScoped<IRepository<Specie, SpecieId>, SpeciesWriteRepository>();            
             services.AddScoped<IVolunteersQueryRepository, VolunteersQueryRepository>();
             services.AddKeyedScoped<ISpeciesQueryRepository, SpeciesQueryRepository>("dapper");
             services.AddKeyedScoped<ISpeciesQueryRepository, SpeciesReadRepository>("ef");

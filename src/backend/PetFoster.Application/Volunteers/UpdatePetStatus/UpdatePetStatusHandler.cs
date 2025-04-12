@@ -48,6 +48,7 @@ namespace PetFoster.Application.Volunteers.UpdatePetStatus
             Enum.TryParse(command.AssistanceStatus, ignoreCase: true, out AssistanceStatus assistanceStatus);
 
             var result = volunteer.UpdatePetAssistanceStatus(petId, assistanceStatus);
+
             if (result.IsFailure)
             {
                 _logger.LogError("Failed to update assistance status ({AssistanceStatusCode}) for pet with id {PetId} in volunteer with id {VolunteerId}. Get error - {@Error}", 

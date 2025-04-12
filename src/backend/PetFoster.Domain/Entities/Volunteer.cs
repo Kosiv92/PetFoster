@@ -3,8 +3,6 @@ using PetFoster.Domain.Enums;
 using PetFoster.Domain.Ids;
 using PetFoster.Domain.Shared;
 using PetFoster.Domain.ValueObjects;
-using System.Formats.Tar;
-using static PetFoster.Domain.Shared.Errors;
 
 namespace PetFoster.Domain.Entities
 {
@@ -192,6 +190,25 @@ namespace PetFoster.Domain.Entities
             {
                 pet.Delete();
             }
+        }
+
+        public Result<Pet, Error> DeletePet(PetId petId, bool isHardDelete = false)
+        {
+            var pet = _fosteredPets.FirstOrDefault(a => a.Id == petId);
+            if (pet == null)
+                return Errors.General.ValueIsInvalid(
+                    $"Pet with id {petId.Value} not found in volunteer with id {this.Id.Value}");
+
+            if (isHardDelete)
+            {
+                _fosteredPets.Remove(pet);
+            }
+            else
+            {
+                pet.Delete();
+            }
+
+            return pet;
         }
 
         public override void Restore()

@@ -1,10 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using PetFoster.Application.DTO.Volunteer;
 using PetFoster.Domain.Entities;
 using PetFoster.Domain.Enums;
 using PetFoster.Domain.Ids;
 using PetFoster.Domain.ValueObjects;
 using PetFoster.Infrastructure.Extensions;
+using System.Text.Json;
 
 namespace PetFoster.Infrastructure.Configurations.Write
 {
@@ -138,8 +141,15 @@ namespace PetFoster.Infrastructure.Configurations.Write
 
             builder.Property(m => m.FileList)
                 .HasField("_fileList")
-                .IsRequired(false)
-                .JsonValueObjectCollectionConversion();
+                .HasConversion(files => JsonSerializer.Serialize(files
+                .Select(f => new PetFileDto(f.PathToStorage.Path)), JsonSerializerOptions.Default), 
+                json => JsonSerializer.Deserialize<List<PetFileDto>>(json, JsonSerializerOptions.Default)!
+                .Select(dto => new PetFile(FilePath.Create(dto.FilePath).Value)).ToList(),
+                new ValueComparer<IReadOnlyList<PetFile>>(
+                    (c1, c2) => c1!.SequenceEqual(c2!),
+                    c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
+                    c => (IReadOnlyList<PetFile>)c.ToList()))
+                .IsRequired(false);
 
             builder.Property(m => m.AssistanceStatus)
                 .HasConversion(

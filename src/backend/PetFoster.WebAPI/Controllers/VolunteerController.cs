@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PetFoster.Application.Volunteers.AddPet;
 using PetFoster.Application.Volunteers.CreateVolunteer;
+using PetFoster.Application.Volunteers.DeletePet;
 using PetFoster.Application.Volunteers.DeleteVolunteer;
 using PetFoster.Application.Volunteers.GetVolunteer;
 using PetFoster.Application.Volunteers.GetVolunteers;
@@ -144,6 +145,34 @@ namespace PetFoster.WebAPI.Controllers
             CancellationToken cancellationToken = default)
         {
             var command = request.ToCommand(id, petId);
+            var result = await handler.Handle(command, cancellationToken);
+
+            if (result.IsFailure)
+                return result.Error.ToResponse();
+
+            return Ok(result.Value);
+        }
+
+        [HttpDelete("{id:guid}/pet/{petId:guid}")]
+        public async Task<ActionResult> DeletePet([FromRoute] Guid id, [FromRoute] Guid petId,             
+            [FromServices] DeletePetHandler handler,
+            CancellationToken cancellationToken = default)
+        {
+            var command = new DeletePetCommand(id, petId);
+            var result = await handler.Handle(command, cancellationToken);
+
+            if (result.IsFailure)
+                return result.Error.ToResponse();
+
+            return Ok(result.Value);
+        }
+
+        [HttpDelete("{id:guid}/pet/{petId:guid}/hard")]
+        public async Task<ActionResult> HardDeletePet([FromRoute] Guid id, [FromRoute] Guid petId,
+            [FromServices] HardDeletePetHandler handler,
+            CancellationToken cancellationToken = default)
+        {
+            var command = new HardDeletePetCommand(id, petId);
             var result = await handler.Handle(command, cancellationToken);
 
             if (result.IsFailure)
