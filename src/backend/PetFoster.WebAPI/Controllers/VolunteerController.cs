@@ -6,6 +6,7 @@ using PetFoster.Application.Volunteers.DeleteVolunteer;
 using PetFoster.Application.Volunteers.GetVolunteer;
 using PetFoster.Application.Volunteers.GetVolunteers;
 using PetFoster.Application.Volunteers.UpdatePersonalInfo;
+using PetFoster.Application.Volunteers.UpdatePetInfo;
 using PetFoster.Application.Volunteers.UpdatePetStatus;
 using PetFoster.Application.Volunteers.UpdateRequisites;
 using PetFoster.Application.Volunteers.UpdateSocialNet;
@@ -142,6 +143,21 @@ namespace PetFoster.WebAPI.Controllers
         public async Task<ActionResult> UpdatePetStatus([FromRoute] Guid id, [FromRoute] Guid petId,
             [FromBody] UpdatePetStatusRequest request,
             [FromServices] UpdatePetStatusHandler handler,
+            CancellationToken cancellationToken = default)
+        {
+            var command = request.ToCommand(id, petId);
+            var result = await handler.Handle(command, cancellationToken);
+
+            if (result.IsFailure)
+                return result.Error.ToResponse();
+
+            return Ok(result.Value);
+        }
+
+        [HttpPut("{id:guid}/pet/{petId:guid}")]
+        public async Task<ActionResult> UpdatePet([FromRoute] Guid id, [FromRoute] Guid petId,
+            [FromBody] UpdatePetRequest request,
+            [FromServices] UpdatePetInfoHandler handler,
             CancellationToken cancellationToken = default)
         {
             var command = request.ToCommand(id, petId);

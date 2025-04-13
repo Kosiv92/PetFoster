@@ -112,6 +112,29 @@ namespace PetFoster.Domain.Entities
         public void UpdateFiles(IEnumerable<PetFile> files) =>
             _fileList = files.ToList();
 
+        internal UnitResult<Error> UpdateInfo(SpecieId specieId, BreedId breedId, PetName name,
+            Description description, PetColoration coloration, PetHealth health, Address address,
+            Characteristics characteristics, PhoneNumber phone, DateTimeOffset? birthDay, bool isCastrated,
+            bool isVaccinated, AssistanceStatus assistanceStatus, List<AssistanceRequisites> assistanceRequisites)
+        {
+            this.SpecieId = specieId;
+            this.BreedId = breedId;
+            this.Name = name;
+            this.Description = description;
+            this.Coloration = coloration;
+            this.Health = health;
+            this.Address = address;
+            this.Characteristics = characteristics;
+            this.OwnerPhoneNumber = phone;
+            this.BirthDay = birthDay;
+            this.IsCastrated = isCastrated;
+            this.IsVaccinated = isVaccinated;
+            this.AssistanceStatus = assistanceStatus;
+            this._assistanceRequisitesList = assistanceRequisites;
+
+            return Result.Success<Error>();
+        }
+
         internal UnitResult<Error> UpdateAssistanceStatus(AssistanceStatus newAssistanceStatus)
         {
             if (newAssistanceStatus == AssistanceStatus.LookingForHome
@@ -122,6 +145,5 @@ namespace PetFoster.Domain.Entities
             }
             else return Errors.General.ValueIsInvalid("Wrong status");
         }
-
     }
 }
