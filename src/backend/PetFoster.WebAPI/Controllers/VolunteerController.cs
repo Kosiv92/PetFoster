@@ -7,6 +7,7 @@ using PetFoster.Application.Volunteers.GetVolunteer;
 using PetFoster.Application.Volunteers.GetVolunteers;
 using PetFoster.Application.Volunteers.UpdatePersonalInfo;
 using PetFoster.Application.Volunteers.UpdatePetInfo;
+using PetFoster.Application.Volunteers.UpdatePetMainPhoto;
 using PetFoster.Application.Volunteers.UpdatePetStatus;
 using PetFoster.Application.Volunteers.UpdateRequisites;
 using PetFoster.Application.Volunteers.UpdateSocialNet;
@@ -211,6 +212,21 @@ namespace PetFoster.WebAPI.Controllers
             var command = new UploadFilesToPetCommand(id, petId, fileDtos);
 
             var result = await handler.Handle(command, cancellationToken);
+            if (result.IsFailure)
+                return result.Error.ToResponse();
+
+            return Ok(result.Value);
+        }
+
+        [HttpPut("{id:guid}/pet/{petId:guid}/mainphoto")]
+        public async Task<ActionResult> SetPetMainPhoto([FromRoute] Guid id, [FromRoute] Guid petId,
+            [FromBody] UpdatePetMainPhotoRequest request,
+            [FromServices] UpdatePetMainPhotoHandler handler,
+            CancellationToken cancellationToken = default)
+        {
+            var command = request.ToCommand(id, petId);
+            var result = await handler.Handle(command, cancellationToken);
+
             if (result.IsFailure)
                 return result.Error.ToResponse();
 

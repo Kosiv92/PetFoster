@@ -145,5 +145,23 @@ namespace PetFoster.Domain.Entities
             }
             else return Errors.General.ValueIsInvalid("Wrong status");
         }
+
+        internal UnitResult<Error> SetMainPhoto(string filePath)
+        {
+            int index = _fileList.FindIndex(f => f.PathToStorage.Path == filePath);
+            if (index >= 0)
+            {
+                PetFile fileToMove = _fileList[index];
+                _fileList.RemoveAt(index);
+                _fileList.Insert(0, fileToMove);
+            }
+            else
+            {
+                return Errors.General.ValueIsInvalid(
+                    $"File {filePath} not found in pet with id {this.Id.Value}");
+            }
+
+            return Result.Success<Error>();
+        }
     }
 }

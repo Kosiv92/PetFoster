@@ -3,7 +3,6 @@ using PetFoster.Domain.Enums;
 using PetFoster.Domain.Ids;
 using PetFoster.Domain.Shared;
 using PetFoster.Domain.ValueObjects;
-using System.Collections.Generic;
 
 namespace PetFoster.Domain.Entities
 {
@@ -116,6 +115,17 @@ namespace PetFoster.Domain.Entities
                     $"Pet with id {petId.Value} not found in volunteer with id {this.Id.Value}");
 
             return pet.UpdateAssistanceStatus(assistanceStatus);
+        }
+
+        public UnitResult<Error> UpdatePetMainPhoto(PetId petId,
+            string filePath)
+        {
+            var pet = _fosteredPets.FirstOrDefault(a => a.Id == petId);
+            if (pet == null)
+                return Errors.General.ValueIsInvalid(
+                    $"Pet with id {petId.Value} not found in volunteer with id {this.Id.Value}");
+
+            return pet.SetMainPhoto(filePath);
         }
 
         public UnitResult<Error> MovePet(Pet pet, Position newPosition)
