@@ -1,8 +1,8 @@
 ﻿using CSharpFunctionalExtensions;
+using PetFoster.Domain.Enums;
 using PetFoster.Domain.Ids;
 using PetFoster.Domain.Shared;
 using PetFoster.Domain.ValueObjects;
-using System.Formats.Tar;
 
 namespace PetFoster.Domain.Entities
 {
@@ -89,6 +89,43 @@ namespace PetFoster.Domain.Entities
 
             _fosteredPets.Add(pet);
             return Result.Success<Error>();
+        }
+
+        public UnitResult<Error> UpdatePetInfo(PetId petId, SpecieId specieId, BreedId breedId, PetName name, 
+            Description description, PetColoration coloration, PetHealth health, Address address, 
+            Characteristics characteristics, PhoneNumber phone, DateTimeOffset? birthDay, bool isCastrated, 
+            bool isVaccinated, AssistanceStatus assistanceStatus,
+            List<AssistanceRequisites> assistanceRequisites)
+        {
+            var pet = _fosteredPets.FirstOrDefault(a => a.Id == petId);
+            if (pet == null)
+                return Errors.General.ValueIsInvalid(
+                    $"Pet with id {petId.Value} not found in volunteer with id {this.Id.Value}");
+
+            return pet.UpdateInfo(specieId, breedId, name, description, coloration, health, address,
+            characteristics, phone, birthDay, isCastrated, isVaccinated, assistanceStatus, assistanceRequisites);
+        }
+
+        public UnitResult<Error> UpdatePetAssistanceStatus(PetId petId, 
+            AssistanceStatus assistanceStatus)
+        {
+            var pet = _fosteredPets.FirstOrDefault(a => a.Id == petId);
+            if (pet == null)
+                return Errors.General.ValueIsInvalid(
+                    $"Pet with id {petId.Value} not found in volunteer with id {this.Id.Value}");
+
+            return pet.UpdateAssistanceStatus(assistanceStatus);
+        }
+
+        public UnitResult<Error> UpdatePetMainPhoto(PetId petId,
+            string filePath)
+        {
+            var pet = _fosteredPets.FirstOrDefault(a => a.Id == petId);
+            if (pet == null)
+                return Errors.General.ValueIsInvalid(
+                    $"Pet with id {petId.Value} not found in volunteer with id {this.Id.Value}");
+
+            return pet.SetMainPhoto(filePath);
         }
 
         public UnitResult<Error> MovePet(Pet pet, Position newPosition)
@@ -179,6 +216,25 @@ namespace PetFoster.Domain.Entities
             {
                 pet.Delete();
             }
+        }
+
+        public Result<Pet, Error> DeletePet(PetId petId, bool isHardDelete = false)
+        {
+            var pet = _fosteredPets.FirstOrDefault(a => a.Id == petId);
+            if (pet == null)
+                return Errors.General.ValueIsInvalid(
+                    $"Pet with id {petId.Value} not found in volunteer with id {this.Id.Value}");
+
+            if (isHardDelete)
+            {
+                _fosteredPets.Remove(pet);
+            }
+            else
+            {
+                pet.Delete();
+            }
+
+            return pet;
         }
 
         public override void Restore()

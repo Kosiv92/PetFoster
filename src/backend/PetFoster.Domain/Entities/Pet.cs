@@ -112,5 +112,56 @@ namespace PetFoster.Domain.Entities
         public void UpdateFiles(IEnumerable<PetFile> files) =>
             _fileList = files.ToList();
 
+        internal UnitResult<Error> UpdateInfo(SpecieId specieId, BreedId breedId, PetName name,
+            Description description, PetColoration coloration, PetHealth health, Address address,
+            Characteristics characteristics, PhoneNumber phone, DateTimeOffset? birthDay, bool isCastrated,
+            bool isVaccinated, AssistanceStatus assistanceStatus, List<AssistanceRequisites> assistanceRequisites)
+        {
+            this.SpecieId = specieId;
+            this.BreedId = breedId;
+            this.Name = name;
+            this.Description = description;
+            this.Coloration = coloration;
+            this.Health = health;
+            this.Address = address;
+            this.Characteristics = characteristics;
+            this.OwnerPhoneNumber = phone;
+            this.BirthDay = birthDay;
+            this.IsCastrated = isCastrated;
+            this.IsVaccinated = isVaccinated;
+            this.AssistanceStatus = assistanceStatus;
+            this._assistanceRequisitesList = assistanceRequisites;
+
+            return Result.Success<Error>();
+        }
+
+        internal UnitResult<Error> UpdateAssistanceStatus(AssistanceStatus newAssistanceStatus)
+        {
+            if (newAssistanceStatus == AssistanceStatus.LookingForHome
+                || newAssistanceStatus == AssistanceStatus.NeedsHelp)
+            {
+                AssistanceStatus = newAssistanceStatus;
+                return Result.Success<Error>();
+            }
+            else return Errors.General.ValueIsInvalid("Wrong status");
+        }
+
+        internal UnitResult<Error> SetMainPhoto(string filePath)
+        {
+            int index = _fileList.FindIndex(f => f.PathToStorage.Path == filePath);
+            if (index >= 0)
+            {
+                PetFile fileToMove = _fileList[index];
+                _fileList.RemoveAt(index);
+                _fileList.Insert(0, fileToMove);
+            }
+            else
+            {
+                return Errors.General.ValueIsInvalid(
+                    $"File {filePath} not found in pet with id {this.Id.Value}");
+            }
+
+            return Result.Success<Error>();
+        }
     }
 }

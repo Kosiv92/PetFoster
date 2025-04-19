@@ -1,6 +1,7 @@
 ﻿using PetFoster.Application.DTO.Volunteer;
 using PetFoster.Application.Volunteers.GetPetsByBreedId;
 using PetFoster.Application.Volunteers.GetPetsBySpecieId;
+using PetFoster.Application.Volunteers.GetPetsByVolunteerId;
 using PetFoster.Application.Volunteers.GetVolunteer;
 using PetFoster.Application.Volunteers.GetVolunteers;
 using PetFoster.Domain.Shared;
@@ -19,6 +20,9 @@ namespace PetFoster.Domain.Interfaces
             CancellationToken cancellationToken);
 
         public Task<IEnumerable<PetDto>> GetPetsByBreedId(GetPetsByBreedIdQuery query,
+            CancellationToken cancellationToken);
+
+        public Task<IEnumerable<PetDto>> GetPetsByVolunteerId(GetPetsByVolunteerIdQuery query, 
             CancellationToken cancellationToken);
     }
 }

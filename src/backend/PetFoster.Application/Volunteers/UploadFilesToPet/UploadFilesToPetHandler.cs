@@ -15,9 +15,7 @@ using PetFoster.Domain.ValueObjects;
 namespace PetFoster.Application.Volunteers.UploadFilesToPet
 {
     public class UploadFilesToPetHandler : ICommandHandler<Guid, UploadFilesToPetCommand>
-    {
-        private const string BUCKET_NAME = "files";
-
+    {       
         private readonly IFileProvider _fileProvider;
         private readonly IRepository<Volunteer, VolunteerId> _repository;
         private readonly IUnitOfWork _unitOfWork;
@@ -63,8 +61,7 @@ namespace PetFoster.Application.Volunteers.UploadFilesToPet
 
             var pet = volunteer.FosteredAnimals.FirstOrDefault(a => a.Id == petId);
             if (pet == null)
-
-            return Errors.General.ValueIsInvalid($"Pet with id {command.PetId} not found in volunteer with id {command.VolunteerId}")
+                return Errors.General.ValueIsInvalid($"Pet with id {command.PetId} not found in volunteer with id {command.VolunteerId}")
                    .ToErrorList();
 
             List<FileData> filesData = [];
@@ -76,7 +73,7 @@ namespace PetFoster.Application.Volunteers.UploadFilesToPet
                 if (filePath.IsFailure)
                     return filePath.Error.ToErrorList();
 
-                var fileData = new FileData(file.Content, new Files.FileInfo(filePath.Value, BUCKET_NAME));
+                var fileData = new FileData(file.Content, new Files.FileInfo(filePath.Value, Constants.FILES_BUCKET_NAME));
 
                 filesData.Add(fileData);
             }
