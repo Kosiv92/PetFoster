@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
 using NSubstitute;
@@ -66,24 +67,31 @@ namespace PetFoster.IntegrateTests
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {            
-            builder.ConfigureTestServices(ConfigureDefaultServices);            
+            builder.ConfigureTestServices(ConfigureDefaultServices);
+            builder.ConfigureAppConfiguration((context, config) =>
+            {
+                config.AddInMemoryCollection(new Dictionary<string, string>
+                {
+                    { "ConnectionStrings:Database", _dbContainer.GetConnectionString() }
+                });
+            });
         }
 
         protected virtual void ConfigureDefaultServices(IServiceCollection services)
         {            
-            var writeContext = services
-                .SingleOrDefault(s => s.ServiceType == typeof(WriteDbContext));                       
+            //var writeContext = services
+            //    .SingleOrDefault(s => s.ServiceType == typeof(WriteDbContext));                       
 
-            if(writeContext != null)
-            {
-                services.Remove(writeContext);
-            }
+            //if(writeContext != null)
+            //{
+            //    services.Remove(writeContext);
+            //}
 
-            services.AddDbContext<WriteDbContext>(opt =>
-            {
-                opt.UseNpgsql(_dbContainer.GetConnectionString());
-                opt.UseSnakeCaseNamingConvention();
-            });
+            //services.AddDbContext<WriteDbContext>(opt =>
+            //{
+            //    opt.UseNpgsql(_dbContainer.GetConnectionString());
+            //    opt.UseSnakeCaseNamingConvention();
+            //});
 
             var fileSerice = services
                 .SingleOrDefault(s => s.ServiceType == typeof(IFileProvider));
