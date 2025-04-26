@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
+using PetFoster.Application.DTO.Volunteer;
 using PetFoster.Application.Interfaces;
 using PetFoster.Application.Volunteers.CreateVolunteer;
 using PetFoster.Domain.Ids;
@@ -56,6 +57,29 @@ namespace PetFoster.IntegrateTests.Volunteers
             volunteer.Should().NotBeNull();
             secondResult.IsFailure.Should().BeTrue();
             secondResult.Error.FirstOrDefault().Code.Should().Be("record.already.exist");
+        }
+
+        protected CreateVolunteerCommand CreateCommand(VolunteerId id)
+        {
+            var fullName = new FullNameDto("John", "Smith", "Isaac");
+            var email = "anyemail@mail.com";
+            var phoneNumber = "88009994488";
+            var description = "Any description";
+            var workExpirience = 5;
+            var assistanceRequisitesList = new List<AssistanceRequisitesDto>()
+            {
+                new AssistanceRequisitesDto("Requisite 1", "5480"),
+                new AssistanceRequisitesDto("Requisite 2", "7615"),
+            };
+            var socialNetContactsList = new List<SocialNetContactsDto>()
+            {
+                new SocialNetContactsDto("Facebook", "JohnSmith.91"),
+                new SocialNetContactsDto("Instagram", "johnysmith.91"),
+            };
+
+            return new CreateVolunteerCommand(id, fullName, email,
+                phoneNumber, description, workExpirience,
+                assistanceRequisitesList, socialNetContactsList);
         }
     }
 }

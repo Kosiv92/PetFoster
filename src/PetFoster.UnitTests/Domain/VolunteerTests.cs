@@ -251,14 +251,14 @@ namespace PetFoster.UnitTests.Domain
             var specieId = SpecieId.NewSpecieId();
             var specieName = SpecieName.Create("SpecieName").Value;
 
-            var specie = new Specie(specieId, specieName, new List<Breed>());
+            var specie = new Specie(specieId, specieName);
 
             var breedId = BreedId.NewBreedId();
             var breedName = BreedName.Create("BreedName").Value;
 
             var breed = new Breed(breedId, breedName);
 
-            return new Pet(id, name, specie, description, breed, petColoration,
+            return new Pet(id, name, specieId, description, breedId, petColoration,
                 pethealth, address, characteristics, phoneNumber, false, birthDay, true,
                 PetFoster.Domain.Enums.AssistanceStatus.LookingForHome, new List<AssistanceRequisites>());
         }

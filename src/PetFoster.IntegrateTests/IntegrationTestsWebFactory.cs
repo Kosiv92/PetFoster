@@ -3,7 +3,6 @@ using Dapper;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
@@ -78,21 +77,7 @@ namespace PetFoster.IntegrateTests
         }
 
         protected virtual void ConfigureDefaultServices(IServiceCollection services)
-        {            
-            //var writeContext = services
-            //    .SingleOrDefault(s => s.ServiceType == typeof(WriteDbContext));                       
-
-            //if(writeContext != null)
-            //{
-            //    services.Remove(writeContext);
-            //}
-
-            //services.AddDbContext<WriteDbContext>(opt =>
-            //{
-            //    opt.UseNpgsql(_dbContainer.GetConnectionString());
-            //    opt.UseSnakeCaseNamingConvention();
-            //});
-
+        {  
             var fileSerice = services
                 .SingleOrDefault(s => s.ServiceType == typeof(IFileProvider));
 
@@ -110,12 +95,14 @@ namespace PetFoster.IntegrateTests
             await _dbContainer.DisposeAsync();
         }
 
-       public void SetupFileProviderMock()
-        {
-            var response = new List<FilePath>
+       public void SetupFileProviderMock(IEnumerable<string> filePathList)
+       {
+            var response = new List<FilePath>();
+
+            foreach (var filePath in filePathList) 
             {
-                FilePath.Create("path1").Value, FilePath.Create("path2").Value
-            };
+                response.Add(FilePath.Create(filePath).Value);
+            }
 
             _fileProviderMock.UploadFiles(Arg.Any<IEnumerable<FileData>>(),
                 Arg.Any<CancellationToken>())
