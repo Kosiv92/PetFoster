@@ -7,11 +7,11 @@ using PetFoster.Domain.Shared;
 
 namespace PetFoster.IntegrateTests.Volunteers
 {
-    public class GetVolunteerHandlerTests : VolunteerTestBase
+    public class GetVolunteersHandlerTests : VolunteerTestBase
     {
         private readonly IQueryHandler<PagedList<VolunteerDto>, GetVoluteersWithPaginationQuery> _sut;
 
-        public GetVolunteerHandlerTests(IntegrationTestsWebFactory factory) : base(factory)
+        public GetVolunteersHandlerTests(IntegrationTestsWebFactory factory) : base(factory)
         {
             _sut = ServiceScope.ServiceProvider
                     .GetRequiredService<IQueryHandler<PagedList<VolunteerDto>, GetVoluteersWithPaginationQuery>>();

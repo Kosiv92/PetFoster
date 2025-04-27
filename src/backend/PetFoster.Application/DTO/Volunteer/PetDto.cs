@@ -21,11 +21,11 @@
 
         public string PhoneNumber { get; set; }
 
-        public bool IsCastrated { get; set; }
+        public bool Castrated { get; set; }
 
         public DateTimeOffset? BirthDay { get; set; }
 
-        public bool IsVaccinated { get; set; }
+        public bool Vaccinated { get; set; }
 
         public int Position { get; set; }
 

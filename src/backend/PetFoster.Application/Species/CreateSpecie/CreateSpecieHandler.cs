@@ -38,8 +38,8 @@ namespace PetFoster.Application.Species.CreateSpecie
 
             var specieName = SpecieName.Create(command.Name).Value;
 
-            var exitSpecie = await _repository.GetByCriteriaAsync(s 
-                => s.Name.Equals(specieName), cancellationToken);
+            var exitSpecie = await _repository.GetByIdAsync(SpecieId.Create(command.Id), 
+                cancellationToken);
 
             if (exitSpecie != null)
             {
