@@ -37,7 +37,14 @@ namespace PetFoster.Application.Volunteers.CreateVolunteer
             }
 
             var email = Email.Create(command.Email).Value;
-            var phoneNumber = PhoneNumber.Create(command.PhoneNumber).Value;            
+            var phoneNumber = PhoneNumber.Create(command.PhoneNumber).Value;
+
+            var sameIdVolunteer = await _repository.GetByIdAsync(command.id, cancellationToken);
+
+            if (sameIdVolunteer != null)
+            {
+                return Errors.Volunteer.IdAlreadyExist().ToErrorList();
+            }
 
             var existVolunteer = await _repository.GetByCriteriaAsync(v => v.Email == email
             || v.PhoneNumber == phoneNumber, cancellationToken);
@@ -47,7 +54,7 @@ namespace PetFoster.Application.Volunteers.CreateVolunteer
                 return Errors.Volunteer.AlreadyExist().ToErrorList();
             } 
 
-            var id = VolunteerId.NewVolunteerId();
+            var id = VolunteerId.Create(command.id);
 
             var fullName = FullName
                 .Create(command.FullName.FirstName, command.FullName.LastName, command.FullName.Patronymic)

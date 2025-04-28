@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using PetFoster.Application.DTO.Volunteer;
+using PetFoster.Application.Interfaces;
 using PetFoster.Application.Validation;
 using PetFoster.Application.Volunteers.UpdateSocialNet;
 using PetFoster.Domain.Shared;
@@ -8,7 +9,7 @@ using PetFoster.Domain.ValueObjects;
 namespace PetFoster.Application.Volunteers.UpdateSocialNet
 {
     public sealed record UpdateVolunteerSocialNetCommand(Guid Id,
-        List<SocialNetContactsDto> SocialNetContactsList);
+        List<SocialNetContactsDto> SocialNetContactsList) : ICommand;
 }
 
 public sealed class UpdateVolunteerSocialNetCommandValidator

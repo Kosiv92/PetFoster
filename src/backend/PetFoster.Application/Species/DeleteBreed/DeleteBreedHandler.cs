@@ -40,7 +40,7 @@ namespace PetFoster.Application.Species.DeleteBreed
             }
 
             var specieId = SpecieId.Create(command.SpecieId);
-            var breedId = BreedId.Create(command.SpecieId);
+            var breedId = BreedId.Create(command.BreedId);
 
             var specie = await _repository.GetByIdAsync(specieId, cancellationToken);
 

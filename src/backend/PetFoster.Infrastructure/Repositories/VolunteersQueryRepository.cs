@@ -156,11 +156,11 @@ namespace PetFoster.Infrastructure.Repositories
             var connection = _connectionFactory.CreateConnection();
             var parameters = new DynamicParameters();
 
-            parameters.Add("@SpecieId", query.SpecieId);
+            parameters.Add("@SpecieId", query.SpecieId.Value);
 
             var sql = """
                    SELECT id, name, specie_id, description, breed_id, coloration, health, weight, height, phone_number, 
-                   is_castrated, birth_day, is_vaccinated, position, assistancestatus 
+                   сastrated, birth_day, vaccinated, position, assistance_status, file_list
                    FROM pets
                    WHERE specie_id = @SpecieId AND is_deleted = false
                    """;
@@ -189,11 +189,11 @@ namespace PetFoster.Infrastructure.Repositories
             var connection = _connectionFactory.CreateConnection();
             var parameters = new DynamicParameters();
 
-            parameters.Add("@BreedId", query.BreedId);
+            parameters.Add("@BreedId", query.BreedId.Value);
 
             var sql = """
                    SELECT id, name, specie_id, description, breed_id, coloration, health, weight, height, phone_number, 
-                   is_castrated, birth_day, is_vaccinated, position, assistancestatus 
+                   сastrated, birth_day, vaccinated, position, assistance_status, file_list
                    FROM pets
                    WHERE breed_id = @BreedId AND is_deleted = false
                    """;

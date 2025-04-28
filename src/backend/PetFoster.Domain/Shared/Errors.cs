@@ -24,6 +24,12 @@ namespace PetFoster.Domain.Shared
 
         public static class Volunteer
         {
+            public static Error IdAlreadyExist()
+            {
+                return Error.Validation("record.already.exist",
+                    "Volunteer with the same id is already exist");
+            }
+
             public static Error AlreadyExist()
             {
                 return Error.Validation("record.already.exist",
