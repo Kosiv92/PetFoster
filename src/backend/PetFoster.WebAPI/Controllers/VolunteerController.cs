@@ -3,6 +3,7 @@ using PetFoster.Application.Volunteers.AddPet;
 using PetFoster.Application.Volunteers.CreateVolunteer;
 using PetFoster.Application.Volunteers.DeletePet;
 using PetFoster.Application.Volunteers.DeleteVolunteer;
+using PetFoster.Application.Volunteers.GetPetByID;
 using PetFoster.Application.Volunteers.GetVolunteer;
 using PetFoster.Application.Volunteers.GetVolunteers;
 using PetFoster.Application.Volunteers.UpdatePersonalInfo;
@@ -138,6 +139,17 @@ namespace PetFoster.WebAPI.Controllers
                 return result.Error.ToResponse();
 
             return Ok(result.Value);
+        }
+
+        [HttpGet("{id:guid}/pet/{petId:guid}")]
+        public async Task<ActionResult> GetPet([FromRoute] Guid id, [FromRoute] Guid petId,            
+            [FromServices] GetPetByIdQueryHandler handler,
+            CancellationToken cancellationToken = default)
+        {
+            var query = new GetPetByIdQuery(id, petId);
+            var petDto = await handler.Handle(query, cancellationToken);
+
+            return Ok(petDto);
         }
 
         [HttpPut("{id:guid}/pet/{petId:guid}/status")]

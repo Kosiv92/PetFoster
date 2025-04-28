@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using PetFoster.Application.DTO.Volunteer;
 using PetFoster.Application.Interfaces;
+using PetFoster.Application.Volunteers.GetPetByID;
 using PetFoster.Application.Volunteers.GetPetsByBreedId;
 using PetFoster.Application.Volunteers.GetPetsBySpecieId;
 using PetFoster.Application.Volunteers.GetPetsByVolunteerId;
@@ -116,6 +117,40 @@ namespace PetFoster.Infrastructure.Repositories
             return queryResult.FirstOrDefault();
         }
 
+        public async Task<PetDto> GetPetByIdAsync(GetPetByIdQuery query,
+            CancellationToken cancellationToken)
+        {
+            var connection = _connectionFactory.CreateConnection();
+            var parameters = new DynamicParameters();
+
+            parameters.Add("@VolunteerId", query.VolunteerId);
+            parameters.Add("@PetId", query.PetId);
+
+            var sql = """
+                   SELECT id, name, specie_id, description, breed_id, coloration, health, weight, height, phone_number, 
+                   сastrated, birth_day, vaccinated, position, assistance_status, file_list 
+                   FROM pets
+                   WHERE volunteer_id = @VolunteerId AND id = @PetId AND is_deleted = false
+                   """;
+
+            var queryResult = await connection.QueryAsync<PetDto, string, PetDto>(
+             sql,
+             (pet, petFilesJson) =>
+             {
+                 var petFiles = JsonSerializer.Deserialize<List<PetFile>>(petFilesJson) ?? new();
+
+                 pet.PetFiles = petFiles
+                    .Select(f => new PetFileDto(f.PathToStorage.Path))
+                    .ToList();
+
+                 return pet;
+             },
+             splitOn: "file_list",
+             param: parameters);
+
+            return queryResult.FirstOrDefault();
+        }
+
         public async Task<IEnumerable<PetDto>> GetPetsByVolunteerId(GetPetsByVolunteerIdQuery query, 
             CancellationToken cancellationToken)
         {
@@ -126,7 +161,7 @@ namespace PetFoster.Infrastructure.Repositories
 
             var sql = """
                    SELECT id, name, specie_id, description, breed_id, coloration, health, weight, height, phone_number, 
-                   is_castrated, birth_day, is_vaccinated, position, assistancestatus 
+                   сastrated, birth_day, vaccinated, position, assistance_status, file_list 
                    FROM pets
                    WHERE volunteer_id = @VolunteerId AND is_deleted = false
                    """;
