@@ -24,7 +24,7 @@ namespace PetFoster.Domain.Entities
             Characteristics = characteristics;
             OwnerPhoneNumber = ownerPhoneNumber;
             IsCastrated = isCastrated;
-            BirthDay = birthDay; //? birthDay.Value.UtcDateTime : null;
+            BirthDay = birthDay;
             IsVaccinated = isVaccinated;
             AssistanceStatus = assistanceStatus;
             _assistanceRequisitesList = assistanceRequisitesList;            

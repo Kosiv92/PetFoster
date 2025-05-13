@@ -39,8 +39,30 @@ namespace PetFoster.IntegrateTests.Pets
 
             if(petId != null)
             {
-                var pet = Fixture.CreatePet(petId.Value, specieId, breedId);
+                var pet = Fixture.CreatePet(petId.Value, specieId, breedId, null, null);
                 newVolunteer.AddPet(pet);
+            }
+
+            await VolunteerRepository.AddAsync(newVolunteer, cancellationToken);
+        }
+
+        protected async Task SeedDatabaseWithExistPets(Guid volunteerId,
+            Guid specieId, Guid breedId, IEnumerable<Pet> pets,
+            CancellationToken cancellationToken = default)
+        {
+            var specie = Fixture.CreateSpecie(specieId);
+            var breed = Fixture.CreateBreed(breedId);
+            specie.AddBreed(breed);
+            await SpecieRepository.AddAsync(specie, cancellationToken);
+
+            var newVolunteer = Fixture.CreateVolunteer(volunteerId);
+
+            if (pets.Any() == true)
+            {
+                foreach(var pet in pets)
+                {
+                    newVolunteer.AddPet(pet);
+                }                
             }
 
             await VolunteerRepository.AddAsync(newVolunteer, cancellationToken);

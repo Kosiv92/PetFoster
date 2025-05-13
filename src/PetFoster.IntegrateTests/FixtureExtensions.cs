@@ -123,18 +123,19 @@ namespace PetFoster.IntegrateTests
         }
 
         public static Pet CreatePet(this IFixture fixture, 
-            Guid petId, Guid specieId, Guid breedId)
+            Guid petId, Guid specieId, Guid breedId, string? petName, string? color)
         {
             var faker = new Faker();
 
             var id = PetId.Create(petId);
-            var name = PetName
-                .Create(faker.Random.String2(PetName.MIN_NAME_LENGTH, PetName.MAX_NAME_LENGTH))
+            var name = petName != null ? PetName.Create(petName).Value 
+                : PetName.Create(faker.Random.String2(PetName.MIN_NAME_LENGTH, PetName.MAX_NAME_LENGTH))
                 .Value;
             var specieIdObject = SpecieId.Create(specieId);
             var breedIdObject = BreedId.Create(breedId);
             var description = Description.Create(fixture.Create<string>()).Value;
-            var coloration = PetColoration.Create(faker.Random.String2(3, PetColoration.MAX_NAME_LENGTH)).Value;
+            var coloration = color != null ? PetColoration.Create(color).Value 
+                : PetColoration.Create(faker.Random.String2(3, PetColoration.MAX_NAME_LENGTH)).Value;
             var health = PetHealth.Create(faker.Random.String2(3, PetHealth.MAX_HEALTH_LENGTH)).Value;
             var address = Address.Create(
                 faker.Random.String2(1, Address.MAX_REGION_LENGTH),
