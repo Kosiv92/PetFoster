@@ -33,7 +33,7 @@ namespace PetFoster.IntegrateTests.Species
             await SeedDatabase(specieId, new List<Guid> { breedId }, cancellationToken);
 
             var volunteer = Fixture.CreateVolunteer(volunteerId);
-            var pet = Fixture.CreatePet(petId, specieId, breedId);
+            var pet = Fixture.CreatePet(petId, specieId, breedId, null, null);
             volunteer.AddPet(pet);
             await VolunteerRepository.AddAsync(volunteer, cancellationToken);
         }

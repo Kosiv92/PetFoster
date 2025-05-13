@@ -4,6 +4,7 @@ using PetFoster.Application.Volunteers.CreateVolunteer;
 using PetFoster.Application.Volunteers.DeletePet;
 using PetFoster.Application.Volunteers.DeleteVolunteer;
 using PetFoster.Application.Volunteers.GetPetByID;
+using PetFoster.Application.Volunteers.GetPets;
 using PetFoster.Application.Volunteers.GetVolunteer;
 using PetFoster.Application.Volunteers.GetVolunteers;
 using PetFoster.Application.Volunteers.UpdatePersonalInfo;
@@ -142,7 +143,19 @@ namespace PetFoster.WebAPI.Controllers
         }
 
         [HttpGet("{id:guid}/pet/{petId:guid}")]
-        public async Task<ActionResult> GetPet([FromRoute] Guid id, [FromRoute] Guid petId,            
+        public async Task<ActionResult> GetPets([FromRoute] Guid id,
+            [FromQuery] GetPetsWithPagiationRequest request,
+            [FromServices] GetPetsWithPaginationHandler handler,
+            CancellationToken cancellationToken = default)
+        {
+            var query = request.ToQuery();
+            var petDto = await handler.Handle(query, cancellationToken);
+
+            return Ok(petDto);
+        }
+
+        [HttpGet("{id:guid}/pet/{petId:guid}")]
+        public async Task<ActionResult> GetPet([FromRoute] Guid id, [FromRoute] Guid petId,
             [FromServices] GetPetByIdQueryHandler handler,
             CancellationToken cancellationToken = default)
         {
