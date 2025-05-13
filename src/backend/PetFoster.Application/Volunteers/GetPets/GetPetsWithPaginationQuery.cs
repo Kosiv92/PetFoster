@@ -1,11 +1,12 @@
-﻿using PetFoster.Application.Interfaces;
+﻿using PetFoster.Application.DTO;
+using PetFoster.Application.Interfaces;
 
-namespace PetFoster.Application.Volunteers.GetPets
-{
-    public sealed record GetPetsWithPaginationQuery(
-        int Page,
-        int PageSize,
-        string? SortBy,
-        bool SortAsc,
-        Dictionary<string, (string, string)>? FilterList) : IQuery;
-}
+namespace PetFoster.Application.Volunteers.GetPets;
+
+public sealed record GetPetsWithPaginationQuery(
+    int Page,
+    int PageSize,
+    string? SortBy,
+    bool SortAsc,
+    List<FilterItemDto>? FilterList) : IQuery;
+

@@ -109,8 +109,8 @@ namespace PetFoster.Infrastructure.Repositories
 
                 foreach (var filter in query.FilterList)
                 {
-                    filters.Add($"{filter.Key} {filter.Value.Item1} @FilterValue{currentIndex}");
-                    parameters.Add($"@FilterValue{currentIndex}", filter.Value.Item2);
+                    filters.Add($"{filter.FilterPropertyName} {filter.FilterCondition} @FilterValue{currentIndex}");
+                    parameters.Add($"@FilterValue{currentIndex}", filter.FilterValue);
                     currentIndex++;
                 }
 

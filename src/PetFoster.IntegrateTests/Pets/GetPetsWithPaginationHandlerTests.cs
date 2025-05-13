@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
+using PetFoster.Application.DTO;
 using PetFoster.Application.DTO.Volunteer;
 using PetFoster.Application.Interfaces;
 using PetFoster.Application.Volunteers.GetPets;
@@ -60,8 +61,8 @@ public class GetPetsWithPaginationHandlerTests : PetTestBase
 
         await SeedDatabaseWithExistPets(volunteerId, specieId, breedId, pets, cancellationToken);
 
-        var filter = new Dictionary<string, (string, string)>();
-        filter.Add("name", ("=", expectedName));
+        var filter = new List<FilterItemDto>();
+        filter.Add(new FilterItemDto("name", "=", expectedName));
 
         var query = new GetPetsWithPaginationQuery(1, 5, null, default, filter);
 
@@ -127,8 +128,8 @@ public class GetPetsWithPaginationHandlerTests : PetTestBase
 
         await SeedDatabaseWithExistPets(volunteerId, specieId, breedId, pets, cancellationToken);
 
-        var filter = new Dictionary<string, (string, string)>();
-        filter.Add("coloration", ("=", coloration));
+        var filter = new List<FilterItemDto>();
+        filter.Add(new FilterItemDto("coloration", "=", coloration));
 
         var sortProperty = "name";
 
