@@ -1,8 +1,8 @@
 ﻿using AutoFixture;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using PetFoster.Application.Interfaces;
 using PetFoster.Application.Species.AddBreed;
+using PetFoster.Core.Abstractions;
 using PetFoster.Domain.Ids;
 
 namespace PetFoster.IntegrateTests.Breeds
@@ -22,46 +22,46 @@ namespace PetFoster.IntegrateTests.Breeds
         public async Task Add_breed_to_database_return_success()
         {
             //Arrange
-            var cancellationToken = new CancellationTokenSource().Token;
+            CancellationToken cancellationToken = new CancellationTokenSource().Token;
 
-            var specieId = Guid.NewGuid();
+            Guid specieId = Guid.NewGuid();
 
-            await SeedDatabase(new List<Guid> { specieId }, cancellationToken);
+            await SeedDatabase([specieId], cancellationToken);
 
-            var command = new AddBreedCommand(specieId, Fixture.Create<string>());
+            AddBreedCommand command = new(specieId, Fixture.Create<string>());
 
             //Act
-            var result = await _sut.Handle(command, CancellationToken.None);
-            var specie = await SpecieRepository
+            CSharpFunctionalExtensions.Result<Guid, Core.ErrorList> result = await _sut.Handle(command, CancellationToken.None);
+            Domain.Entities.Specie? specie = await SpecieRepository
                 .GetByIdAsync(
                 SpecieId.Create(specieId),
                 cancellationToken);
-            var breed = specie.Breeds.Single();
+            Domain.Entities.Breed breed = specie.Breeds.Single();
 
             //Assert
-            result.IsSuccess.Should().BeTrue();
-            result.Value.Should().NotBeEmpty();
-            breed.Should().NotBeNull();
-            breed.Id.Value.Should().Be(result.Value);
+            _ = result.IsSuccess.Should().BeTrue();
+            _ = result.Value.Should().NotBeEmpty();
+            _ = breed.Should().NotBeNull();
+            _ = breed.Id.Value.Should().Be(result.Value);
         }
 
         [Fact]
         public async Task Add_pet_to_not_exist_specie_return_failure()
         {
             //Arrange
-            var cancellationToken = new CancellationTokenSource().Token;
+            CancellationToken cancellationToken = new CancellationTokenSource().Token;
 
-            var specieId = Guid.NewGuid();
+            Guid specieId = Guid.NewGuid();
 
-            await SeedDatabase(new List<Guid> { specieId }, cancellationToken);
+            await SeedDatabase([specieId], cancellationToken);
 
-            var command = new AddBreedCommand(Guid.NewGuid(), Fixture.Create<string>());
+            AddBreedCommand command = new(Guid.NewGuid(), Fixture.Create<string>());
 
             //Act
-            var result = await _sut.Handle(command, CancellationToken.None);
+            CSharpFunctionalExtensions.Result<Guid, Core.ErrorList> result = await _sut.Handle(command, CancellationToken.None);
 
             //Assert
-            result.IsFailure.Should().BeTrue();
+            _ = result.IsFailure.Should().BeTrue();
             result.Error.Single().Type.Should().Be(ErrorType.NotFound);
         }
     }

@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -11,7 +10,7 @@ namespace PetFoster.Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
+            _ = migrationBuilder.CreateTable(
                 name: "species",
                 columns: table => new
                 {
@@ -20,10 +19,10 @@ namespace PetFoster.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_species", x => x.id);
+                    _ = table.PrimaryKey("pk_species", x => x.id);
                 });
 
-            migrationBuilder.CreateTable(
+            _ = migrationBuilder.CreateTable(
                 name: "volunteers",
                 columns: table => new
                 {
@@ -40,12 +39,12 @@ namespace PetFoster.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_volunteers", x => x.id);
-                    table.CheckConstraint("CK_Volunteer_Email_ValidFormat", "email ~* '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$'");
-                    table.CheckConstraint("CK_Volunteer_WorkExperience_NonNegative", "work_expirience >= 0");
+                    _ = table.PrimaryKey("pk_volunteers", x => x.id);
+                    _ = table.CheckConstraint("CK_Volunteer_Email_ValidFormat", "email ~* '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$'");
+                    _ = table.CheckConstraint("CK_Volunteer_WorkExperience_NonNegative", "work_expirience >= 0");
                 });
 
-            migrationBuilder.CreateTable(
+            _ = migrationBuilder.CreateTable(
                 name: "breeds",
                 columns: table => new
                 {
@@ -55,8 +54,8 @@ namespace PetFoster.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_breeds", x => x.id);
-                    table.ForeignKey(
+                    _ = table.PrimaryKey("pk_breeds", x => x.id);
+                    _ = table.ForeignKey(
                         name: "fk_breeds_species_specie_id",
                         column: x => x.specie_id,
                         principalTable: "species",
@@ -64,7 +63,7 @@ namespace PetFoster.Infrastructure.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateTable(
+            _ = migrationBuilder.CreateTable(
                 name: "pets",
                 columns: table => new
                 {
@@ -92,21 +91,21 @@ namespace PetFoster.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_pets", x => x.id);
-                    table.CheckConstraint("CK_Pet_Height_NonNegative", "height >= 0");
-                    table.CheckConstraint("CK_Pet_Weight_NonNegative", "weight >= 0");
-                    table.CheckConstraint("CK_Volunteer_PhoneNumber_NumericOnly", "phone_number ~ '^[0-9]11$'");
-                    table.ForeignKey(
+                    _ = table.PrimaryKey("pk_pets", x => x.id);
+                    _ = table.CheckConstraint("CK_Pet_Height_NonNegative", "height >= 0");
+                    _ = table.CheckConstraint("CK_Pet_Weight_NonNegative", "weight >= 0");
+                    _ = table.CheckConstraint("CK_Volunteer_PhoneNumber_NumericOnly", "phone_number ~ '^[0-9]11$'");
+                    _ = table.ForeignKey(
                         name: "fk_pets_breeds_breed_id",
                         column: x => x.breed_id,
                         principalTable: "breeds",
                         principalColumn: "id");
-                    table.ForeignKey(
+                    _ = table.ForeignKey(
                         name: "fk_pets_species_specie_id",
                         column: x => x.specie_id,
                         principalTable: "species",
                         principalColumn: "id");
-                    table.ForeignKey(
+                    _ = table.ForeignKey(
                         name: "fk_pets_volunteers_volunteer_id",
                         column: x => x.volunteer_id,
                         principalTable: "volunteers",
@@ -114,22 +113,22 @@ namespace PetFoster.Infrastructure.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateIndex(
+            _ = migrationBuilder.CreateIndex(
                 name: "ix_breeds_specie_id",
                 table: "breeds",
                 column: "specie_id");
 
-            migrationBuilder.CreateIndex(
+            _ = migrationBuilder.CreateIndex(
                 name: "ix_pets_breed_id",
                 table: "pets",
                 column: "breed_id");
 
-            migrationBuilder.CreateIndex(
+            _ = migrationBuilder.CreateIndex(
                 name: "ix_pets_specie_id",
                 table: "pets",
                 column: "specie_id");
 
-            migrationBuilder.CreateIndex(
+            _ = migrationBuilder.CreateIndex(
                 name: "ix_pets_volunteer_id",
                 table: "pets",
                 column: "volunteer_id");
@@ -138,16 +137,16 @@ namespace PetFoster.Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
+            _ = migrationBuilder.DropTable(
                 name: "pets");
 
-            migrationBuilder.DropTable(
+            _ = migrationBuilder.DropTable(
                 name: "breeds");
 
-            migrationBuilder.DropTable(
+            _ = migrationBuilder.DropTable(
                 name: "volunteers");
 
-            migrationBuilder.DropTable(
+            _ = migrationBuilder.DropTable(
                 name: "species");
         }
     }

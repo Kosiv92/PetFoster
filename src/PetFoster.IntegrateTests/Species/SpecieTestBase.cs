@@ -1,8 +1,8 @@
 ﻿using AutoFixture;
 using Microsoft.Extensions.DependencyInjection;
+using PetFoster.Core.Interfaces;
 using PetFoster.Domain.Entities;
 using PetFoster.Domain.Ids;
-using PetFoster.Domain.Interfaces;
 
 namespace PetFoster.IntegrateTests.Species
 {
@@ -30,23 +30,23 @@ namespace PetFoster.IntegrateTests.Species
             Guid volunteerId, Guid petId,
             CancellationToken cancellationToken = default)
         {
-            await SeedDatabase(specieId, new List<Guid> { breedId }, cancellationToken);
+            await SeedDatabase(specieId, [breedId], cancellationToken);
 
-            var volunteer = Fixture.CreateVolunteer(volunteerId);
-            var pet = Fixture.CreatePet(petId, specieId, breedId, null, null);
-            volunteer.AddPet(pet);
+            Volunteer volunteer = Fixture.CreateVolunteer(volunteerId);
+            Pet pet = Fixture.CreatePet(petId, specieId, breedId, null, null);
+            _ = volunteer.AddPet(pet);
             await VolunteerRepository.AddAsync(volunteer, cancellationToken);
         }
 
-        protected async Task SeedDatabase(Guid specieId, IEnumerable<Guid> breedIds,            
+        protected async Task SeedDatabase(Guid specieId, IEnumerable<Guid> breedIds,
             CancellationToken cancellationToken = default)
         {
-            var newSpecie = Fixture.CreateSpecie(specieId);
-            foreach (var id in breedIds)
+            Specie newSpecie = Fixture.CreateSpecie(specieId);
+            foreach (Guid id in breedIds)
             {
-                var breed = Fixture.CreateBreed(id);
-                newSpecie.AddBreed(breed);
-            }            
+                Breed breed = Fixture.CreateBreed(id);
+                _ = newSpecie.AddBreed(breed);
+            }
             await SpecieRepository.AddAsync(newSpecie, cancellationToken);
         }
 
@@ -55,15 +55,18 @@ namespace PetFoster.IntegrateTests.Species
         {
             if (speciesId?.Any() == true)
             {
-                foreach (var id in speciesId)
+                foreach (Guid id in speciesId)
                 {
-                    var newSpecie = Fixture.CreateSpecie(id);
+                    Specie newSpecie = Fixture.CreateSpecie(id);
                     await SpecieRepository.AddAsync(newSpecie, cancellationToken);
                 }
             }
         }
 
-        public Task InitializeAsync() => Task.CompletedTask;
+        public Task InitializeAsync()
+        {
+            return Task.CompletedTask;
+        }
 
         public async Task DisposeAsync()
         {

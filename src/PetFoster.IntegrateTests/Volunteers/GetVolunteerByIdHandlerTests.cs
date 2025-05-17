@@ -1,8 +1,8 @@
 ﻿using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using PetFoster.Application.DTO.Volunteer;
-using PetFoster.Application.Interfaces;
 using PetFoster.Application.Volunteers.GetVolunteer;
+using PetFoster.Core.Abstractions;
+using PetFoster.Core.DTO.Volunteer;
 
 namespace PetFoster.IntegrateTests.Volunteers
 {
@@ -10,7 +10,7 @@ namespace PetFoster.IntegrateTests.Volunteers
     {
         private readonly IQueryHandler<VolunteerDto, GetVolunteerByIdQuery> _sut;
 
-        public GetVolunteerByIdHandlerTests(IntegrationTestsWebFactory factory) 
+        public GetVolunteerByIdHandlerTests(IntegrationTestsWebFactory factory)
             : base(factory)
         {
             _sut = ServiceScope.ServiceProvider
@@ -21,11 +21,11 @@ namespace PetFoster.IntegrateTests.Volunteers
         public async Task Get_volunteer_by_id_from_database_return_result()
         {
             //Assert
-            var cancellationToken = new CancellationTokenSource().Token;
+            CancellationToken cancellationToken = new CancellationTokenSource().Token;
 
-            var volunteerCount = 3;
+            int volunteerCount = 3;
 
-            var volunteerIds = new List<Guid>();
+            List<Guid> volunteerIds = [];
             for (int i = 0; i < volunteerCount; i++)
             {
                 volunteerIds.Add(Guid.NewGuid());
@@ -33,28 +33,28 @@ namespace PetFoster.IntegrateTests.Volunteers
 
             await SeedDatabase(volunteerIds, cancellationToken);
 
-            var idToGet = volunteerIds.Last();
+            Guid idToGet = volunteerIds.Last();
 
-            var query = new GetVolunteerByIdQuery(idToGet);
+            GetVolunteerByIdQuery query = new(idToGet);
 
 
             //Act
-            var result = await _sut.Handle(query, cancellationToken);
+            VolunteerDto result = await _sut.Handle(query, cancellationToken);
 
             //Arrange
-            result.Should().NotBeNull();
-            result.Id.Should().Be(idToGet);            
+            _ = result.Should().NotBeNull();
+            _ = result.Id.Should().Be(idToGet);
         }
 
         [Fact]
         public async Task Get_volunteer_by_wrong_id_from_database_return_null()
         {
             //Assert
-            var cancellationToken = new CancellationTokenSource().Token;
+            CancellationToken cancellationToken = new CancellationTokenSource().Token;
 
-            var volunteerCount = 3;
+            int volunteerCount = 3;
 
-            var volunteerIds = new List<Guid>();
+            List<Guid> volunteerIds = [];
             for (int i = 0; i < volunteerCount; i++)
             {
                 volunteerIds.Add(Guid.NewGuid());
@@ -62,16 +62,16 @@ namespace PetFoster.IntegrateTests.Volunteers
 
             await SeedDatabase(volunteerIds, cancellationToken);
 
-            var idToGet = Guid.NewGuid();
+            Guid idToGet = Guid.NewGuid();
 
-            var query = new GetVolunteerByIdQuery(idToGet);
+            GetVolunteerByIdQuery query = new(idToGet);
 
 
             //Act
-            var result = await _sut.Handle(query, cancellationToken);
+            VolunteerDto result = await _sut.Handle(query, cancellationToken);
 
             //Arrange
-            result.Should().BeNull();            
+            _ = result.Should().BeNull();
         }
 
     }

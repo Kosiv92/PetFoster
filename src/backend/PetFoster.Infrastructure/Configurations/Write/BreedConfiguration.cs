@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using PetFoster.Core.ValueObjects;
 using PetFoster.Domain.Entities;
 using PetFoster.Domain.Ids;
-using PetFoster.Domain.ValueObjects;
 
 namespace PetFoster.Infrastructure.Configurations.Write
 {
@@ -10,23 +10,23 @@ namespace PetFoster.Infrastructure.Configurations.Write
     {
         public void Configure(EntityTypeBuilder<Breed> builder)
         {
-            builder.ToTable("breeds");
+            _ = builder.ToTable("breeds");
 
-            builder.HasKey(m => m.Id);
+            _ = builder.HasKey(m => m.Id);
 
-            builder.Property(m => m.Id)                
+            _ = builder.Property(m => m.Id)
                 .HasConversion(
                     id => id.Value,
                     value => BreedId.Create(value));
 
-            builder.Property(m => m.Name)
+            _ = builder.Property(m => m.Name)
                 .HasMaxLength(BreedName.MAX_NAME_LENGTH)
                 .HasConversion(
                 name => name.Value,
                 value => BreedName.Create(value).Value);
 
-            builder.HasOne(m => m.Specie)
-                .WithMany(m => m.Breeds)                
+            _ = builder.HasOne(m => m.Specie)
+                .WithMany(m => m.Breeds)
                 .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired();
 

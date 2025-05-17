@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using PetFoster.Application.Interfaces;
 using PetFoster.Application.Volunteers.UpdatePetInfo;
+using PetFoster.Core.Abstractions;
 using PetFoster.Domain.Ids;
 
 namespace PetFoster.IntegrateTests.Pets
@@ -21,79 +21,79 @@ namespace PetFoster.IntegrateTests.Pets
         public async Task Update_pet_return_success()
         {
             //Arrange
-            var cancellationToken = new CancellationTokenSource().Token;
+            CancellationToken cancellationToken = new CancellationTokenSource().Token;
 
-            var volunteerId = Guid.NewGuid();
-            var specieId = Guid.NewGuid();
-            var breedId = Guid.NewGuid();
-            var petId = Guid.NewGuid();
+            Guid volunteerId = Guid.NewGuid();
+            Guid specieId = Guid.NewGuid();
+            Guid breedId = Guid.NewGuid();
+            Guid petId = Guid.NewGuid();
 
             await SeedDatabase(volunteerId, specieId, breedId, petId, cancellationToken);
 
-            var command = Fixture.CreateUpdatePetCommand(volunteerId, petId, specieId, breedId);
+            UpdatePetInfoCommand command = Fixture.CreateUpdatePetCommand(volunteerId, petId, specieId, breedId);
 
             //Act
-            var result = await _sut.Handle(command, CancellationToken.None);
-            var volunteer = await VolunteerRepository
+            CSharpFunctionalExtensions.Result<Guid, Core.ErrorList> result = await _sut.Handle(command, CancellationToken.None);
+            Domain.Entities.Volunteer? volunteer = await VolunteerRepository
                 .GetByIdAsync(
                 VolunteerId.Create(volunteerId),
                 cancellationToken);
-            var pet = volunteer.FosteredAnimals.Single();
+            Domain.Entities.Pet pet = volunteer.FosteredAnimals.Single();
 
             //Assert
-            result.IsSuccess.Should().BeTrue();
-            result.Value.Should().Be(petId);
-            pet.Id.Value.Should().Be(petId);
-            pet.Name.Value.Should().Be(command.Name);
-            pet.Description.Value.Should().Be(command.Description);
-            pet.Health.Value.Should().Be(command.Health);
-            pet.Coloration.Value.Should().Be(command.Coloration);
-            pet.IsVaccinated.Should().Be(command.IsVaccinated);
-            pet.IsCastrated.Should().Be(command.IsCastrated);
-            pet.OwnerPhoneNumber.Value.Should().Be(command.OwnerPhoneNumber);
-            pet.SpecieId.Value.Should().Be(command.SpecieId);
-            pet.BreedId.Value.Should().Be(command.BreedId);
-            pet.Characteristics.Height.Should().Be(command.Characteristics.Height);
-            pet.Characteristics.Weight.Should().Be(command.Characteristics.Weight);
-            pet.Address.Region.Should().Be(command.Address.Region);
-            pet.Address.City.Should().Be(command.Address.City);
-            pet.Address.Street.Should().Be(command.Address.Street);
-            pet.Address.HouseNumber.Should().Be(command.Address.HouseNumber);
-            pet.Address.ApartmentNumber.Should().Be(command.Address.ApartmentNumber);
-            pet.AssistanceStatus.ToString().Should().Be(command.AssistanceStatus);
+            _ = result.IsSuccess.Should().BeTrue();
+            _ = result.Value.Should().Be(petId);
+            _ = pet.Id.Value.Should().Be(petId);
+            _ = pet.Name.Value.Should().Be(command.Name);
+            _ = pet.Description.Value.Should().Be(command.Description);
+            _ = pet.Health.Value.Should().Be(command.Health);
+            _ = pet.Coloration.Value.Should().Be(command.Coloration);
+            _ = pet.IsVaccinated.Should().Be(command.IsVaccinated);
+            _ = pet.IsCastrated.Should().Be(command.IsCastrated);
+            _ = pet.OwnerPhoneNumber.Value.Should().Be(command.OwnerPhoneNumber);
+            _ = pet.SpecieId.Value.Should().Be(command.SpecieId);
+            _ = pet.BreedId.Value.Should().Be(command.BreedId);
+            _ = pet.Characteristics.Height.Should().Be(command.Characteristics.Height);
+            _ = pet.Characteristics.Weight.Should().Be(command.Characteristics.Weight);
+            _ = pet.Address.Region.Should().Be(command.Address.Region);
+            _ = pet.Address.City.Should().Be(command.Address.City);
+            _ = pet.Address.Street.Should().Be(command.Address.Street);
+            _ = pet.Address.HouseNumber.Should().Be(command.Address.HouseNumber);
+            _ = pet.Address.ApartmentNumber.Should().Be(command.Address.ApartmentNumber);
+            _ = pet.AssistanceStatus.ToString().Should().Be(command.AssistanceStatus);
         }
 
         [Fact]
         public async Task Update_not_exist_pet_return_failure()
         {
             //Arrange
-            var cancellationToken = new CancellationTokenSource().Token;
+            CancellationToken cancellationToken = new CancellationTokenSource().Token;
 
-            var volunteerId = Guid.NewGuid();
-            var specieId = Guid.NewGuid();
-            var breedId = Guid.NewGuid();
-            var petId = Guid.NewGuid();
+            Guid volunteerId = Guid.NewGuid();
+            Guid specieId = Guid.NewGuid();
+            Guid breedId = Guid.NewGuid();
+            Guid petId = Guid.NewGuid();
 
             await SeedDatabase(volunteerId, specieId, breedId, petId, cancellationToken);
 
-            var command = Fixture.CreateUpdatePetCommand(volunteerId, Guid.NewGuid(), specieId, breedId);
+            UpdatePetInfoCommand command = Fixture.CreateUpdatePetCommand(volunteerId, Guid.NewGuid(), specieId, breedId);
 
             //Act
-            var result = await _sut.Handle(command, CancellationToken.None);
-            var volunteer = await VolunteerRepository
+            CSharpFunctionalExtensions.Result<Guid, Core.ErrorList> result = await _sut.Handle(command, CancellationToken.None);
+            Domain.Entities.Volunteer? volunteer = await VolunteerRepository
                 .GetByIdAsync(
                 VolunteerId.Create(volunteerId),
                 cancellationToken);
-            var pet = volunteer.FosteredAnimals.Single();
+            Domain.Entities.Pet pet = volunteer.FosteredAnimals.Single();
 
             //Assert
-            result.IsFailure.Should().BeTrue();
-            result.Error.Single().Type.Should().Be(ErrorType.Validation);            
-            pet.Name.Value.Should().NotBe(command.Name);
-            pet.Description.Value.Should().NotBe(command.Description);
-            pet.Health.Value.Should().NotBe(command.Health);
-            pet.Coloration.Value.Should().NotBe(command.Coloration);            
-            pet.OwnerPhoneNumber.Value.Should().NotBe(command.OwnerPhoneNumber);             
+            _ = result.IsFailure.Should().BeTrue();
+            result.Error.Single().Type.Should().Be(ErrorType.Validation);
+            _ = pet.Name.Value.Should().NotBe(command.Name);
+            _ = pet.Description.Value.Should().NotBe(command.Description);
+            _ = pet.Health.Value.Should().NotBe(command.Health);
+            _ = pet.Coloration.Value.Should().NotBe(command.Coloration);
+            _ = pet.OwnerPhoneNumber.Value.Should().NotBe(command.OwnerPhoneNumber);
         }
     }
 }

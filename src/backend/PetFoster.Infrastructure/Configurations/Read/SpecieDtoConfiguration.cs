@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using PetFoster.Application.DTO.Specie;
+using PetFoster.Core.DTO.Specie;
 
 namespace PetFoster.Infrastructure.Configurations.Read
 {
@@ -8,17 +8,17 @@ namespace PetFoster.Infrastructure.Configurations.Read
     {
         public void Configure(EntityTypeBuilder<SpecieDto> builder)
         {
-            builder.ToTable("species");
+            _ = builder.ToTable("species");
 
-            builder.HasKey(m => m.Id);
+            _ = builder.HasKey(m => m.Id);
 
-            builder.Property(m => m.Id)
+            _ = builder.Property(m => m.Id)
                 .HasColumnName("id");
 
-            builder.Property(m => m.Name)
+            _ = builder.Property(m => m.Name)
                .HasColumnName("name");
 
-            builder.HasMany(m => m.Breeds)
+            _ = builder.HasMany(m => m.Breeds)
                 .WithOne()
                 .HasForeignKey(b => b.SpecieId);
         }

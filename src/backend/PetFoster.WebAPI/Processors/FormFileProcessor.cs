@@ -1,4 +1,4 @@
-﻿using PetFoster.Application.DTO.Volunteer;
+﻿using PetFoster.Core.DTO.Volunteer;
 
 namespace PetFoster.WebAPI.Processors
 {
@@ -8,10 +8,10 @@ namespace PetFoster.WebAPI.Processors
 
         public List<UploadFileDto> Process(IFormFileCollection files)
         {
-            foreach (var file in files)
+            foreach (IFormFile file in files)
             {
-                var stream = file.OpenReadStream();
-                var fileDto = new UploadFileDto(stream, file.FileName);
+                Stream stream = file.OpenReadStream();
+                UploadFileDto fileDto = new(stream, file.FileName);
                 _fileDtos.Add(fileDto);
             }
 
@@ -20,7 +20,7 @@ namespace PetFoster.WebAPI.Processors
 
         public async ValueTask DisposeAsync()
         {
-            foreach (var file in _fileDtos)
+            foreach (UploadFileDto file in _fileDtos)
             {
                 await file.Content.DisposeAsync();
             }

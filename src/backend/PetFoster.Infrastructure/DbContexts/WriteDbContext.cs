@@ -15,7 +15,9 @@ namespace PetFoster.Infrastructure.DbContexts
         { }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
-            => modelBuilder.ApplyConfigurationsFromAssembly(typeof(WriteDbContext).Assembly,
-                type => type.FullName?.Contains("Configurations.Write") ?? false);
+        {
+            _ = modelBuilder.ApplyConfigurationsFromAssembly(typeof(WriteDbContext).Assembly,
+                        type => type.FullName?.Contains("Configurations.Write") ?? false);
+        }
     }
 }

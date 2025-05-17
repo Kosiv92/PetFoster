@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using PetFoster.Application.DTO.Volunteer;
 using PetFoster.Application.Files;
 using PetFoster.Application.Interfaces;
-using PetFoster.Domain.ValueObjects;
+using PetFoster.Core.DTO.Volunteer;
+using PetFoster.Core.ValueObjects;
 using PetFoster.WebAPI.Extensions;
 using PetFoster.WebAPI.Processors;
 
@@ -25,58 +25,49 @@ namespace PetFoster.WebAPI.Controllers
         public async Task<IActionResult> Get(string file,
             CancellationToken cancellationToken = default)
         {
-            var filePath = FilePath.Create(file).Value;
+            FilePath filePath = FilePath.Create(file).Value;
 
-            var dto = new GetFileDto(filePath, BUCKET_NAME);
+            GetFileDto dto = new(filePath, BUCKET_NAME);
 
-            var result = await _fileProvider.GetFileLink(dto, cancellationToken);
+            CSharpFunctionalExtensions.Result<string, Core.Error> result = await _fileProvider.GetFileLink(dto, cancellationToken);
 
-            if (result.IsFailure)
-                return result.Error.ToResponse();
-
-            return Ok(result.Value);
+            return result.IsFailure ? result.Error.ToResponse() : (IActionResult)Ok(result.Value);
         }
 
         [HttpDelete]
         public async Task<IActionResult> Delete([FromBody] string file,
             CancellationToken cancellationToken = default)
         {
-            var filePath = FilePath.Create(file).Value;
+            FilePath filePath = FilePath.Create(file).Value;
 
-            var fileInfo = new Application.Files.FileInfo(filePath, BUCKET_NAME);
+            Application.Files.FileInfo fileInfo = new(filePath, BUCKET_NAME);
 
-            var result = await _fileProvider.RemoveFile(fileInfo, cancellationToken);
+            CSharpFunctionalExtensions.UnitResult<Core.Error> result = await _fileProvider.RemoveFile(fileInfo, cancellationToken);
 
-            if (result.IsFailure)
-                return result.Error.ToResponse();
-
-            return Ok();
+            return result.IsFailure ? result.Error.ToResponse() : (IActionResult)Ok();
         }
 
         [HttpPost]
-        public async Task<ActionResult> Upload([FromForm] IFormFileCollection files, 
+        public async Task<ActionResult> Upload([FromForm] IFormFileCollection files,
             CancellationToken cancellationToken = default)
         {
-            await using var fileProcessor = new FormFileProcessor();
-            var fileDtos = fileProcessor.Process(files);
+            await using FormFileProcessor fileProcessor = new();
+            List<UploadFileDto> fileDtos = fileProcessor.Process(files);
 
-            List<FileData> filesData = new();
+            List<FileData> filesData = [];
 
-            foreach (var file in fileDtos)
+            foreach (UploadFileDto file in fileDtos)
             {
-                var filePath = FilePath.Create(Guid.NewGuid(), Path.GetExtension(file.FileName));
+                CSharpFunctionalExtensions.Result<FilePath, Core.Error> filePath = FilePath.Create(Guid.NewGuid(), Path.GetExtension(file.FileName));
 
-                var fileData = new FileData(file.Content, new Application.Files.FileInfo(filePath.Value, BUCKET_NAME));
+                FileData fileData = new(file.Content, new Application.Files.FileInfo(filePath.Value, BUCKET_NAME));
 
                 filesData.Add(fileData);
             }
 
-            var result = await _fileProvider.UploadFiles(filesData, cancellationToken);
+            CSharpFunctionalExtensions.Result<IReadOnlyList<FilePath>, Core.Error> result = await _fileProvider.UploadFiles(filesData, cancellationToken);
 
-            if (result.IsFailure)
-                return result.Error.ToResponse();
-
-            return Ok(result.Value);
+            return result.IsFailure ? result.Error.ToResponse() : Ok(result.Value);
         }
     }
 }

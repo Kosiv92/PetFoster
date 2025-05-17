@@ -1,8 +1,8 @@
 ﻿using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using PetFoster.Application.DTO.Volunteer;
-using PetFoster.Application.Interfaces;
 using PetFoster.Application.Volunteers.GetPetByID;
+using PetFoster.Core.Abstractions;
+using PetFoster.Core.DTO.Volunteer;
 
 namespace PetFoster.IntegrateTests.Pets
 {
@@ -21,47 +21,47 @@ namespace PetFoster.IntegrateTests.Pets
         public async Task Get_pet_from_database_return_result()
         {
             //Arrange
-            var cancellationToken = new CancellationTokenSource().Token;
+            CancellationToken cancellationToken = new CancellationTokenSource().Token;
 
-            var volunteerId = Guid.NewGuid();
-            var specieId = Guid.NewGuid();
-            var breedId = Guid.NewGuid();
-            var petId = Guid.NewGuid();
+            Guid volunteerId = Guid.NewGuid();
+            Guid specieId = Guid.NewGuid();
+            Guid breedId = Guid.NewGuid();
+            Guid petId = Guid.NewGuid();
 
             await SeedDatabase(volunteerId, specieId, breedId, petId, cancellationToken);
 
-            var query = new GetPetByIdQuery(volunteerId, petId);
+            GetPetByIdQuery query = new(volunteerId, petId);
 
             //Act
-            var result = await _sut.Handle(query, CancellationToken.None);
-            
+            PetDto result = await _sut.Handle(query, CancellationToken.None);
+
 
             //Assert
-            result.Should().NotBeNull();
-            result.Id.Should().Be(petId);            
+            _ = result.Should().NotBeNull();
+            _ = result.Id.Should().Be(petId);
         }
 
         [Fact]
         public async Task Get_not_exist_pet_from_database_return_null()
         {
             //Arrange
-            var cancellationToken = new CancellationTokenSource().Token;
+            CancellationToken cancellationToken = new CancellationTokenSource().Token;
 
-            var volunteerId = Guid.NewGuid();
-            var specieId = Guid.NewGuid();
-            var breedId = Guid.NewGuid();
-            var petId = Guid.NewGuid();
+            Guid volunteerId = Guid.NewGuid();
+            Guid specieId = Guid.NewGuid();
+            Guid breedId = Guid.NewGuid();
+            Guid petId = Guid.NewGuid();
 
             await SeedDatabase(volunteerId, specieId, breedId, petId, cancellationToken);
 
-            var query = new GetPetByIdQuery(volunteerId, Guid.NewGuid());
+            GetPetByIdQuery query = new(volunteerId, Guid.NewGuid());
 
             //Act
-            var result = await _sut.Handle(query, CancellationToken.None);
+            PetDto result = await _sut.Handle(query, CancellationToken.None);
 
 
             //Assert
-            result.Should().BeNull();            
+            _ = result.Should().BeNull();
         }
     }
 }

@@ -1,10 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PetFoster.Application.DTO.Specie;
 using PetFoster.Application.Interfaces;
 using PetFoster.Application.Species.GetBreeds;
 using PetFoster.Application.Species.GetSpecie;
 using PetFoster.Application.Species.GetSpecies;
-using PetFoster.Domain.Shared;
+using PetFoster.Core;
+using PetFoster.Core.DTO.Specie;
 using PetFoster.Infrastructure.DbContexts;
 
 namespace PetFoster.Infrastructure.Repositories
@@ -18,13 +18,13 @@ namespace PetFoster.Infrastructure.Repositories
             _dbContext = dbContext;
         }
 
-        public async Task<PagedList<SpecieDto>> GetAllAsync(GetSpeciesWithPaginationQuery query, 
+        public async Task<PagedList<SpecieDto>> GetAllAsync(GetSpeciesWithPaginationQuery query,
             CancellationToken cancellationToken)
         {
-            var totalCount = await _dbContext.Species.CountAsync(cancellationToken);
+            int totalCount = await _dbContext.Species.CountAsync(cancellationToken);
 
-            var species = await _dbContext.Species
-                .Skip((query.Page -1) * query.PageSize)
+            List<SpecieDto> species = await _dbContext.Species
+                .Skip((query.Page - 1) * query.PageSize)
                 .Take(query.PageSize).ToListAsync(cancellationToken);
 
             return new PagedList<SpecieDto>()
@@ -43,7 +43,7 @@ namespace PetFoster.Infrastructure.Repositories
                 .FirstOrDefaultAsync(s => s.Id == query.Id);
         }
 
-        public Task<List<BreedDto>> GetBreedsBySpecieIdAsync(GetBreedsBySpecieIdQuery query, 
+        public Task<List<BreedDto>> GetBreedsBySpecieIdAsync(GetBreedsBySpecieIdQuery query,
             CancellationToken cancellationToken)
         {
             return _dbContext.Breeds

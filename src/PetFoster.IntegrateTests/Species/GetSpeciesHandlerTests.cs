@@ -1,9 +1,9 @@
 ﻿using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using PetFoster.Application.DTO.Specie;
-using PetFoster.Application.Interfaces;
 using PetFoster.Application.Species.GetSpecies;
-using PetFoster.Domain.Shared;
+using PetFoster.Core;
+using PetFoster.Core.Abstractions;
+using PetFoster.Core.DTO.Specie;
 
 namespace PetFoster.IntegrateTests.Species
 {
@@ -23,9 +23,9 @@ namespace PetFoster.IntegrateTests.Species
         public async Task Get_species_return_result(int specieCount)
         {
             //Assert
-            var cancellationToken = new CancellationTokenSource().Token;
+            CancellationToken cancellationToken = new CancellationTokenSource().Token;
 
-            var specieIds = new List<Guid>();
+            List<Guid> specieIds = [];
             for (int i = 0; i < specieCount; i++)
             {
                 specieIds.Add(Guid.NewGuid());
@@ -35,20 +35,20 @@ namespace PetFoster.IntegrateTests.Species
 
             const int pageIndex = 1;
 
-            var query = new GetSpeciesWithPaginationQuery(
+            GetSpeciesWithPaginationQuery query = new(
                 null,
                 null,
                 pageIndex,
                 specieCount);
 
             //Act
-            var result = await _sut.Handle(query, cancellationToken);
+            PagedList<SpecieDto> result = await _sut.Handle(query, cancellationToken);
 
             //Arrange
-            result.Should().NotBeNull();
-            result.Items.Count.Should().Be(specieCount);
-            result.TotalCount.Should().Be(specieCount);
-            result.Items.Should().Contain(d => d.Id == specieIds[0]);
+            _ = result.Should().NotBeNull();
+            _ = result.Items.Count.Should().Be(specieCount);
+            _ = result.TotalCount.Should().Be(specieCount);
+            _ = result.Items.Should().Contain(d => d.Id == specieIds[0]);
         }
 
         [Theory]
@@ -58,9 +58,9 @@ namespace PetFoster.IntegrateTests.Species
             int specieCount, int pageSize, int partResultCount)
         {
             //Assert
-            var cancellationToken = new CancellationTokenSource().Token;
+            CancellationToken cancellationToken = new CancellationTokenSource().Token;
 
-            var specieIds = new List<Guid>();
+            List<Guid> specieIds = [];
             for (int i = 0; i < specieCount; i++)
             {
                 specieIds.Add(Guid.NewGuid());
@@ -70,20 +70,20 @@ namespace PetFoster.IntegrateTests.Species
 
             const int pageIndex = 2;
 
-            var query = new GetSpeciesWithPaginationQuery(
+            GetSpeciesWithPaginationQuery query = new(
                 null,
                 null,
                 pageIndex,
                 pageSize);
 
             //Act
-            var result = await _sut.Handle(query, cancellationToken);
+            PagedList<SpecieDto> result = await _sut.Handle(query, cancellationToken);
 
             //Arrange
-            result.Should().NotBeNull();
-            result.TotalCount.Should().Be(specieCount);
-            result.Items.Count.Should().Be(partResultCount);
-            result.Items.Select(p => p.Id).Should()
+            _ = result.Should().NotBeNull();
+            _ = result.TotalCount.Should().Be(specieCount);
+            _ = result.Items.Count.Should().Be(partResultCount);
+            _ = result.Items.Select(p => p.Id).Should()
                 .OnlyContain(id => specieIds.Contains(id));
         }
 
@@ -91,11 +91,11 @@ namespace PetFoster.IntegrateTests.Species
         public async Task Get_species_from_not_exist_page_return_empty_result()
         {
             //Assert
-            var cancellationToken = new CancellationTokenSource().Token;
+            CancellationToken cancellationToken = new CancellationTokenSource().Token;
 
             int specieCount = 2;
 
-            var specieIds = new List<Guid>();
+            List<Guid> specieIds = [];
             for (int i = 0; i < specieCount; i++)
             {
                 specieIds.Add(Guid.NewGuid());
@@ -105,19 +105,19 @@ namespace PetFoster.IntegrateTests.Species
 
             const int pageIndex = 2;
 
-            var query = new GetSpeciesWithPaginationQuery(
+            GetSpeciesWithPaginationQuery query = new(
                 null,
                 null,
                 pageIndex,
                 specieCount);
 
             //Act
-            var result = await _sut.Handle(query, cancellationToken);
+            PagedList<SpecieDto> result = await _sut.Handle(query, cancellationToken);
 
             //Arrange
-            result.Should().NotBeNull();
-            result.TotalCount.Should().Be(specieCount);
-            result.Items.Count.Should().Be(0);
+            _ = result.Should().NotBeNull();
+            _ = result.TotalCount.Should().Be(specieCount);
+            _ = result.Items.Count.Should().Be(0);
         }
     }
 }

@@ -22,11 +22,11 @@ namespace PetFoster.Infrastructure.Files
 
         public async Task Process(CancellationToken cancellationToken)
         {
-            var fileInfos = await _messageQueue.ReadAsync(cancellationToken);
+            IEnumerable<Application.Files.FileInfo> fileInfos = await _messageQueue.ReadAsync(cancellationToken);
 
-            foreach (var fileInfo in fileInfos)
+            foreach (Application.Files.FileInfo fileInfo in fileInfos)
             {
-                await _fileProvider.RemoveFile(fileInfo, cancellationToken);
+                _ = await _fileProvider.RemoveFile(fileInfo, cancellationToken);
             }
         }
     }

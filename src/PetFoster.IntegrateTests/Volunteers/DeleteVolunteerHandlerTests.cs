@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using PetFoster.Application.Interfaces;
 using PetFoster.Application.Volunteers.DeleteVolunteer;
+using PetFoster.Core.Abstractions;
 using PetFoster.Domain.Ids;
 
 namespace PetFoster.IntegrateTests.Volunteers
@@ -10,7 +10,7 @@ namespace PetFoster.IntegrateTests.Volunteers
     {
         private readonly ICommandHandler<Guid, DeleteVolunteerCommand> _sut;
 
-        public DeleteVolunteerHandlerTests(IntegrationTestsWebFactory factory) 
+        public DeleteVolunteerHandlerTests(IntegrationTestsWebFactory factory)
             : base(factory)
         {
             _sut = ServiceScope.ServiceProvider
@@ -21,69 +21,69 @@ namespace PetFoster.IntegrateTests.Volunteers
         public async Task Delete_volunteer_from_database_return_id()
         {
             //Assert
-            var cancellationToken = new CancellationTokenSource().Token;
-                       
-            var volunteerId = Guid.NewGuid();
+            CancellationToken cancellationToken = new CancellationTokenSource().Token;
 
-            await SeedDatabase(new List<Guid> { volunteerId }, cancellationToken);
+            Guid volunteerId = Guid.NewGuid();
 
-            var command = new DeleteVolunteerCommand(volunteerId);
+            await SeedDatabase([volunteerId], cancellationToken);
+
+            DeleteVolunteerCommand command = new(volunteerId);
 
             //Act
-            var result = await _sut.Handle(command, cancellationToken);
+            CSharpFunctionalExtensions.Result<Guid, Core.ErrorList> result = await _sut.Handle(command, cancellationToken);
 
             //Arrange
-            result.IsSuccess.Should().BeTrue();
-            result.Value.Should().NotBeEmpty();
-            result.Value.Should().Be(volunteerId);
+            _ = result.IsSuccess.Should().BeTrue();
+            _ = result.Value.Should().NotBeEmpty();
+            _ = result.Value.Should().Be(volunteerId);
         }
 
         [Fact]
         public async Task Delete_not_exist_volunteer_return_failure()
         {
             //Assert
-            var cancellationToken = new CancellationTokenSource().Token;
+            CancellationToken cancellationToken = new CancellationTokenSource().Token;
 
-            var volunteerId = Guid.NewGuid();
+            Guid volunteerId = Guid.NewGuid();
 
-            await SeedDatabase(new List<Guid> { Guid.NewGuid() }, cancellationToken);
+            await SeedDatabase([Guid.NewGuid()], cancellationToken);
 
-            var command = new DeleteVolunteerCommand(volunteerId);
+            DeleteVolunteerCommand command = new(volunteerId);
 
             //Act
-            var result = await _sut.Handle(command, cancellationToken);
+            CSharpFunctionalExtensions.Result<Guid, Core.ErrorList> result = await _sut.Handle(command, cancellationToken);
 
             //Arrange
-            result.IsFailure.Should().BeTrue();
-            result.Error.Should().NotBeEmpty();            
+            _ = result.IsFailure.Should().BeTrue();
+            _ = result.Error.Should().NotBeEmpty();
         }
 
         [Fact]
         public async Task Delete_volunteer_from_database_unaffected_other_volunteers()
         {
             //Assert
-            var cancellationToken = new CancellationTokenSource().Token;
+            CancellationToken cancellationToken = new CancellationTokenSource().Token;
 
-            var volunteerIdForDelete = Guid.NewGuid();
-            var volunteerIdNonDeleted = Guid.NewGuid();
+            Guid volunteerIdForDelete = Guid.NewGuid();
+            Guid volunteerIdNonDeleted = Guid.NewGuid();
 
             await SeedDatabase(
-                new List<Guid> { volunteerIdForDelete, volunteerIdNonDeleted }, 
+                [volunteerIdForDelete, volunteerIdNonDeleted],
                 cancellationToken);
 
-            var command = new DeleteVolunteerCommand(volunteerIdForDelete);
-            var existVolunteer = await Repository.GetByIdAsync(
-                VolunteerId.Create(volunteerIdNonDeleted), 
+            DeleteVolunteerCommand command = new(volunteerIdForDelete);
+            Domain.Entities.Volunteer? existVolunteer = await Repository.GetByIdAsync(
+                VolunteerId.Create(volunteerIdNonDeleted),
                 cancellationToken);
 
             //Act
-            var result = await _sut.Handle(command, cancellationToken);
+            CSharpFunctionalExtensions.Result<Guid, Core.ErrorList> result = await _sut.Handle(command, cancellationToken);
 
             //Arrange
-            result.IsSuccess.Should().BeTrue();
-            result.Value.Should().NotBeEmpty();
-            existVolunteer.Should().NotBeNull();
-            existVolunteer.Id.Value.Should().Be(volunteerIdNonDeleted);
+            _ = result.IsSuccess.Should().BeTrue();
+            _ = result.Value.Should().NotBeEmpty();
+            _ = existVolunteer.Should().NotBeNull();
+            _ = existVolunteer.Id.Value.Should().Be(volunteerIdNonDeleted);
         }
     }
 }

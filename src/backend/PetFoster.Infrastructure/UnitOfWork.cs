@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore.Storage;
-using PetFoster.Application.Database;
+using PetFoster.Core.Database;
 using PetFoster.Infrastructure.DbContexts;
 using System.Data;
 
@@ -16,14 +16,14 @@ namespace PetFoster.Infrastructure
 
         public async Task<IDbTransaction> BeginTransaction(CancellationToken cancellationToken = default)
         {
-            var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
+            IDbContextTransaction transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
 
             return transaction.GetDbTransaction();
         }
 
         public async Task SaveChanges(CancellationToken cancellationToken = default)
         {
-            await _dbContext.SaveChangesAsync(cancellationToken);
+            _ = await _dbContext.SaveChangesAsync(cancellationToken);
         }
     }
 }

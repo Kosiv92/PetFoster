@@ -10,11 +10,11 @@ namespace PetFoster.Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropCheckConstraint(
+            _ = migrationBuilder.DropCheckConstraint(
                 name: "CK_Volunteer_PhoneNumber_NumericOnly",
                 table: "pets");
 
-            migrationBuilder.AlterColumn<string>(
+            _ = migrationBuilder.AlterColumn<string>(
                 name: "name",
                 table: "pets",
                 type: "character varying(100)",
@@ -24,7 +24,7 @@ namespace PetFoster.Infrastructure.Migrations
                 oldType: "character varying(1)",
                 oldMaxLength: 1);
 
-            migrationBuilder.AddCheckConstraint(
+            _ = migrationBuilder.AddCheckConstraint(
                 name: "CK_Volunteer_PhoneNumber_NumericOnly",
                 table: "pets",
                 sql: "phone_number ~ '^[0-9]{11}$'");
@@ -33,11 +33,11 @@ namespace PetFoster.Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropCheckConstraint(
+            _ = migrationBuilder.DropCheckConstraint(
                 name: "CK_Volunteer_PhoneNumber_NumericOnly",
                 table: "pets");
 
-            migrationBuilder.AlterColumn<string>(
+            _ = migrationBuilder.AlterColumn<string>(
                 name: "name",
                 table: "pets",
                 type: "character varying(1)",
@@ -47,7 +47,7 @@ namespace PetFoster.Infrastructure.Migrations
                 oldType: "character varying(100)",
                 oldMaxLength: 100);
 
-            migrationBuilder.AddCheckConstraint(
+            _ = migrationBuilder.AddCheckConstraint(
                 name: "CK_Volunteer_PhoneNumber_NumericOnly",
                 table: "pets",
                 sql: "phone_number ~ '^[0-9]11$'");

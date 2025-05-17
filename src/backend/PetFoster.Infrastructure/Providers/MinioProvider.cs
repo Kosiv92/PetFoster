@@ -1,12 +1,12 @@
 ﻿using CSharpFunctionalExtensions;
 using Microsoft.Extensions.Logging;
-using Minio.DataModel.Args;
 using Minio;
-using PetFoster.Application.Interfaces;
-using PetFoster.Domain.Shared;
-using PetFoster.Domain.ValueObjects;
+using Minio.DataModel.Args;
 using PetFoster.Application.Files;
-using PetFoster.Application.DTO.Volunteer;
+using PetFoster.Application.Interfaces;
+using PetFoster.Core;
+using PetFoster.Core.DTO.Volunteer;
+using PetFoster.Core.ValueObjects;
 
 namespace PetFoster.Infrastructure.Providers
 {
@@ -25,15 +25,14 @@ namespace PetFoster.Infrastructure.Providers
         public async Task<Result<FilePath, Error>> UploadFile(
         FileData fileData, CancellationToken cancellationToken = default)
         {
-            var result = await UploadFiles(new List<FileData> { fileData }, cancellationToken);
-            if (result.IsFailure) return result.Error;
-            return result.Value.Single();
+            Result<IReadOnlyList<FilePath>, Error> result = await UploadFiles([fileData], cancellationToken);
+            return result.IsFailure ? (Result<FilePath, Error>)result.Error : (Result<FilePath, Error>)result.Value.Single();
         }
 
         public async Task<UnitResult<Error>> RemoveFile(Application.Files.FileInfo fileInfo,
             CancellationToken cancellationToken = default)
         {
-            var bucketExist = await IsBucketExist(fileInfo.BucketName, cancellationToken);
+            bool bucketExist = await IsBucketExist(fileInfo.BucketName, cancellationToken);
 
             if (bucketExist == false)
             {
@@ -42,14 +41,16 @@ namespace PetFoster.Infrastructure.Providers
 
             try
             {
-                var statArgs = new StatObjectArgs()
+                StatObjectArgs statArgs = new StatObjectArgs()
                     .WithBucket(fileInfo.BucketName)
                     .WithObject(fileInfo.FilePath.Path);
 
-                var objectStat = await _minioClient.StatObjectAsync(statArgs, cancellationToken);
+                Minio.DataModel.ObjectStat? objectStat = await _minioClient.StatObjectAsync(statArgs, cancellationToken);
 
                 if (objectStat is null)
+                {
                     return Result.Success<Error>();
+                }
 
                 RemoveObjectArgs removeArgs = new RemoveObjectArgs()
                 .WithBucket(fileInfo.BucketName)
@@ -72,54 +73,56 @@ namespace PetFoster.Infrastructure.Providers
         public async Task<Result<string, Error>> GetFileLink(GetFileDto dto,
             CancellationToken cancellationToken = default)
         {
-            var bucketExist = await IsBucketExist(dto.BucketName, cancellationToken);
+            bool bucketExist = await IsBucketExist(dto.BucketName, cancellationToken);
 
             if (bucketExist == false)
             {
                 return Error.Failure("bucket.not.exist", $"Bucket {dto.BucketName} is not exist");
             }
 
-            var expiry = (int)TimeSpan.FromHours(1).TotalSeconds;
+            int expiry = (int)TimeSpan.FromHours(1).TotalSeconds;
 
             try
             {
-                var getArgs = new PresignedGetObjectArgs()
+                PresignedGetObjectArgs getArgs = new PresignedGetObjectArgs()
                 .WithBucket(dto.BucketName)
-                .WithObject(dto.FilePath.Path)                
+                .WithObject(dto.FilePath.Path)
                 .WithExpiry(expiry);
 
                 return await _minioClient.PresignedGetObjectAsync(getArgs);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError(
                     "Throw exception {Exception} while get link for file {FilePath} from bucket {BucketName} in minio",
                     ex.Message, dto.FilePath.Path, dto.BucketName);
 
                 return Error.Failure("file.get.link", $"Fail to get link to file {dto.FilePath.Path} in minio");
-            }  
+            }
         }
 
         public async Task<Result<IReadOnlyList<FilePath>, Error>> UploadFiles(
         IEnumerable<FileData> filesData,
         CancellationToken cancellationToken = default)
         {
-            var semaphoreSlim = new SemaphoreSlim(MAX_DEGREE_OF_PARALLELISM);
-            var filesList = filesData.ToList();
+            SemaphoreSlim semaphoreSlim = new(MAX_DEGREE_OF_PARALLELISM);
+            List<FileData> filesList = filesData.ToList();
 
             try
             {
                 await IfBucketsNotExistCreateBucket(filesList, cancellationToken);
 
-                var tasks = filesList.Select(async file =>
+                IEnumerable<Task<Result<FilePath, Error>>> tasks = filesList.Select(async file =>
                     await PutObject(file, semaphoreSlim, cancellationToken));
 
-                var pathsResult = await Task.WhenAll(tasks);
+                Result<FilePath, Error>[] pathsResult = await Task.WhenAll(tasks);
 
                 if (pathsResult.Any(p => p.IsFailure))
+                {
                     return pathsResult.First().Error;
+                }
 
-                var results = pathsResult.Select(p => p.Value).ToList();
+                List<FilePath> results = pathsResult.Select(p => p.Value).ToList();
 
                 _logger.LogInformation("Uploaded files: {files}", results.Select(f => f.Path));
 
@@ -141,7 +144,7 @@ namespace PetFoster.Infrastructure.Providers
         {
             await semaphoreSlim.WaitAsync(cancellationToken);
 
-            var putObjectArgs = new PutObjectArgs()
+            PutObjectArgs putObjectArgs = new PutObjectArgs()
                 .WithBucket(fileData.FileInfo.BucketName)
                 .WithStreamData(fileData.Stream)
                 .WithObjectSize(fileData.Stream.Length)
@@ -149,7 +152,7 @@ namespace PetFoster.Infrastructure.Providers
 
             try
             {
-                await _minioClient
+                _ = await _minioClient
                     .PutObjectAsync(putObjectArgs, cancellationToken);
 
                 return fileData.FileInfo.FilePath;
@@ -166,7 +169,7 @@ namespace PetFoster.Infrastructure.Providers
             }
             finally
             {
-                semaphoreSlim.Release();
+                _ = semaphoreSlim.Release();
             }
         }
 
@@ -176,13 +179,13 @@ namespace PetFoster.Infrastructure.Providers
         {
             HashSet<string> bucketNames = [.. filesData.Select(file => file.FileInfo.BucketName)];
 
-            foreach (var bucketName in bucketNames)
+            foreach (string bucketName in bucketNames)
             {
-                var bucketExist = await IsBucketExist(bucketName, cancellationToken);
+                bool bucketExist = await IsBucketExist(bucketName, cancellationToken);
 
                 if (bucketExist == false)
                 {
-                    var makeBucketArgs = new MakeBucketArgs()
+                    MakeBucketArgs makeBucketArgs = new MakeBucketArgs()
                         .WithBucket(bucketName);
 
                     await _minioClient.MakeBucketAsync(makeBucketArgs, cancellationToken);
@@ -193,7 +196,7 @@ namespace PetFoster.Infrastructure.Providers
         private Task<bool> IsBucketExist(string bucketName,
             CancellationToken cancellationToken)
         {
-            var bucketExistArgs = new BucketExistsArgs()
+            BucketExistsArgs bucketExistArgs = new BucketExistsArgs()
                     .WithBucket(bucketName);
 
             return _minioClient

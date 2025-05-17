@@ -1,9 +1,9 @@
 ﻿using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using PetFoster.Application.DTO.Volunteer;
-using PetFoster.Application.Interfaces;
 using PetFoster.Application.Volunteers.GetVolunteers;
-using PetFoster.Domain.Shared;
+using PetFoster.Core;
+using PetFoster.Core.Abstractions;
+using PetFoster.Core.DTO.Volunteer;
 
 namespace PetFoster.IntegrateTests.Volunteers
 {
@@ -23,9 +23,9 @@ namespace PetFoster.IntegrateTests.Volunteers
         public async Task Get_volunteers_return_result(int volunteerCount)
         {
             //Assert
-            var cancellationToken = new CancellationTokenSource().Token;
+            CancellationToken cancellationToken = new CancellationTokenSource().Token;
 
-            var volunteerIds = new List<Guid>();
+            List<Guid> volunteerIds = [];
             for (int i = 0; i < volunteerCount; i++)
             {
                 volunteerIds.Add(Guid.NewGuid());
@@ -35,19 +35,19 @@ namespace PetFoster.IntegrateTests.Volunteers
 
             const int pageIndex = 1;
 
-            var query = new GetVoluteersWithPaginationQuery(
+            GetVoluteersWithPaginationQuery query = new(
                 null,
                 null,
                 pageIndex,
                 volunteerCount);
 
             //Act
-            var result = await _sut.Handle(query, cancellationToken);
+            PagedList<VolunteerDto> result = await _sut.Handle(query, cancellationToken);
 
             //Arrange
-            result.Should().NotBeNull();
-            result.TotalCount.Should().Be(volunteerCount);
-            result.Items.Should().Contain(d => d.Id == volunteerIds[0]);
+            _ = result.Should().NotBeNull();
+            _ = result.TotalCount.Should().Be(volunteerCount);
+            _ = result.Items.Should().Contain(d => d.Id == volunteerIds[0]);
         }
 
         [Theory]
@@ -57,9 +57,9 @@ namespace PetFoster.IntegrateTests.Volunteers
             int volunteerCount, int pageSize, int partResultCount)
         {
             //Assert
-            var cancellationToken = new CancellationTokenSource().Token;
+            CancellationToken cancellationToken = new CancellationTokenSource().Token;
 
-            var volunteerIds = new List<Guid>();
+            List<Guid> volunteerIds = [];
             for (int i = 0; i < volunteerCount; i++)
             {
                 volunteerIds.Add(Guid.NewGuid());
@@ -69,32 +69,32 @@ namespace PetFoster.IntegrateTests.Volunteers
 
             const int pageIndex = 2;
 
-            var query = new GetVoluteersWithPaginationQuery(
+            GetVoluteersWithPaginationQuery query = new(
                 null,
                 null,
                 pageIndex,
                 pageSize);
 
             //Act
-            var result = await _sut.Handle(query, cancellationToken);
+            PagedList<VolunteerDto> result = await _sut.Handle(query, cancellationToken);
 
             //Arrange
-            result.Should().NotBeNull();
-            result.TotalCount.Should().Be(volunteerCount);
-            result.Items.Count.Should().Be(partResultCount);
-            result.Items.Select(p => p.Id).Should()
-                .OnlyContain(id => volunteerIds.Contains(id));            
+            _ = result.Should().NotBeNull();
+            _ = result.TotalCount.Should().Be(volunteerCount);
+            _ = result.Items.Count.Should().Be(partResultCount);
+            _ = result.Items.Select(p => p.Id).Should()
+                .OnlyContain(id => volunteerIds.Contains(id));
         }
 
-        [Fact]        
+        [Fact]
         public async Task Get_volunteers_from_not_exist_page_return_empty_result()
         {
             //Assert
-            var cancellationToken = new CancellationTokenSource().Token;
+            CancellationToken cancellationToken = new CancellationTokenSource().Token;
 
             int volunteerCount = 2;
 
-            var volunteerIds = new List<Guid>();
+            List<Guid> volunteerIds = [];
             for (int i = 0; i < volunteerCount; i++)
             {
                 volunteerIds.Add(Guid.NewGuid());
@@ -104,19 +104,19 @@ namespace PetFoster.IntegrateTests.Volunteers
 
             const int pageIndex = 2;
 
-            var query = new GetVoluteersWithPaginationQuery(
+            GetVoluteersWithPaginationQuery query = new(
                 null,
                 null,
                 pageIndex,
                 volunteerCount);
 
             //Act
-            var result = await _sut.Handle(query, cancellationToken);
+            PagedList<VolunteerDto> result = await _sut.Handle(query, cancellationToken);
 
             //Arrange
-            result.Should().NotBeNull();
-            result.TotalCount.Should().Be(volunteerCount);
-            result.Items.Count.Should().Be(0);            
+            _ = result.Should().NotBeNull();
+            _ = result.TotalCount.Should().Be(volunteerCount);
+            _ = result.Items.Count.Should().Be(0);
         }
     }
 }

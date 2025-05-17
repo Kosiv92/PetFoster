@@ -1,8 +1,8 @@
 ﻿using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using PetFoster.Application.DTO.Specie;
-using PetFoster.Application.Interfaces;
 using PetFoster.Application.Species.GetBreeds;
+using PetFoster.Core.Abstractions;
+using PetFoster.Core.DTO.Specie;
 
 namespace PetFoster.IntegrateTests.Breeds
 {
@@ -21,39 +21,12 @@ namespace PetFoster.IntegrateTests.Breeds
         public async Task Get_breeds_return_result()
         {
             //Assert
-            var cancellationToken = new CancellationTokenSource().Token;
+            CancellationToken cancellationToken = new CancellationTokenSource().Token;
 
             int breedsCount = 3;
 
-            var specieId = Guid.NewGuid();
-            List<Guid> breedIds = new List<Guid>();
-            for(int i = 0; i < breedsCount; i++)
-            {
-                breedIds.Add(Guid.NewGuid());
-            }
-
-            await SeedDatabase(specieId, breedIds, cancellationToken);
-
-            var query = new GetBreedsBySpecieIdQuery(specieId);
-
-            //Act
-            var result = await _sut.Handle(query, cancellationToken);
-
-            //Arrange
-            result.Should().NotBeNull();
-            result.Count.Should().Be(breedsCount);            
-        }
-
-        [Fact]
-        public async Task Get_breeds_from_not_exist_specie_return_failure()
-        {
-            //Assert
-            var cancellationToken = new CancellationTokenSource().Token;
-
-            int breedsCount = 3;
-
-            var specieId = Guid.NewGuid();
-            List<Guid> breedIds = new List<Guid>();
+            Guid specieId = Guid.NewGuid();
+            List<Guid> breedIds = [];
             for (int i = 0; i < breedsCount; i++)
             {
                 breedIds.Add(Guid.NewGuid());
@@ -61,13 +34,40 @@ namespace PetFoster.IntegrateTests.Breeds
 
             await SeedDatabase(specieId, breedIds, cancellationToken);
 
-            var query = new GetBreedsBySpecieIdQuery(Guid.NewGuid());
+            GetBreedsBySpecieIdQuery query = new(specieId);
 
             //Act
-            var result = await _sut.Handle(query, cancellationToken);
+            List<BreedDto> result = await _sut.Handle(query, cancellationToken);
 
             //Arrange
-            result.Should().BeEmpty();            
+            _ = result.Should().NotBeNull();
+            _ = result.Count.Should().Be(breedsCount);
+        }
+
+        [Fact]
+        public async Task Get_breeds_from_not_exist_specie_return_failure()
+        {
+            //Assert
+            CancellationToken cancellationToken = new CancellationTokenSource().Token;
+
+            int breedsCount = 3;
+
+            Guid specieId = Guid.NewGuid();
+            List<Guid> breedIds = [];
+            for (int i = 0; i < breedsCount; i++)
+            {
+                breedIds.Add(Guid.NewGuid());
+            }
+
+            await SeedDatabase(specieId, breedIds, cancellationToken);
+
+            GetBreedsBySpecieIdQuery query = new(Guid.NewGuid());
+
+            //Act
+            List<BreedDto> result = await _sut.Handle(query, cancellationToken);
+
+            //Arrange
+            _ = result.Should().BeEmpty();
         }
     }
 }

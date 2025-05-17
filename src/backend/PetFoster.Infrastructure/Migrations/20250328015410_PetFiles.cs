@@ -10,7 +10,7 @@ namespace PetFoster.Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AlterColumn<string>(
+            _ = migrationBuilder.AlterColumn<string>(
                 name: "name",
                 table: "species",
                 type: "character varying(200)",
@@ -20,27 +20,27 @@ namespace PetFoster.Infrastructure.Migrations
                 oldType: "character varying(2)",
                 oldMaxLength: 2);
 
-            migrationBuilder.AddColumn<bool>(
+            _ = migrationBuilder.AddColumn<bool>(
                 name: "is_deleted",
                 table: "species",
                 type: "boolean",
                 nullable: false,
                 defaultValue: false);
 
-            migrationBuilder.AddColumn<string>(
+            _ = migrationBuilder.AddColumn<string>(
                 name: "file_list",
                 table: "pets",
                 type: "text",
                 nullable: true);
 
-            migrationBuilder.AddColumn<int>(
+            _ = migrationBuilder.AddColumn<int>(
                 name: "position",
                 table: "pets",
                 type: "integer",
                 nullable: false,
                 defaultValue: 0);
 
-            migrationBuilder.AlterColumn<string>(
+            _ = migrationBuilder.AlterColumn<string>(
                 name: "name",
                 table: "breeds",
                 type: "character varying(200)",
@@ -50,7 +50,7 @@ namespace PetFoster.Infrastructure.Migrations
                 oldType: "character varying(2)",
                 oldMaxLength: 2);
 
-            migrationBuilder.AddColumn<bool>(
+            _ = migrationBuilder.AddColumn<bool>(
                 name: "is_deleted",
                 table: "breeds",
                 type: "boolean",
@@ -61,23 +61,23 @@ namespace PetFoster.Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
+            _ = migrationBuilder.DropColumn(
                 name: "is_deleted",
                 table: "species");
 
-            migrationBuilder.DropColumn(
+            _ = migrationBuilder.DropColumn(
                 name: "file_list",
                 table: "pets");
 
-            migrationBuilder.DropColumn(
+            _ = migrationBuilder.DropColumn(
                 name: "position",
                 table: "pets");
 
-            migrationBuilder.DropColumn(
+            _ = migrationBuilder.DropColumn(
                 name: "is_deleted",
                 table: "breeds");
 
-            migrationBuilder.AlterColumn<string>(
+            _ = migrationBuilder.AlterColumn<string>(
                 name: "name",
                 table: "species",
                 type: "character varying(2)",
@@ -87,7 +87,7 @@ namespace PetFoster.Infrastructure.Migrations
                 oldType: "character varying(200)",
                 oldMaxLength: 200);
 
-            migrationBuilder.AlterColumn<string>(
+            _ = migrationBuilder.AlterColumn<string>(
                 name: "name",
                 table: "breeds",
                 type: "character varying(2)",

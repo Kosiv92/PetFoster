@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using PetFoster.Application.Interfaces;
 using PetFoster.Application.Volunteers.UpdatePetStatus;
+using PetFoster.Core.Abstractions;
 using PetFoster.Domain.Enums;
 using PetFoster.Domain.Ids;
 
@@ -11,7 +11,7 @@ namespace PetFoster.IntegrateTests.Pets
     {
         private readonly ICommandHandler<Guid, UpdatePetStatusCommand> _sut;
 
-        public UpdatePetStatusHandlerTests(IntegrationTestsWebFactory factory) 
+        public UpdatePetStatusHandlerTests(IntegrationTestsWebFactory factory)
             : base(factory)
         {
             _sut = ServiceScope.ServiceProvider
@@ -24,64 +24,64 @@ namespace PetFoster.IntegrateTests.Pets
         public async Task Update_valid_pet_status_return_success(int assistanceStatusCode)
         {
             //Arrange
-            var cancellationToken = new CancellationTokenSource().Token;
+            CancellationToken cancellationToken = new CancellationTokenSource().Token;
 
-            var volunteerId = Guid.NewGuid();
-            var specieId = Guid.NewGuid();
-            var breedId = Guid.NewGuid();
-            var petId = Guid.NewGuid();
+            Guid volunteerId = Guid.NewGuid();
+            Guid specieId = Guid.NewGuid();
+            Guid breedId = Guid.NewGuid();
+            Guid petId = Guid.NewGuid();
 
             await SeedDatabase(volunteerId, specieId, breedId, petId, cancellationToken);
 
-            var assistanceStatus = ((AssistanceStatus)assistanceStatusCode).ToString();
+            string assistanceStatus = ((AssistanceStatus)assistanceStatusCode).ToString();
 
-            var command = new UpdatePetStatusCommand(volunteerId, petId, assistanceStatus);
+            UpdatePetStatusCommand command = new(volunteerId, petId, assistanceStatus);
 
             //Act
-            var result = await _sut.Handle(command, CancellationToken.None);
-            var volunteer = await VolunteerRepository
+            CSharpFunctionalExtensions.Result<Guid, Core.ErrorList> result = await _sut.Handle(command, CancellationToken.None);
+            Domain.Entities.Volunteer? volunteer = await VolunteerRepository
                 .GetByIdAsync(
                 VolunteerId.Create(volunteerId),
                 cancellationToken);
-            var pet = volunteer!.FosteredAnimals.Single();
+            Domain.Entities.Pet pet = volunteer!.FosteredAnimals.Single();
 
             //Assert
-            result.IsSuccess.Should().BeTrue();
-            result.Value.Should().Be(petId);
-            pet.Id.Value.Should().Be(petId);            
-            pet.AssistanceStatus.Should().Be((AssistanceStatus)assistanceStatusCode);
+            _ = result.IsSuccess.Should().BeTrue();
+            _ = result.Value.Should().Be(petId);
+            _ = pet.Id.Value.Should().Be(petId);
+            _ = pet.AssistanceStatus.Should().Be((AssistanceStatus)assistanceStatusCode);
         }
 
         [Fact]
         public async Task Update_invalid_pet_status_return_failure()
         {
             //Arrange
-            var cancellationToken = new CancellationTokenSource().Token;
+            CancellationToken cancellationToken = new CancellationTokenSource().Token;
 
-            var volunteerId = Guid.NewGuid();
-            var specieId = Guid.NewGuid();
-            var breedId = Guid.NewGuid();
-            var petId = Guid.NewGuid();
+            Guid volunteerId = Guid.NewGuid();
+            Guid specieId = Guid.NewGuid();
+            Guid breedId = Guid.NewGuid();
+            Guid petId = Guid.NewGuid();
 
             await SeedDatabase(volunteerId, specieId, breedId, petId, cancellationToken);
 
-            var assistanceStatus = AssistanceStatus.FoundHome;
+            AssistanceStatus assistanceStatus = AssistanceStatus.FoundHome;
 
-            var command = new UpdatePetStatusCommand(volunteerId, petId, assistanceStatus.ToString());
+            UpdatePetStatusCommand command = new(volunteerId, petId, assistanceStatus.ToString());
 
             //Act
-            var result = await _sut.Handle(command, CancellationToken.None);
-            var volunteer = await VolunteerRepository
+            CSharpFunctionalExtensions.Result<Guid, Core.ErrorList> result = await _sut.Handle(command, CancellationToken.None);
+            Domain.Entities.Volunteer? volunteer = await VolunteerRepository
                 .GetByIdAsync(
                 VolunteerId.Create(volunteerId),
                 cancellationToken);
-            var pet = volunteer!.FosteredAnimals.Single();
+            Domain.Entities.Pet pet = volunteer!.FosteredAnimals.Single();
 
             //Assert
-            result.IsFailure.Should().BeTrue();
+            _ = result.IsFailure.Should().BeTrue();
             result.Error.Single().Type.Should().Be(ErrorType.Validation);
-            pet.Id.Value.Should().Be(petId);
-            pet.AssistanceStatus.Should().NotBe(assistanceStatus);
+            _ = pet.Id.Value.Should().Be(petId);
+            _ = pet.AssistanceStatus.Should().NotBe(assistanceStatus);
         }
 
     }

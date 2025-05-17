@@ -1,8 +1,8 @@
 ﻿using AutoFixture;
 using Microsoft.Extensions.DependencyInjection;
+using PetFoster.Core.Interfaces;
 using PetFoster.Domain.Entities;
 using PetFoster.Domain.Ids;
-using PetFoster.Domain.Interfaces;
 
 namespace PetFoster.IntegrateTests.Pets
 {
@@ -30,17 +30,17 @@ namespace PetFoster.IntegrateTests.Pets
             Guid specieId, Guid breedId, Guid? petId,
             CancellationToken cancellationToken = default)
         {
-            var specie = Fixture.CreateSpecie(specieId);
-            var breed = Fixture.CreateBreed(breedId);
-            specie.AddBreed(breed);
+            Specie specie = Fixture.CreateSpecie(specieId);
+            Breed breed = Fixture.CreateBreed(breedId);
+            _ = specie.AddBreed(breed);
             await SpecieRepository.AddAsync(specie, cancellationToken);
 
-            var newVolunteer = Fixture.CreateVolunteer(volunteerId);
+            Volunteer newVolunteer = Fixture.CreateVolunteer(volunteerId);
 
-            if(petId != null)
+            if (petId != null)
             {
-                var pet = Fixture.CreatePet(petId.Value, specieId, breedId, null, null);
-                newVolunteer.AddPet(pet);
+                Pet pet = Fixture.CreatePet(petId.Value, specieId, breedId, null, null);
+                _ = newVolunteer.AddPet(pet);
             }
 
             await VolunteerRepository.AddAsync(newVolunteer, cancellationToken);
@@ -50,25 +50,28 @@ namespace PetFoster.IntegrateTests.Pets
             Guid specieId, Guid breedId, IEnumerable<Pet> pets,
             CancellationToken cancellationToken = default)
         {
-            var specie = Fixture.CreateSpecie(specieId);
-            var breed = Fixture.CreateBreed(breedId);
-            specie.AddBreed(breed);
+            Specie specie = Fixture.CreateSpecie(specieId);
+            Breed breed = Fixture.CreateBreed(breedId);
+            _ = specie.AddBreed(breed);
             await SpecieRepository.AddAsync(specie, cancellationToken);
 
-            var newVolunteer = Fixture.CreateVolunteer(volunteerId);
+            Volunteer newVolunteer = Fixture.CreateVolunteer(volunteerId);
 
             if (pets.Any() == true)
             {
-                foreach(var pet in pets)
+                foreach (Pet pet in pets)
                 {
-                    newVolunteer.AddPet(pet);
-                }                
+                    _ = newVolunteer.AddPet(pet);
+                }
             }
 
             await VolunteerRepository.AddAsync(newVolunteer, cancellationToken);
         }
 
-        public Task InitializeAsync() => Task.CompletedTask;
+        public Task InitializeAsync()
+        {
+            return Task.CompletedTask;
+        }
 
         public async Task DisposeAsync()
         {

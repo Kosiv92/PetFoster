@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PetFoster.Core.Interfaces;
 using PetFoster.Domain.Entities;
 using PetFoster.Domain.Ids;
-using PetFoster.Domain.Interfaces;
 using PetFoster.Infrastructure.DbContexts;
 using System.Linq.Expressions;
 
@@ -10,7 +10,7 @@ namespace PetFoster.Infrastructure.Repositories
     public sealed class VolunteersRepository : IRepository<Volunteer, VolunteerId>
     {
         private readonly WriteDbContext _dbContext;
-        DbSet<Volunteer> _volunteers;
+        private readonly DbSet<Volunteer> _volunteers;
 
         public VolunteersRepository(WriteDbContext dbContext)
         {
@@ -20,18 +20,20 @@ namespace PetFoster.Infrastructure.Repositories
 
         public async Task AddAsync(Volunteer entity, CancellationToken cancellationToken = default)
         {
-            await _volunteers.AddAsync(entity, cancellationToken);
-            await SaveChangesAsync(null, cancellationToken);            
+            _ = await _volunteers.AddAsync(entity, cancellationToken);
+            await SaveChangesAsync(null, cancellationToken);
         }
 
         public async Task<VolunteerId> DeleteAsync(VolunteerId id, CancellationToken cancellationToken = default)
         {
-            var entity = await _volunteers.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+            Volunteer? entity = await _volunteers.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
 
             if (entity == null)
+            {
                 throw new Exception($"Volunteer with ID:{id} not found");
+            }
 
-            _volunteers.Remove(entity);
+            _ = _volunteers.Remove(entity);
             await SaveChangesAsync(null, cancellationToken);
 
             return id;
@@ -45,13 +47,15 @@ namespace PetFoster.Infrastructure.Repositories
         }
 
         public Task<Volunteer?> GetByIdAsync(VolunteerId id, CancellationToken cancellationToken = default)
-            => _volunteers.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);        
+        {
+            return _volunteers.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+        }
 
         public Task SaveChangesAsync(Volunteer? entity, CancellationToken cancellationToken = default)
         {
             if (entity != null)
             {
-                _volunteers.Attach(entity);
+                _ = _volunteers.Attach(entity);
             }
             return _dbContext.SaveChangesAsync(cancellationToken);
         }

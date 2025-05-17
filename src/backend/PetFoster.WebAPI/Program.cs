@@ -4,12 +4,12 @@ using PetFoster.Infrastructure.Extensions;
 using PetFoster.WebAPI.Extensions;
 using Serilog;
 
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
     .WriteTo.Debug()
-    .WriteTo.Seq(builder.Configuration.GetConnectionString("Seq") 
+    .WriteTo.Seq(builder.Configuration.GetConnectionString("Seq")
     ?? throw new ArgumentNullException("Seq"))
     .CreateLogger();
 
@@ -26,14 +26,14 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddSerilog();
 
-var app = builder.Build();
+WebApplication app = builder.Build();
 
 app.UseCustomExceptionHandler();
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    _ = app.UseSwagger();
+    _ = app.UseSwaggerUI();
 }
 
 app.UseSerilogRequestLogging();

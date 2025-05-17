@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using PetFoster.Application.DTO.Specie;
+using PetFoster.Core.DTO.Specie;
 
 namespace PetFoster.Infrastructure.DbContexts
 {
@@ -17,8 +17,10 @@ namespace PetFoster.Infrastructure.DbContexts
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
-            => modelBuilder
-            .ApplyConfigurationsFromAssembly(typeof(ReadDbContext).Assembly, 
-                type => type.FullName?.Contains("Configurations.Read") ?? false);
+        {
+            _ = modelBuilder
+                    .ApplyConfigurationsFromAssembly(typeof(ReadDbContext).Assembly,
+                        type => type.FullName?.Contains("Configurations.Read") ?? false);
+        }
     }
 }

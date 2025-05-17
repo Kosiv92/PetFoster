@@ -1,11 +1,11 @@
 ﻿using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using PetFoster.Application.DTO;
-using PetFoster.Application.DTO.Volunteer;
-using PetFoster.Application.Interfaces;
 using PetFoster.Application.Volunteers.GetPets;
+using PetFoster.Core;
+using PetFoster.Core.Abstractions;
+using PetFoster.Core.DTO;
+using PetFoster.Core.DTO.Volunteer;
 using PetFoster.Domain.Entities;
-using PetFoster.Domain.Shared;
 
 namespace PetFoster.IntegrateTests.Pets;
 
@@ -24,55 +24,57 @@ public class GetPetsWithPaginationHandlerTests : PetTestBase
     public async Task Get_pet_from_database_return_result()
     {
         //Arrange
-        var cancellationToken = new CancellationTokenSource().Token;
+        CancellationToken cancellationToken = new CancellationTokenSource().Token;
 
-        var volunteerId = Guid.NewGuid();
-        var specieId = Guid.NewGuid();
-        var breedId = Guid.NewGuid();
-        var petId = Guid.NewGuid();
+        Guid volunteerId = Guid.NewGuid();
+        Guid specieId = Guid.NewGuid();
+        Guid breedId = Guid.NewGuid();
+        Guid petId = Guid.NewGuid();
 
         await SeedDatabase(volunteerId, specieId, breedId, petId, cancellationToken);
 
-        var query = new GetPetsWithPaginationQuery(1, 5, null, default, null);
+        GetPetsWithPaginationQuery query = new(1, 5, null, default, null);
 
         //Act
-        var result = await _sut.Handle(query, CancellationToken.None);
+        PagedList<PetDto> result = await _sut.Handle(query, CancellationToken.None);
 
         //Assert
-        result.Should().NotBeNull();
-        result.Items.Should().NotBeEmpty();
-        result.Items.Single().Id.Should().Be(petId);
+        _ = result.Should().NotBeNull();
+        _ = result.Items.Should().NotBeEmpty();
+        _ = result.Items.Single().Id.Should().Be(petId);
     }
 
     [Fact]
     public async Task Get_pet_with_name_filter_return_expected_result()
     {
         //Arrange
-        var cancellationToken = new CancellationTokenSource().Token;
+        CancellationToken cancellationToken = new CancellationTokenSource().Token;
 
-        var expectedName = "pet_name_1";
+        string expectedName = "pet_name_1";
 
-        var volunteerId = Guid.NewGuid();
-        var specieId = Guid.NewGuid();
-        var breedId = Guid.NewGuid();
-        var first_pet = Fixture.CreatePet(Guid.NewGuid(), specieId, breedId, expectedName, null);
-        var second_pet = Fixture.CreatePet(Guid.NewGuid(), specieId, breedId, null, null);
-        var pets = new List<Pet>() { first_pet, second_pet };
+        Guid volunteerId = Guid.NewGuid();
+        Guid specieId = Guid.NewGuid();
+        Guid breedId = Guid.NewGuid();
+        Pet first_pet = Fixture.CreatePet(Guid.NewGuid(), specieId, breedId, expectedName, null);
+        Pet second_pet = Fixture.CreatePet(Guid.NewGuid(), specieId, breedId, null, null);
+        List<Pet> pets = [first_pet, second_pet];
 
         await SeedDatabaseWithExistPets(volunteerId, specieId, breedId, pets, cancellationToken);
 
-        var filter = new List<FilterItemDto>();
-        filter.Add(new FilterItemDto("name", "=", expectedName));
+        List<FilterItemDto> filter =
+        [
+            new FilterItemDto("name", "=", expectedName)
+        ];
 
-        var query = new GetPetsWithPaginationQuery(1, 5, null, default, filter);
+        GetPetsWithPaginationQuery query = new(1, 5, null, default, filter);
 
         //Act
-        var result = await _sut.Handle(query, cancellationToken);
+        PagedList<PetDto> result = await _sut.Handle(query, cancellationToken);
 
         //Assert
-        result.Should().NotBeNull();
-        result.Items.Should().NotBeEmpty();
-        result.Items.Single().Name.Should().Be(expectedName);
+        _ = result.Should().NotBeNull();
+        _ = result.Items.Should().NotBeEmpty();
+        _ = result.Items.Single().Name.Should().Be(expectedName);
     }
 
     [Theory]
@@ -82,29 +84,29 @@ public class GetPetsWithPaginationHandlerTests : PetTestBase
         string firstColoration, string secondColoration, bool isAscSort)
     {
         //Arrange
-        var cancellationToken = new CancellationTokenSource().Token;
+        CancellationToken cancellationToken = new CancellationTokenSource().Token;
 
-        var volunteerId = Guid.NewGuid();
-        var specieId = Guid.NewGuid();
-        var breedId = Guid.NewGuid();
-        var first_pet = Fixture.CreatePet(Guid.NewGuid(), specieId, breedId, null, firstColoration);
-        var second_pet = Fixture.CreatePet(Guid.NewGuid(), specieId, breedId, null, secondColoration);
-        var pets = new List<Pet>() { first_pet, second_pet };
+        Guid volunteerId = Guid.NewGuid();
+        Guid specieId = Guid.NewGuid();
+        Guid breedId = Guid.NewGuid();
+        Pet first_pet = Fixture.CreatePet(Guid.NewGuid(), specieId, breedId, null, firstColoration);
+        Pet second_pet = Fixture.CreatePet(Guid.NewGuid(), specieId, breedId, null, secondColoration);
+        List<Pet> pets = [first_pet, second_pet];
 
         await SeedDatabaseWithExistPets(volunteerId, specieId, breedId, pets, cancellationToken);
 
-        var sortProperty = "coloration";
+        string sortProperty = "coloration";
 
-        var query = new GetPetsWithPaginationQuery(1, 5, sortProperty, isAscSort, null);
+        GetPetsWithPaginationQuery query = new(1, 5, sortProperty, isAscSort, null);
 
         //Act
-        var result = await _sut.Handle(query, cancellationToken);
+        PagedList<PetDto> result = await _sut.Handle(query, cancellationToken);
 
         //Assert
-        result.Should().NotBeNull();
-        result.Items.Should().HaveCount(2);
-        result.Items[0].Coloration.Should().Be(secondColoration);
-        result.Items[1].Coloration.Should().Be(firstColoration);
+        _ = result.Should().NotBeNull();
+        _ = result.Items.Should().HaveCount(2);
+        _ = result.Items[0].Coloration.Should().Be(secondColoration);
+        _ = result.Items[1].Coloration.Should().Be(firstColoration);
     }
 
     [Theory]
@@ -114,36 +116,38 @@ public class GetPetsWithPaginationHandlerTests : PetTestBase
         string firstName, string secondName, bool isAscSort)
     {
         //Arrange
-        var cancellationToken = new CancellationTokenSource().Token;
+        CancellationToken cancellationToken = new CancellationTokenSource().Token;
 
-        var coloration = "white";
+        string coloration = "white";
 
-        var volunteerId = Guid.NewGuid();
-        var specieId = Guid.NewGuid();
-        var breedId = Guid.NewGuid();
-        var first_pet = Fixture.CreatePet(Guid.NewGuid(), specieId, breedId, firstName, coloration);
-        var second_pet = Fixture.CreatePet(Guid.NewGuid(), specieId, breedId, secondName, coloration);
-        var third_pet = Fixture.CreatePet(Guid.NewGuid(), specieId, breedId, null, null);
-        var pets = new List<Pet>() { first_pet, second_pet, third_pet };
+        Guid volunteerId = Guid.NewGuid();
+        Guid specieId = Guid.NewGuid();
+        Guid breedId = Guid.NewGuid();
+        Pet first_pet = Fixture.CreatePet(Guid.NewGuid(), specieId, breedId, firstName, coloration);
+        Pet second_pet = Fixture.CreatePet(Guid.NewGuid(), specieId, breedId, secondName, coloration);
+        Pet third_pet = Fixture.CreatePet(Guid.NewGuid(), specieId, breedId, null, null);
+        List<Pet> pets = [first_pet, second_pet, third_pet];
 
         await SeedDatabaseWithExistPets(volunteerId, specieId, breedId, pets, cancellationToken);
 
-        var filter = new List<FilterItemDto>();
-        filter.Add(new FilterItemDto("coloration", "=", coloration));
+        List<FilterItemDto> filter =
+        [
+            new FilterItemDto("coloration", "=", coloration)
+        ];
 
-        var sortProperty = "name";
+        string sortProperty = "name";
 
-        var query = new GetPetsWithPaginationQuery(1, 5, sortProperty, isAscSort, filter);
+        GetPetsWithPaginationQuery query = new(1, 5, sortProperty, isAscSort, filter);
 
         //Act
-        var result = await _sut.Handle(query, cancellationToken);
+        PagedList<PetDto> result = await _sut.Handle(query, cancellationToken);
 
         //Assert
-        result.Should().NotBeNull();
-        result.Items.Should().HaveCount(2);
-        result.TotalCount.Should().Be(3);
-        result.Items[0].Name.Should().Be(second_pet.Name.Value);
-        result.Items[1].Name.Should().Be(first_pet.Name.Value);
+        _ = result.Should().NotBeNull();
+        _ = result.Items.Should().HaveCount(2);
+        _ = result.TotalCount.Should().Be(3);
+        _ = result.Items[0].Name.Should().Be(second_pet.Name.Value);
+        _ = result.Items[1].Name.Should().Be(first_pet.Name.Value);
     }
 }
 

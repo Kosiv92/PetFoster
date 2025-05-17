@@ -26,6 +26,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\backend\PetFoster.WebAPI\PetFoster.WebAPI.csproj" />
+    <ProjectReference Include="..\PetFoster.Shared\PetFoster.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>

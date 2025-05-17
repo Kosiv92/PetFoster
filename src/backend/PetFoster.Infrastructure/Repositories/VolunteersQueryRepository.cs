@@ -1,5 +1,4 @@
 ﻿using Dapper;
-using PetFoster.Application.DTO.Volunteer;
 using PetFoster.Application.Interfaces;
 using PetFoster.Application.Volunteers.GetPetByID;
 using PetFoster.Application.Volunteers.GetPets;
@@ -8,9 +7,10 @@ using PetFoster.Application.Volunteers.GetPetsBySpecieId;
 using PetFoster.Application.Volunteers.GetPetsByVolunteerId;
 using PetFoster.Application.Volunteers.GetVolunteer;
 using PetFoster.Application.Volunteers.GetVolunteers;
-using PetFoster.Domain.Interfaces;
-using PetFoster.Domain.Shared;
-using PetFoster.Domain.ValueObjects;
+using PetFoster.Core;
+using PetFoster.Core.DTO;
+using PetFoster.Core.DTO.Volunteer;
+using PetFoster.Core.ValueObjects;
 using System.Text;
 using System.Text.Json;
 
@@ -19,25 +19,25 @@ namespace PetFoster.Infrastructure.Repositories
     public sealed class VolunteersQueryRepository : IVolunteersQueryRepository
     {
         private readonly ISqlConnectionFactory _connectionFactory;
-        const string DESC = "DESC";
+        private const string DESC = "DESC";
 
         public VolunteersQueryRepository(ISqlConnectionFactory connectionFactory)
         {
             _connectionFactory = connectionFactory;
         }
 
-        public async Task<PagedList<VolunteerDto>> GetAllAsync(GetVoluteersWithPaginationQuery query, 
+        public async Task<PagedList<VolunteerDto>> GetAllAsync(GetVoluteersWithPaginationQuery query,
             CancellationToken cancellationToken)
         {
-            var connection = _connectionFactory.CreateConnection();
-            var parameters = new DynamicParameters();
+            System.Data.IDbConnection connection = _connectionFactory.CreateConnection();
+            DynamicParameters parameters = new();
 
             parameters.Add("@PageSize", query.PageSize);
             parameters.Add("@Offset", (query.Page - 1) * query.PageSize);
 
-            var totalCount = await connection.ExecuteScalarAsync<long>("SELECT COUNT(*) FROM volunteers");
+            long totalCount = await connection.ExecuteScalarAsync<long>("SELECT COUNT(*) FROM volunteers");
 
-            var sql = """
+            string sql = """
                    SELECT id, first_name, last_name, patronymic, email, description, work_expirience, 
                    phone_number, is_deleted, assistance_requisites_list, social_net_contacts 
                    FROM volunteers
@@ -45,16 +45,16 @@ namespace PetFoster.Infrastructure.Repositories
                    ORDER BY last_name,first_name,patronymic LIMIT @PageSize OFFSET @Offset
                    """;
 
-            var queryResult = await connection
+            IEnumerable<VolunteerDto> queryResult = await connection
                 .QueryAsync<VolunteerDto, string, string, VolunteerDto>(
              sql,
              (volunteer, assistanseJson, socialJson) =>
              {
-                 var assistanceRequisites = JsonSerializer
-                 .Deserialize<List<AssistanceRequisites>>(assistanseJson) ?? new();
+                 List<AssistanceRequisites> assistanceRequisites = JsonSerializer
+                 .Deserialize<List<AssistanceRequisites>>(assistanseJson) ?? [];
 
-                 var socialContacts = JsonSerializer
-                 .Deserialize<List<SocialNetContact>>(socialJson) ?? new();
+                 List<SocialNetContact> socialContacts = JsonSerializer
+                 .Deserialize<List<SocialNetContact>>(socialJson) ?? [];
 
                  volunteer.AssistanceRequisitesList = assistanceRequisites
                     .Select(a => new AssistanceRequisitesDto(a.Name, a.Description?.Value))
@@ -80,60 +80,60 @@ namespace PetFoster.Infrastructure.Repositories
         }
 
         public async Task<PagedList<PetDto>> GetPetWithPaginationAsync(
-            GetPetsWithPaginationQuery query, 
+            GetPetsWithPaginationQuery query,
             CancellationToken cancellationToken)
         {
-            var connection = _connectionFactory.CreateConnection();
-            var parameters = new DynamicParameters();
+            System.Data.IDbConnection connection = _connectionFactory.CreateConnection();
+            DynamicParameters parameters = new();
 
             parameters.Add("@PageSize", query.PageSize);
             parameters.Add("@Offset", (query.Page - 1) * query.PageSize);
 
-            var totalCount = await connection.ExecuteScalarAsync<long>("SELECT COUNT(*) FROM pets");
+            long totalCount = await connection.ExecuteScalarAsync<long>("SELECT COUNT(*) FROM pets");
 
-            StringBuilder sqlBuilder = new StringBuilder();                        
+            StringBuilder sqlBuilder = new();
 
-            var sqlSelectPart = """
+            string sqlSelectPart = """
                    SELECT id, name, specie_id, description, breed_id, coloration, health, weight, height, phone_number, 
                    сastrated, birth_day, vaccinated, position, assistance_status, file_list
                    FROM pets
                    """;
 
-            sqlBuilder.Append(sqlSelectPart);
+            _ = sqlBuilder.Append(sqlSelectPart);
 
             if (query.FilterList?.Any() == true)
             {
-                var filters = new List<string>();
+                List<string> filters = [];
 
                 int currentIndex = 1;
 
-                foreach (var filter in query.FilterList)
+                foreach (FilterItemDto filter in query.FilterList)
                 {
                     filters.Add($"{filter.FilterPropertyName} {filter.FilterCondition} @FilterValue{currentIndex}");
                     parameters.Add($"@FilterValue{currentIndex}", filter.FilterValue);
                     currentIndex++;
                 }
 
-                var filterSqlPart = String.Concat(" WHERE ", String.Join(" AND ", filters));
+                string filterSqlPart = string.Concat(" WHERE ", string.Join(" AND ", filters));
 
-                sqlBuilder.AppendLine(filterSqlPart);
+                _ = sqlBuilder.AppendLine(filterSqlPart);
             }
 
             if (query.SortBy != null)
-            {      
-                var orderDirection = query.SortAsc ? String.Empty : "DESC";
-                sqlBuilder.AppendLine($" ORDER BY {query.SortBy} {orderDirection}");
+            {
+                string orderDirection = query.SortAsc ? string.Empty : "DESC";
+                _ = sqlBuilder.AppendLine($" ORDER BY {query.SortBy} {orderDirection}");
             }
 
-            sqlBuilder.AppendLine("LIMIT @PageSize OFFSET @Offset");
+            _ = sqlBuilder.AppendLine("LIMIT @PageSize OFFSET @Offset");
 
-            var sqlQuery = sqlBuilder.ToString();
+            string sqlQuery = sqlBuilder.ToString();
 
-            var queryResult = await connection.QueryAsync<PetDto, string, PetDto>(
+            IEnumerable<PetDto> queryResult = await connection.QueryAsync<PetDto, string, PetDto>(
              sqlQuery,
              (pet, petFilesJson) =>
              {
-                 var petFiles = JsonSerializer.Deserialize<List<PetFile>>(petFilesJson) ?? new();
+                 List<PetFile> petFiles = JsonSerializer.Deserialize<List<PetFile>>(petFilesJson) ?? [];
 
                  pet.PetFiles = petFiles
                     .Select(f => new PetFileDto(f.PathToStorage.Path))
@@ -153,30 +153,30 @@ namespace PetFoster.Infrastructure.Repositories
             };
         }
 
-        public async Task<VolunteerDto> GetByIdAsync(GetVolunteerByIdQuery query, 
+        public async Task<VolunteerDto> GetByIdAsync(GetVolunteerByIdQuery query,
             CancellationToken cancellationToken)
         {
-            var connection = _connectionFactory.CreateConnection();
-            var parameters = new DynamicParameters();
+            System.Data.IDbConnection connection = _connectionFactory.CreateConnection();
+            DynamicParameters parameters = new();
 
             parameters.Add("@VolunteerId", query.Id);
 
-            var sql = """
+            string sql = """
                    SELECT id, first_name, last_name, patronymic, email, description, work_expirience, 
                     phone_number, is_deleted, assistance_requisites_list, social_net_contacts 
                    FROM volunteers
                    WHERE id = @VolunteerId AND is_deleted = false
                    """;
 
-            var queryResult = await connection.QueryAsync<VolunteerDto, string, string, VolunteerDto>(
+            IEnumerable<VolunteerDto> queryResult = await connection.QueryAsync<VolunteerDto, string, string, VolunteerDto>(
              sql,
              (volunteer, assistanseJson, socialJson) =>
              {
-                 var assistanceRequisites = JsonSerializer
-                 .Deserialize<List<AssistanceRequisites>>(assistanseJson) ?? new();
+                 List<AssistanceRequisites> assistanceRequisites = JsonSerializer
+                 .Deserialize<List<AssistanceRequisites>>(assistanseJson) ?? [];
 
-                 var socialContacts = JsonSerializer
-                 .Deserialize<List<SocialNetContact>>(socialJson) ?? new();
+                 List<SocialNetContact> socialContacts = JsonSerializer
+                 .Deserialize<List<SocialNetContact>>(socialJson) ?? [];
 
                  volunteer.AssistanceRequisitesList = assistanceRequisites
                     .Select(a => new AssistanceRequisitesDto(a.Name, a.Description?.Value))
@@ -197,24 +197,24 @@ namespace PetFoster.Infrastructure.Repositories
         public async Task<PetDto> GetPetByIdAsync(GetPetByIdQuery query,
             CancellationToken cancellationToken)
         {
-            var connection = _connectionFactory.CreateConnection();
-            var parameters = new DynamicParameters();
+            System.Data.IDbConnection connection = _connectionFactory.CreateConnection();
+            DynamicParameters parameters = new();
 
             parameters.Add("@VolunteerId", query.VolunteerId);
             parameters.Add("@PetId", query.PetId);
 
-            var sql = """
+            string sql = """
                    SELECT id, name, specie_id, description, breed_id, coloration, health, weight, height, phone_number, 
                    сastrated, birth_day, vaccinated, position, assistance_status, file_list 
                    FROM pets
                    WHERE volunteer_id = @VolunteerId AND id = @PetId AND is_deleted = false
                    """;
 
-            var queryResult = await connection.QueryAsync<PetDto, string, PetDto>(
+            IEnumerable<PetDto> queryResult = await connection.QueryAsync<PetDto, string, PetDto>(
              sql,
              (pet, petFilesJson) =>
              {
-                 var petFiles = JsonSerializer.Deserialize<List<PetFile>>(petFilesJson) ?? new();
+                 List<PetFile> petFiles = JsonSerializer.Deserialize<List<PetFile>>(petFilesJson) ?? [];
 
                  pet.PetFiles = petFiles
                     .Select(f => new PetFileDto(f.PathToStorage.Path))
@@ -228,26 +228,26 @@ namespace PetFoster.Infrastructure.Repositories
             return queryResult.FirstOrDefault();
         }
 
-        public async Task<IEnumerable<PetDto>> GetPetsByVolunteerId(GetPetsByVolunteerIdQuery query, 
+        public async Task<IEnumerable<PetDto>> GetPetsByVolunteerId(GetPetsByVolunteerIdQuery query,
             CancellationToken cancellationToken)
         {
-            var connection = _connectionFactory.CreateConnection();
-            var parameters = new DynamicParameters();
+            System.Data.IDbConnection connection = _connectionFactory.CreateConnection();
+            DynamicParameters parameters = new();
 
             parameters.Add("@VolunteerId", query.VolunteerId);
 
-            var sql = """
+            string sql = """
                    SELECT id, name, specie_id, description, breed_id, coloration, health, weight, height, phone_number, 
                    сastrated, birth_day, vaccinated, position, assistance_status, file_list 
                    FROM pets
                    WHERE volunteer_id = @VolunteerId AND is_deleted = false
                    """;
 
-            var queryResult = await connection.QueryAsync<PetDto, string, PetDto>(
+            IEnumerable<PetDto> queryResult = await connection.QueryAsync<PetDto, string, PetDto>(
              sql,
              (pet, petFilesJson) =>
              {
-                 var petFiles = JsonSerializer.Deserialize<List<PetFile>>(petFilesJson) ?? new();
+                 List<PetFile> petFiles = JsonSerializer.Deserialize<List<PetFile>>(petFilesJson) ?? [];
 
                  pet.PetFiles = petFiles
                     .Select(f => new PetFileDto(f.PathToStorage.Path))
@@ -262,26 +262,26 @@ namespace PetFoster.Infrastructure.Repositories
         }
 
 
-        public async Task<IEnumerable<PetDto>> GetPetsBySpecieId(GetPetsBySpecieIdQuery query, 
+        public async Task<IEnumerable<PetDto>> GetPetsBySpecieId(GetPetsBySpecieIdQuery query,
             CancellationToken cancellationToken)
         {
-            var connection = _connectionFactory.CreateConnection();
-            var parameters = new DynamicParameters();
+            System.Data.IDbConnection connection = _connectionFactory.CreateConnection();
+            DynamicParameters parameters = new();
 
             parameters.Add("@SpecieId", query.SpecieId.Value);
 
-            var sql = """
+            string sql = """
                    SELECT id, name, specie_id, description, breed_id, coloration, health, weight, height, phone_number, 
                    сastrated, birth_day, vaccinated, position, assistance_status, file_list
                    FROM pets
                    WHERE specie_id = @SpecieId AND is_deleted = false
                    """;
 
-            var queryResult = await connection.QueryAsync<PetDto, string, PetDto>(
+            IEnumerable<PetDto> queryResult = await connection.QueryAsync<PetDto, string, PetDto>(
              sql,
              (pet, petFilesJson) =>
              {
-                 var petFiles = JsonSerializer.Deserialize<List<PetFile>>(petFilesJson) ?? new();
+                 List<PetFile> petFiles = JsonSerializer.Deserialize<List<PetFile>>(petFilesJson) ?? [];
 
                  pet.PetFiles = petFiles
                     .Select(f => new PetFileDto(f.PathToStorage.Path))
@@ -295,26 +295,26 @@ namespace PetFoster.Infrastructure.Repositories
             return queryResult;
         }
 
-        public async Task<IEnumerable<PetDto>> GetPetsByBreedId(GetPetsByBreedIdQuery query, 
+        public async Task<IEnumerable<PetDto>> GetPetsByBreedId(GetPetsByBreedIdQuery query,
             CancellationToken cancellationToken)
         {
-            var connection = _connectionFactory.CreateConnection();
-            var parameters = new DynamicParameters();
+            System.Data.IDbConnection connection = _connectionFactory.CreateConnection();
+            DynamicParameters parameters = new();
 
             parameters.Add("@BreedId", query.BreedId.Value);
 
-            var sql = """
+            string sql = """
                    SELECT id, name, specie_id, description, breed_id, coloration, health, weight, height, phone_number, 
                    сastrated, birth_day, vaccinated, position, assistance_status, file_list
                    FROM pets
                    WHERE breed_id = @BreedId AND is_deleted = false
                    """;
 
-            var queryResult = await connection.QueryAsync<PetDto, string, PetDto>(
+            IEnumerable<PetDto> queryResult = await connection.QueryAsync<PetDto, string, PetDto>(
              sql,
              (pet, petFilesJson) =>
              {
-                 var petFiles = JsonSerializer.Deserialize<List<PetFile>>(petFilesJson) ?? new();
+                 List<PetFile> petFiles = JsonSerializer.Deserialize<List<PetFile>>(petFilesJson) ?? [];
 
                  pet.PetFiles = petFiles
                     .Select(f => new PetFileDto(f.PathToStorage.Path))
@@ -326,6 +326,6 @@ namespace PetFoster.Infrastructure.Repositories
              param: parameters);
 
             return queryResult;
-        }               
+        }
     }
 }

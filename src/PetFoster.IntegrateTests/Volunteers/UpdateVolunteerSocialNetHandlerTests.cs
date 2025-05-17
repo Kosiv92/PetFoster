@@ -1,8 +1,8 @@
 ﻿using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using PetFoster.Application.DTO.Volunteer;
-using PetFoster.Application.Interfaces;
 using PetFoster.Application.Volunteers.UpdateSocialNet;
+using PetFoster.Core.Abstractions;
+using PetFoster.Core.DTO.Volunteer;
 using PetFoster.Domain.Ids;
 
 namespace PetFoster.IntegrateTests.Volunteers
@@ -13,7 +13,7 @@ namespace PetFoster.IntegrateTests.Volunteers
         private const string SOCIAL_NAME = "Test social name";
         private const string ACCOUNT_NAME = "Test account name";
 
-        public UpdateVolunteerSocialNetHandlerTests(IntegrationTestsWebFactory factory) 
+        public UpdateVolunteerSocialNetHandlerTests(IntegrationTestsWebFactory factory)
             : base(factory)
         {
             _sut = ServiceScope.ServiceProvider
@@ -24,73 +24,73 @@ namespace PetFoster.IntegrateTests.Volunteers
         public async Task Update_volunteer_requisites_return_success()
         {
             //Assert
-            var cancellationToken = new CancellationTokenSource().Token;
-            var volunteerId = Guid.NewGuid();
-            await SeedDatabase(new List<Guid> { volunteerId }, cancellationToken);
+            CancellationToken cancellationToken = new CancellationTokenSource().Token;
+            Guid volunteerId = Guid.NewGuid();
+            await SeedDatabase([volunteerId], cancellationToken);
 
-            var command = CreateUpdateVolunteerSocialNetCommand(volunteerId);
+            UpdateVolunteerSocialNetCommand command = CreateUpdateVolunteerSocialNetCommand(volunteerId);
 
             //Act
-            var result = await _sut.Handle(command, cancellationToken);
+            CSharpFunctionalExtensions.Result<Guid, Core.ErrorList> result = await _sut.Handle(command, cancellationToken);
 
             //Arrange
-            result.IsSuccess.Should().BeTrue();
-            result.Value.Should().NotBeEmpty();
-            result.Value.Should().Be(volunteerId);
+            _ = result.IsSuccess.Should().BeTrue();
+            _ = result.Value.Should().NotBeEmpty();
+            _ = result.Value.Should().Be(volunteerId);
         }
 
         [Fact]
         public async Task Update_volunteer_change_personal_info_in_database()
         {
             //Assert
-            var cancellationToken = new CancellationTokenSource().Token;
-            var volunteerId = Guid.NewGuid();
-            await SeedDatabase(new List<Guid> { volunteerId }, cancellationToken);
+            CancellationToken cancellationToken = new CancellationTokenSource().Token;
+            Guid volunteerId = Guid.NewGuid();
+            await SeedDatabase([volunteerId], cancellationToken);
 
-            var command = CreateUpdateVolunteerSocialNetCommand(volunteerId);
+            UpdateVolunteerSocialNetCommand command = CreateUpdateVolunteerSocialNetCommand(volunteerId);
 
             //Act
-            var result = await _sut.Handle(command, cancellationToken);
-            var updatedVolunteer = await Repository.GetByIdAsync(
+            CSharpFunctionalExtensions.Result<Guid, Core.ErrorList> result = await _sut.Handle(command, cancellationToken);
+            Domain.Entities.Volunteer? updatedVolunteer = await Repository.GetByIdAsync(
                 VolunteerId.Create(volunteerId),
                 cancellationToken);
-            var updatedVolunteerSocialNet = updatedVolunteer?.
+            Core.ValueObjects.SocialNetContact? updatedVolunteerSocialNet = updatedVolunteer?.
                 SocialNetContacts.First();
 
             //Arrange
-            result.IsSuccess.Should().BeTrue();
-            result.Value.Should().NotBeEmpty();
-            result.Value.Should().Be(volunteerId);
-            updatedVolunteer.Should().NotBeNull();
-            updatedVolunteerSocialNet.Should().NotBeNull();
-            updatedVolunteerSocialNet.SocialNetName.Should().Be(SOCIAL_NAME);
-            updatedVolunteerSocialNet.AccountName.Should().Be(ACCOUNT_NAME);
+            _ = result.IsSuccess.Should().BeTrue();
+            _ = result.Value.Should().NotBeEmpty();
+            _ = result.Value.Should().Be(volunteerId);
+            _ = updatedVolunteer.Should().NotBeNull();
+            _ = updatedVolunteerSocialNet.Should().NotBeNull();
+            _ = updatedVolunteerSocialNet.SocialNetName.Should().Be(SOCIAL_NAME);
+            _ = updatedVolunteerSocialNet.AccountName.Should().Be(ACCOUNT_NAME);
         }
 
         [Fact]
         public async Task Update_not_exist_volunteer_return_failure()
         {
             //Assert
-            var cancellationToken = new CancellationTokenSource().Token;
-            var volunteerId = Guid.NewGuid();
-            await SeedDatabase(new List<Guid> { volunteerId }, cancellationToken);
+            CancellationToken cancellationToken = new CancellationTokenSource().Token;
+            Guid volunteerId = Guid.NewGuid();
+            await SeedDatabase([volunteerId], cancellationToken);
 
-            var command = CreateUpdateVolunteerSocialNetCommand(Guid.NewGuid());
+            UpdateVolunteerSocialNetCommand command = CreateUpdateVolunteerSocialNetCommand(Guid.NewGuid());
 
             //Act
-            var result = await _sut.Handle(command, cancellationToken);
+            CSharpFunctionalExtensions.Result<Guid, Core.ErrorList> result = await _sut.Handle(command, cancellationToken);
 
             //Arrange
-            result.IsFailure.Should().BeTrue();
-            result.Error.Should().NotBeEmpty();
+            _ = result.IsFailure.Should().BeTrue();
+            _ = result.Error.Should().NotBeEmpty();
             result.Error.First().Type.Should().Be(ErrorType.NotFound);
         }
 
         private UpdateVolunteerSocialNetCommand CreateUpdateVolunteerSocialNetCommand(
             Guid volunteerId)
         {
-            var socialNetList = new List<SocialNetContactsDto>();
-            var newSocialNet = new SocialNetContactsDto(SOCIAL_NAME, ACCOUNT_NAME);
+            List<SocialNetContactsDto> socialNetList = [];
+            SocialNetContactsDto newSocialNet = new(SOCIAL_NAME, ACCOUNT_NAME);
             socialNetList.Add(newSocialNet);
 
             return new UpdateVolunteerSocialNetCommand(

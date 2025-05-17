@@ -10,19 +10,28 @@ namespace PetFoster.WebAPI.Extensions
     {
         public static UpdateVolunteerPersonalInfoCommand ToUpdateVolunteerPersonalInfoCommand
             (this UpdateVolunteerPersonalInfoRequest request,
-            Guid volunteerId) => new UpdateVolunteerPersonalInfoCommand(volunteerId,
+            Guid volunteerId)
+        {
+            return new UpdateVolunteerPersonalInfoCommand(volunteerId,
                 new FullNameDto(request.FirstName, request.LastName, request.Patronymic),
                 request.Email,
                 request.PhoneNumber,
                 request.Description,
                 request.WorkExperience);
+        }
 
         public static UpdateVolunteerSocialNetCommand ToUpdateVolunteerSocialNetCommand
             (this UpdateSocialNetInfoVolunteerRequest request,
-            Guid volunteerId) => new UpdateVolunteerSocialNetCommand(volunteerId, request.SocialNetContactsList);
+            Guid volunteerId)
+        {
+            return new UpdateVolunteerSocialNetCommand(volunteerId, request.SocialNetContactsList);
+        }
 
         public static UpdateVolunteerRequisitesCommand ToUpdateVolunteerRequisitesCommand
             (this UpdateRequisitesInfoVolunteerRequest request,
-            Guid volunteerId) => new UpdateVolunteerRequisitesCommand(volunteerId, request.AssistanceRequisitesList);
+            Guid volunteerId)
+        {
+            return new UpdateVolunteerRequisitesCommand(volunteerId, request.AssistanceRequisitesList);
+        }
     }
 }

@@ -18,10 +18,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\backend\PetFoster.Application\PetFoster.Application.csproj" />
-    <ProjectReference Include="..\backend\PetFoster.Domain\PetFoster.Domain.csproj" />
     <ProjectReference Include="..\backend\PetFoster.Infrastructure\PetFoster.Infrastructure.csproj" />
     <ProjectReference Include="..\backend\PetFoster.WebAPI\PetFoster.WebAPI.csproj" />
+    <ProjectReference Include="..\PetFoster.Shared\PetFoster.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>

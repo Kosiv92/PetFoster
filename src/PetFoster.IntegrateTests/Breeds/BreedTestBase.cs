@@ -4,7 +4,7 @@ namespace PetFoster.IntegrateTests.Breeds
 {
     public class BreedTestBase : SpecieTestBase
     {
-        public BreedTestBase(IntegrationTestsWebFactory factory) 
+        public BreedTestBase(IntegrationTestsWebFactory factory)
             : base(factory)
         { }
     }
