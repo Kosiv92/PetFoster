@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>    
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.1" />
+    <PackageReference Include="Scrutor" Version="6.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\shared\PetFoster.Core\PetFoster.Core.csproj" />
+    <ProjectReference Include="..\..\shared\PetFoster.Framework\PetFoster.Framework.csproj" />
+    <ProjectReference Include="..\..\shared\PetFoster.SharedKernel\PetFoster.SharedKernel.csproj" />
+    <ProjectReference Include="..\..\volunteers\PetFoster.Volunteers.Contracts\PetFoster.Volunteers.Contracts.csproj" />
+    <ProjectReference Include="..\PetFoster.Species.Domain\PetFoster.Species.Domain.csproj" />
+  </ItemGroup>
+
+</Project>
