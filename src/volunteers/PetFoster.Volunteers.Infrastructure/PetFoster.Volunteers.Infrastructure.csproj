@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.1.66" />
+    <PackageReference Include="EntityFrameworkCore.NamingConventions" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="9.0.0" />
+    <PackageReference Include="Minio.AspNetCore" Version="6.0.1" />
+    <PackageReference Include="Npgsql" Version="9.0.3" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
+  </ItemGroup>
+
+  <ItemGroup>    
+    <ProjectReference Include="..\..\shared\PetFoster.Core\PetFoster.Core.csproj" />    
+    <ProjectReference Include="..\..\shared\PetFoster.Framework\PetFoster.Framework.csproj" />    
+    <ProjectReference Include="..\..\shared\PetFoster.SharedKernel\PetFoster.SharedKernel.csproj" />    
+    <ProjectReference Include="..\PetFoster.Volunteers.Application\PetFoster.Volunteers.Application.csproj" />
+    <ProjectReference Include="..\PetFoster.Volunteers.Domain\PetFoster.Volunteers.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Configurations\Read\" />
+  </ItemGroup>
+
+</Project>
